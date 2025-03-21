@@ -1,49 +1,39 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SupremeAmer Wallet</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <nav>
-            <ul>
-                <li><a href="#">Dashboard</a></li>
-                <li><a href="#">Send SUPA</a></li>
-                <li><a href="#">Receive SUPA</a></li>
-            </ul>
-        </nav>
+        <button id="connect-button">Connect</button>
     </header>
     <main>
         <section id="wallet-info">
             <h2>Wallet Information</h2>
-            <p id="wallet-address"></p>
-            <p id="supa-balance"></p>
+            <p id="balance"></p>
+            <p id="address"></p>
         </section>
-        <section id="send-supa">
-            <h2>Send SUPA</h2>
-            <form>
-                <label for="recipient-address">Recipient Address:</label>
-                <input type="text" id="recipient-address" name="recipient-address"><br><br>
-                <label for="amount">Amount:</label>
-                <input type="number" id="amount" name="amount"><br><br>
-                <button id="send-supa-button">Send SUPA</button>
-            </form>
-        </section>
-        <section id="receive-supa">
-            <h2>Receive SUPA</h2>
-            <p id="receive-supa-address"></p>
-        </section>
-        <section id="game-section">
-            <h2>SupremeAmer Puzzle Game</h2>
-            <button id="play-game-button">Play Game</button>
-            <div id="game-container"></div>
-        </section>
+        <button id="send-button">Send</button>
+        <button id="receive-button">Receive</button>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.7.0/dist/web3.min.js"></script>
-    <script src="script.js"></script>
+    <footer>
+        <button id="wallet-button" class="selected">Wallet</button>
+        <button id="game-button">Game</button>
+        <button id="dapp-button">DApp</button>
+    </footer>
+
+    <div id="game-container" style="display: none;">
+        <div id="game-board"></div>
+        <div id="word-input"></div>
+        <button id="submit-button">Submit</button>
+        <div id="score-display"></div>
+        <button id="boost-button">Boost</button>
+        <button id="withdraw-button">Withdraw</button>
+    </div>
+
 <style>
 body {
     font-family: Arial, sans-serif;
@@ -55,24 +45,7 @@ header {
     background-color: #333;
     color: #fff;
     padding: 1em;
-    text-align: center;
-}
-
-nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: space-between;
-}
-
-nav li {
-    margin-right: 20px;
-}
-
-nav a {
-    color: #fff;
-    text-decoration: none;
+    text-align: right;
 }
 
 main {
@@ -82,18 +55,14 @@ main {
     padding: 2em;
 }
 
-section {
+#wallet-info {
     background-color: #f7f7f7;
     padding: 1em;
     margin-bottom: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
-    margin-top: 0;
-}
-
-#send-supa-button {
+button {
     background-color: #333;
     color: #fff;
     padding: 10px 20px;
@@ -102,11 +71,56 @@ h2 {
     cursor: pointer;
 }
 
-#send-supa-button:hover {
-    background-color: #444;
+button.selected {
+    background-color: #555;
 }
 
-#play-game-button {
+footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+    background-color: #333;
+    color: #fff;
+}
+
+#game-container {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f7f7f7;
+    padding: 2em;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#game-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 10px;
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+}
+
+#game-board div {
+    background-color: #fff;
+    padding: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#word-input {
+    width: 50%;
+    height: 40px;
+    margin: 20px auto;
+    padding: 10px;
+    font-size: 24px;
+}
+
+#submit-button {
     background-color: #333;
     color: #fff;
     padding: 10px 20px;
@@ -115,141 +129,30 @@ h2 {
     cursor: pointer;
 }
 
-#play-game-button:hover {
-    background-color: #444;
+#score-display {
+    font-size: 36px;
+    margin: 20px auto;
+    text-align: center;
+}
+
+#boost-button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#withdraw-button {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 </style>
-
-<script>
-// Import Web3 library
-const Web3 = require('web3');
-
-// Set up Web3 provider
-const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/YOUR_PROJECT_ID');
-
-// Create Web3 instance
-const web3 = new Web3(provider);
-
-// Define SupremeAmer token contract address
-const supremeAmerContractAddress = '0x...SUPREMEAMER_CONTRACT_ADDRESS...';
-
-// Define user wallet
-const userWallet = {
-    supremeAmerTokenBalance: 0,
-    ethereumAddress: '',
-};
-
-// Define game logic
-const gameLogic = {
-    // Game levels
-    levels: [
-        {
-            type: 'wordScramble',
-            words: ['bitcoin', 'ethereum', 'blockchain'],
-        },
-        {
-            type: 'numberSequence',
-            sequence: [1, 2, 4, 8, 16],
-        },
-    ],
-
-    // Token rewards
-    tokenRewards: [
-        {
-            level: 1,
-            tokens: 10,
-        },
-        {
-            level: 2
-        },
-    ],
-
-    // Game mechanics
-    gameMechanics: {
-        timeAttack: true,
-        tokenMultipliers: true,
-        powerUps: true,
-    },
-
-    // Level up
-    levelUp: async () => {
-        // Increase user level
-        userWallet.level += 1;
-
-        // Reward user with additional SupremeAmer tokens
-        userWallet.supremeAmerTokenBalance += 10;
-
-        // Verify payment
-        await verifyPayment();
-    },
-
-    // Verify payment
-    verifyPayment: async () => {
-        // Get Ethereum transaction hash
-        const txHash = await web3.eth.getTransactionHash();
-
-        // Verify payment by checking transaction hash and confirming funds are added to your Ethereum address
-        if (txHash && metaMask.confirmTransaction(txHash)) {
-            console.log('Payment verified!');
-        } else {
-            console.log('Payment verification failed!');
-        }
-    },
-};
-
-// Define MetaMask API
-const metaMask = {
-    // Confirm transaction
-    confirmTransaction: (txHash) => {
-        // Implement MetaMask API to confirm transaction
-    },
-};
-
-// Initialize game logic
-gameLogic.userWallet.ethereumAddress = '0x...YOUR_ETHEREUM_ADDRESS...';
-
-// Play game button event listener
-document.getElementById('play-game-button').addEventListener('click', () => {
-    // Display game container
-    document.getElementById('game-container').style.display = 'block';
-
-    // Start game
-    startGame();
-});
-
-// Start game function
-function startGame() {
-    // Display game levels
-    const gameLevels = document.getElementById('game-levels');
-    gameLevels.innerHTML = '';
-
-    gameLogic.levels.forEach((level) => {
-        const levelElement = document.createElement('div');
-        levelElement.innerHTML = `Level ${level.type}: ${level.words.join(', ')}`;
-
-        gameLevels.appendChild(levelElement);
-    });
-}
-
-// Send SUPA button event listener
-document.getElementById('send-supa-button').addEventListener('click', () => {
-    // Get recipient address and amount
-    const recipientAddress = document.getElementById('recipient-address').value;
-    const amount = document.getElementById('amount').value;
-
-    // Send SUPA tokens
-    sendSupaTokens(recipientAddress, amount);
-});
-
-// Send SUPA tokens function
-function sendSupaTokens(recipientAddress, amount) {
-    // Implement Web3 API to send SUPA tokens
-    web3.eth.sendTransaction({
-        from: userWallet.ethereumAddress,
-        to: recipientAddress,
-        value: amount,
-    });
-}
-</script>
-</body>
+    <script src="script.js"></script>
+    </body>
 </html>
