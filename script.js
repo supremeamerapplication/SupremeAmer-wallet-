@@ -146,3 +146,66 @@ const gameBoardLetters = document.querySelectorAll('#game-board div');
 gameBoardLetters.forEach((letter) => {
     letter.addEventListener('click', handleGameBoardClick);
 });
+
+
+// Import Web3 library
+const Web3 = require('web3');
+
+// Set up Web3 provider
+const provider = new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/68342fd8381a4c8789dc82d9be2ab570');
+
+// Create Web3 instance
+const web3 = new Web3(provider);
+
+// Define game logic
+const gameLogic = {
+  // User wallet
+  userWallet: {
+    supremeAmerTokenBalance: 0,
+    ethereumAddress: '',
+  },
+
+  // Payment gateway
+  paymentGateway: {
+    metaMask: {
+      // MetaMask API
+    },
+  },
+
+  // Game boost
+  gameBoost: {
+    levelUpCost: 0.5, // $0.5 worth of Ethereum
+  },
+
+  // Level up
+  levelUp: async () => {
+    // Increase user level
+    gameLogic.userWallet.level += 1;
+
+    // Reward user with additional SupremeAmer tokens
+    gameLogic.userWallet.supremeAmerTokenBalance += 10;
+
+    // Verify payment
+    await gameLogic.verifyPayment();
+  },
+
+  // Verify payment
+  verifyPayment: async () => {
+    // Get Ethereum transaction hash
+    const txHash = await web3.eth.getTransactionHash();
+
+    // Verify payment by checking transaction hash and confirming funds are added to your Ethereum address
+    if (txHash && gameLogic.paymentGateway.metaMask.confirmTransaction(txHash)) {
+      console.log('Payment verified!');
+    } else {
+      console.log('Payment verification failed!');
+    }
+  },
+};
+
+// Initialize game logic
+gameLogic.userWallet.ethereumAddress = '0x...YOUR_ETHEREUM_ADDRESS...';
+gameLogic.paymentGateway.metaMask = {
+  // Initialize MetaMask API
+};
+ 
