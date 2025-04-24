@@ -3,32 +3,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const disconnectWalletButton = document.getElementById('disconnect-wallet');
   const walletAddressDiv = document.getElementById('wallet-address');
   const balanceDiv = document.getElementById('balance');
-  const transactionForm = document.getElementById('transaction-form');
-  const recipientAddressInput = document.getElementById('recipient-address');
-  const amountInput = document.getElementById('amount');
-  const transactionStatus = document.getElementById('transaction-status');
+  const additionalActionsDiv = document.getElementById('additional-actions');
+  const sendButton = document.getElementById('send-button');
+  const receiveButton = document.getElementById('receive-button');
+  const historyButton = document.getElementById('history-button');
 
   let web3;
   let connectedAccount = null;
 
-  // Initialize Web3 instance and check if MetaMask is installed
+  // Initialize Web3 and check if MetaMask is installed
   if (typeof window.ethereum !== 'undefined') {
     web3 = new Web3(window.ethereum);
+
+    // Load saved wallet address
+    const savedAddress = localStorage.getItem('connectedAddress');
+    if (savedAddress) {
+      connectWallet(savedAddress);
+    }
 
     connectWalletButton.addEventListener('click', async () => {
       try {
         // Request account access
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         connectedAccount = accounts[0];
-        walletAddressDiv.textContent = `Connected Wallet Address: ${connectedAccount}`;
-        console.log('Wallet connected:', connectedAccount);
-
-        // Show balance
-        await updateBalance();
-
-        // Toggle buttons
-        connectWalletButton.classList.add('hidden');
-        disconnectWalletButton.classList.remove('hidden');
+        localStorage.setItem('connectedAddress', connectedAccount);
+        connectWallet(connectedAccount);
       } catch (error) {
         console.error('Error connecting to wallet:', error);
         walletAddressDiv.textContent = 'Failed to connect wallet.';
@@ -37,54 +36,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
     disconnectWalletButton.addEventListener('click', () => {
       connectedAccount = null;
+      localStorage.removeItem('connectedAddress');
       walletAddressDiv.textContent = '';
       balanceDiv.textContent = '';
       connectWalletButton.classList.remove('hidden');
       disconnectWalletButton.classList.add('hidden');
+      additionalActionsDiv.classList.add('hidden');
     });
 
-    transactionForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!connectedAccount) {
-        transactionStatus.textContent = 'Please connect your wallet first.';
-        return;
-      }
+    sendButton.addEventListener('click', () => {
+      window.location.href = 'send.html';
+    });
 
-      const recipient = recipientAddressInput.value;
-      const amount = amountInput.value;
+    receiveButton.addEventListener('click', () => {
+      window.location.href = 'receive.html';
+    });
 
-      if (!web3.utils.isAddress(recipient)) {
-        transactionStatus.textContent = 'Invalid recipient address.';
-        return;
-      }
-
-      try {
-        transactionStatus.textContent = 'Sending transaction...';
-        const value = web3.utils.toWei(amount, 'ether');
-        await web3.eth.sendTransaction({
-          from: connectedAccount,
-          to: recipient,
-          value,
-        });
-        transactionStatus.textContent = 'Transaction sent successfully!';
-      } catch (error) {
-        console.error('Error sending transaction:', error);
-        transactionStatus.textContent = 'Transaction failed.';
-      }
+    historyButton.addEventListener('click', () => {
+      window.location.href = 'history.html';
     });
   } else {
     walletAddressDiv.textContent = 'MetaMask is not installed. Please install MetaMask and try again.';
     connectWalletButton.disabled = true;
   }
 
-  // Function to update wallet balance
-  async function updateBalance() {
-    try {
-      const balance = await web3.eth.getBalance(connectedAccount);
-      balanceDiv.textContent = `Balance: ${web3.utils.fromWei(balance, 'ether')} ETH`;
-    } catch (error) {
-      console.error('Error fetching balance:', error);
-      balanceDiv.textContent = 'Balance: Unable to fetch.';
-    }
+  async function connectWallet(address) {
+    connectedAccount = address;
+    walletAddressDiv.textContent = `Connected Wallet Address: ${address}`;
+    console.log('Wallet connected:', address);
+
+    // Show balance
+    const balance = await web3.eth.getBalance(address);
+    balanceDiv.textContent = `Balance: ${web3.utils.fromWei(balance, 'ether')} ETH`;
+
+    // Toggle buttons
+    connectWalletButton.classList.add('hidden');
+    disconnectWalletButton.classList.remove('hidden');
+    additionalActionsDiv.classList.remove('hidden');
   }
 });
