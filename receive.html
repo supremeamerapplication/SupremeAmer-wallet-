@@ -3,28 +3,58 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Receive Crypto</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Receive Ethereum</title>
+  <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+  <style>
+    .container {
+      text-align: center;
+      margin-top: 50px;
+    }
+    #qrcode {
+      margin-top: 20px;
+    }
+    input {
+      padding: 8px;
+      width: 300px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body class="font-sans bg-gray-100 text-gray-800">
-  <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold text-center">Receive Crypto</h1>
-    <p class="text-center mt-4">Share your wallet address to receive funds:</p>
-    <p id="wallet-address" class="text-center mt-2 text-lg font-semibold"></p>
-    <button id="copy-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
-      Copy Address
-    </button>
+<body>
+  <div class="container">
+    <h1>Receive Ethereum</h1>
+    <p>Enter your Ethereum wallet address below:</p>
+    <input type="text" id="walletAddress" placeholder="Enter your Ethereum wallet address">
+    <br>
+    <button onclick="generateQRCode()">Generate QR Code</button>
+    <div id="qrcode"></div>
   </div>
-  <script>
-    const walletAddressDiv = document.getElementById('wallet-address');
-    const copyButton = document.getElementById('copy-button');
-    const address = localStorage.getItem('connectedAddress');
-    walletAddressDiv.textContent = address;
 
-    copyButton.addEventListener('click', () => {
-      navigator.clipboard.writeText(address);
-      alert('Address copied to clipboard!');
-    });
+  <script>
+    function generateQRCode() {
+      const walletAddress = document.getElementById('walletAddress').value;
+      if (!walletAddress) {
+        alert('Please enter a wallet address.');
+        return;
+      }
+
+      // Clear any existing QR code
+      document.getElementById('qrcode').innerHTML = '';
+
+      // Generate the QR code
+      new QRCode(document.getElementById('qrcode'), {
+        text: walletAddress,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
   </script>
 </body>
 </html>
