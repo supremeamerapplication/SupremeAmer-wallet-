@@ -1,0 +1,159 @@
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9fafb; /* Light gray background */
+  color: #333; /* Dark text color */
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header */
+h1 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #1a202c; /* Darker gray */
+}
+
+/* Wallet Buttons */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+#connect-wallet {
+  background-color: #3b82f6; /* Blue */
+  color: white;
+}
+
+#connect-wallet:hover {
+  background-color: #2563eb; /* Darker Blue */
+}
+
+#disconnect-wallet {
+  background-color: #ef4444; /* Red */
+  color: white;
+}
+
+#disconnect-wallet:hover {
+  background-color: #dc2626; /* Darker Red */
+}
+
+#send-button {
+  background-color: #10b981; /* Green */
+  color: white;
+}
+
+#send-button:hover {
+  background-color: #059669; /* Darker Green */
+}
+
+#receive-button {
+  background-color: #6366f1; /* Indigo */
+  color: white;
+}
+
+#receive-button:hover {
+  background-color: #4f46e5; /* Darker Indigo */
+}
+
+#history-button {
+  background-color: #6b7280; /* Gray */
+  color: white;
+}
+
+#history-button:hover {
+  background-color: #4b5563; /* Darker Gray */
+}
+
+.hidden {
+  display: none;
+}
+
+/* Wallet Details */
+#wallet-details {
+  text-align: center;
+  margin: 20px 0;
+}
+
+#wallet-address {
+  font-weight: bold;
+  color: #1f2937; /* Dark gray */
+}
+
+#balance {
+  font-size: 1.2rem;
+  color: #4b5563; /* Medium gray */
+}
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+input {
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 80%;
+  max-width: 400px;
+  border: 1px solid #cbd5e0; /* Light border */
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+input:focus {
+  border-color: #3b82f6; /* Blue border on focus */
+  outline: none;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* Blue shadow */
+}
+
+/* Status Messages */
+#send-status, #transaction-status {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #6b7280; /* Gray */
+}
+
+/* Copy Button */
+#copy-button {
+  background-color: #3b82f6; /* Blue */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#copy-button:hover {
+  background-color: #2563eb; /* Darker Blue */
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  input {
+    width: 90%;
+  }
+}
