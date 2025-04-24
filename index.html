@@ -1,163 +1,30 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupremeAmer Wallet</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto Wallet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #wallet-address {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #connect-wallet {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <button id="connect-button">Connect</button>
-    </header>
-    <main>
-        <section id="wallet-info">
-            <h2>Wallet Information</h2>
-            <p id="balance"></p>
-            <p id="address"></p>
-        </section>
-        <button id="send-button">Send</button>
-        <button id="send-button">Receive</button>
-    </main>
-    <footer>
-        <button id="wallet-button" class="selected">Wallet</button>
-        <button id="game-button">Game</button>
-        <button id="dapp-button">DApp</button>
-    </footer>
-
-    <div id="game-container" style="display: none;">
-        <div id="game-board"></div>
-        <div id="word-input"></div>
-        <button id="submit-button">Submit</button>
-        <div id="score-display"></div>
-        <button id="boost-button">Boost</button>
-        <button id="withdraw-button">Withdraw</button>
-    </div>
-
-<style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 1em;
-    text-align: right;
-}
-
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2em;
-}
-
-#wallet-info {
-    background-color: #f7f7f7;
-    padding: 1em;
-    margin-bottom: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-button {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button.selected {
-    background-color: #555;
-}
-    send-button{
-        justify-content: space-between;
-        display: flex;
-        
-    }
-
-footer {
-    display: flex;
-    justify-content: space-between;
-    padding: 1em;
-    background-color: #333;
-    color: #fff;
-}
-
-#game-container {
-    display: none;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #f7f7f7;
-    padding: 2em;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#game-board {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 10px;
-    width: 400px;
-    height: 400px;
-    margin: 20px auto;
-}
-
-#game-board div {
-    background-color: #fff;
-    padding: 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#word-input {
-    width: 50%;
-    height: 40px;
-    margin: 20px auto;
-    padding: 10px;
-    font-size: 24px;
-}
-
-#submit-button {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#score-display {
-    font-size: 36px;
-    margin: 20px auto;
-    text-align: center;
-}
-
-#boost-button {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#withdraw-button {
-    background-color: #333;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-</style>
-    <script src="script.js"></script>
-    </body>
+  <h1>Crypto Wallet</h1>
+  <button id="connect-wallet">Connect Wallet</button>
+  <div id="wallet-address"></div>
+  <script src="wallet.js"></script>
+</body>
 </html>
