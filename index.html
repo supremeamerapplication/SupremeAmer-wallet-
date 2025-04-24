@@ -9,7 +9,7 @@
 </head>
 <body class="font-sans bg-gray-100 text-gray-800">
   <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold text-center mb-4">Enhanced Multi-Blockchain Wallet</h1>
+    <h1 class="text-2xl font-bold text-center mb-4">Enhanced Crypto Wallet</h1>
     <div class="flex justify-center mb-4">
       <button id="connect-wallet" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Connect Wallet
@@ -22,16 +22,16 @@
       <p id="wallet-address" class="font-semibold"></p>
       <p id="balance" class="text-gray-600"></p>
     </div>
-    <div id="transaction-section" class="mt-6">
-      <h2 class="text-xl font-semibold text-center mb-4">Send Transaction</h2>
-      <form id="transaction-form" class="flex flex-col items-center">
-        <input id="recipient-address" type="text" placeholder="Recipient Address" class="border p-2 mb-4 w-80 rounded">
-        <input id="amount" type="number" placeholder="Amount (ETH)" class="border p-2 mb-4 w-80 rounded">
-        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-          Send Transaction
-        </button>
-      </form>
-      <p id="transaction-status" class="text-center mt-4 text-sm text-gray-600"></p>
+    <div id="additional-actions" class="mt-6 text-center hidden">
+      <button id="send-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4">
+        Send
+      </button>
+      <button id="receive-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mb-4">
+        Receive
+      </button>
+      <button id="history-button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4">
+        History
+      </button>
     </div>
   </div>
   <script src="wallet.js"></script>
