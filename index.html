@@ -4,27 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Crypto Wallet</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 20px;
-    }
-    #wallet-address {
-      margin-top: 20px;
-      font-weight: bold;
-    }
-    #connect-wallet {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>Crypto Wallet</h1>
-  <button id="connect-wallet">Connect Wallet</button>
-  <div id="wallet-address"></div>
+<body class="font-sans bg-gray-100 text-gray-800">
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold text-center mb-4">Enhanced Multi-Blockchain Wallet</h1>
+    <div class="flex justify-center mb-4">
+      <button id="connect-wallet" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Connect Wallet
+      </button>
+      <button id="disconnect-wallet" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-4 hidden">
+        Disconnect Wallet
+      </button>
+    </div>
+    <div id="wallet-details" class="text-center">
+      <p id="wallet-address" class="font-semibold"></p>
+      <p id="balance" class="text-gray-600"></p>
+    </div>
+    <div id="transaction-section" class="mt-6">
+      <h2 class="text-xl font-semibold text-center mb-4">Send Transaction</h2>
+      <form id="transaction-form" class="flex flex-col items-center">
+        <input id="recipient-address" type="text" placeholder="Recipient Address" class="border p-2 mb-4 w-80 rounded">
+        <input id="amount" type="number" placeholder="Amount (ETH)" class="border p-2 mb-4 w-80 rounded">
+        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+          Send Transaction
+        </button>
+      </form>
+      <p id="transaction-status" class="text-center mt-4 text-sm text-gray-600"></p>
+    </div>
+  </div>
   <script src="wallet.js"></script>
 </body>
 </html>
