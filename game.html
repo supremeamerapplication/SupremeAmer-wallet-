@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SupremeAmer Word Puzzle</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <div id="game-container">
+    <h1>SupremeAmer Word Puzzle</h1>
+    <p>Level: <span id="level">1</span></p>
+    <p>Reward: <span id="reward">10 SupremeAmer Coins</span></p>
+    <div id="puzzle"></div>
+    <input type="text" id="user-input" placeholder="Type your answer here" />
+    <button id="submit-button">Submit</button>
+    <button id="boost-button">Use Boost (0.00007 ETH)</button>
+    <p id="message"></p>
+    <p id="wallet-status"></p>
+  </div>
+</body>
+</html>
