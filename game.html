@@ -3,22 +3,93 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SupremeAmer Word Puzzle</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="game.js" defer></script>
+  <title>Mining Game</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    #coin-logo {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
 </head>
-<body>
-  <div id="game-container">
-    <h1>SupremeAmer Word Puzzle</h1>
-    <p>Level: <span id="level">1</span></p>
-    <p>Reward: <span id="reward">10 SupremeAmer Coins</span></p>
-    <div id="puzzle"></div>
-    <input type="text" id="user-input" placeholder="Type your answer here" />
-    <button id="submit-button">Submit</button>
-    <button id="boost-button">Use Boost (0.00007 ETH)</button>
-    <p id="message"></p>
-    <p id="wallet-status"></p>
+<body class="font-sans bg-gray-100 text-gray-800">
+  <div class="container mx-auto p-4 text-center">
+    <h1 class="text-3xl font-bold mb-6">Mining Game</h1>
+
+    <!-- Coin Logo -->
+    <img id="coin-logo" src="coin-logo.png" alt="Coin Logo">
+
+    <!-- Mining Status -->
+    <div class="text-xl font-semibold my-4">
+      <p>Mined Sac Points: <span id="sac-balance">0.0000</span></p>
+    </div>
+
+    <!-- Swap Section -->
+    <div class="my-6">
+      <input 
+        type="number" 
+        id="swap-amount" 
+        placeholder="Enter Sac Points to Swap" 
+        class="border rounded w-1/2 p-2 text-center"
+      >
+      <button 
+        id="swap-button" 
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">
+        Swap to SA Coin
+      </button>
+    </div>
+
+    <!-- Swap Confirmation -->
+    <p id="swap-message" class="text-green-500 font-medium mt-4"></p>
   </div>
+
+  <!-- Footer with Swap and Transfer Buttons -->
+  <footer class="bg-white border-t border-gray-300 mt-6 p-4">
+    <div class="flex justify-around">
+      <button id="swap-footer" class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">
+        Swap
+      </button>
+      <a href="transfer.html" id="transfer-button" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
+        Transfer
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // Mining Variables
+    let sacBalance = 0.0000;
+    const miningRate = 0.0007; // Sac Points per second
+    const swapFeeRate = 0.03; // 3% fee
+
+    // Update Mined Balance Every Second
+    setInterval(() => {
+      sacBalance += miningRate;
+      document.getElementById('sac-balance').textContent = sacBalance.toFixed(4);
+    }, 1000);
+
+    // Swap Functionality
+    document.getElementById('swap-button').addEventListener('click', () => {
+      const swapAmount = parseFloat(document.getElementById('swap-amount').value);
+      if (isNaN(swapAmount) || swapAmount <= 0) {
+        alert('Enter a valid Swap Amount!');
+        return;
+      }
+      if (swapAmount > sacBalance) {
+        alert('You do not have enough Sac Points!');
+        return;
+      }
+
+      // Deduct Fee and Update Balance
+      const fee = swapAmount * swapFeeRate;
+      const saCoins = swapAmount - fee;
+      sacBalance -= swapAmount;
+
+      document.getElementById('sac-balance').textContent = sacBalance.toFixed(4);
+      document.getElementById('swap-message').textContent = 
+        `Swapped ${swapAmount.toFixed(4)} Sac Points to ${saCoins.toFixed(4)} SA Coins (Fee: ${fee.toFixed(4)}).`;
+    });
+  </script>
 </body>
 </html>
