@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans bg-gray-100 text-gray-800">
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold text-center mb-4">Discover</h1>
+    <div class="flex justify-center mb-4">
+      <!-- URL Input -->
+      <input 
+        type="text" 
+        id="url-input" 
+        placeholder="Enter URL (e.g., https://example.com)" 
+        class="border rounded w-full md:w-2/3 lg:w-1/2 p-2"
+      >
+      <!-- Go Button -->
+      <button 
+        id="go-button" 
+        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">
+        Go
+      </button>
+    </div>
+    <!-- Browser Display -->
+    <div class="border rounded overflow-hidden">
+      <iframe 
+        id="browser-frame" 
+        src="about:blank" 
+        class="w-full h-screen"
+        sandbox="allow-scripts allow-same-origin allow-popups"
+      ></iframe>
+    </div>
+  </div>
+  <script>
+    // JavaScript to handle URL navigation
+    document.getElementById('go-button').addEventListener('click', () => {
+      const urlInput = document.getElementById('url-input').value;
+      const browserFrame = document.getElementById('browser-frame');
+
+      // Validate and update the iframe
+      if (urlInput) {
+        const formattedUrl = urlInput.startsWith('http://') || urlInput.startsWith('https://') 
+          ? urlInput 
+          : `https://${urlInput}`;
+        browserFrame.src = formattedUrl;
+      } else {
+        alert('Please enter a valid URL.');
+      }
+    });
+  </script>
+</body>
+</html>
