@@ -1,8 +1,8 @@
 /* General Styles */
 body {
-  font-family: 'Inter', sans-serif; /* Modern font similar to MetaMask */
-  background-color: #f2f6fc; /* Light blue-gray background */
-  color: #1a202c; /* Dark text color */
+  font-family: 'Inter', sans-serif; /* Modern font */
+  background-color: #0d1f44; /* Dark blue background */
+  color: #ffffff; /* White text color */
   margin: 0;
   padding: 0;
   display: flex;
@@ -16,9 +16,10 @@ body {
   width: 100%;
   background-color: #ffffff; /* White card background */
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow */
   padding: 24px;
   box-sizing: border-box;
+  color: #0d1f44; /* Dark blue text for content inside the container */
 }
 
 /* Header */
@@ -66,58 +67,36 @@ button:hover {
   background-color: #dc2626; /* Darker Red */
 }
 
-#send-button {
-  background-color: #10b981; /* Green */
-  color: white;
-}
-
-#send-button:hover {
-  background-color: #059669; /* Darker Green */
-}
-
-#receive-button {
-  background-color: #6366f1; /* Indigo */
-  color: white;
-}
-
-#receive-button:hover {
-  background-color: #4f46e5; /* Darker Indigo */
-}
-
-#history-button {
-  background-color: #6b7280; /* Gray */
-  color: white;
-}
-
-#history-button:hover {
-  background-color: #4b5563; /* Darker Gray */
-}
-
-.hidden {
-  display: none;
-}
-
 /* Wallet Details */
 #wallet-details {
   text-align: center;
   margin: 20px 0;
-  border: 1px solid #e2e8f0; /* Light gray border */
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #f8fafc; /* Soft background */
+  border: 2px solid #3b82f6; /* Blue border */
+  border-radius: 12px; /* Rounded corners */
+  padding: 20px;
+  background-color: #f8fafc; /* Soft light background */
 }
 
 #wallet-address {
   font-weight: 700;
-  color: #0d1f44; /* Dark blue */
+  color: #1a202c; /* Dark gray text */
   font-size: 0.9rem;
   word-wrap: break-word;
+  margin-top: 10px;
+  padding: 8px;
+  border: 1px solid #cbd5e0; /* Light gray border */
+  border-radius: 8px; /* Rounded corners for wallet address */
+  background-color: #ffffff; /* White background for address */
 }
 
 #balance {
   font-size: 1.4rem;
-  color: #1a202c; /* Dark text */
+  color: #0d1f44; /* Dark blue text */
   margin-top: 10px;
+  padding: 12px;
+  border: 2px solid #3b82f6; /* Blue border for the balance */
+  border-radius: 8px; /* Rounded corners */
+  background-color: #f8fafc; /* Light background */
 }
 
 /* Forms */
@@ -151,6 +130,29 @@ input:focus {
   color: #6b7280; /* Gray */
 }
 
+/* Footer Buttons */
+#footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+footer button {
+  flex: 1;
+  margin: 0 8px;
+  padding: 12px;
+  background-color: #3b82f6; /* Blue */
+  border-radius: 8px;
+  color: #ffffff; /* White text */
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+}
+
+footer button:hover {
+  background-color: #2563eb; /* Slightly darker blue */
+  transform: translateY(-2px);
+}
+
 /* Copy Button */
 #copy-button {
   background-color: #3b82f6; /* Blue */
@@ -167,27 +169,6 @@ input:focus {
   background-color: #2563eb; /* Darker Blue */
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2); /* Blue shadow */
-}
-
-/* Footer Buttons */
-#footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-footer button {
-  flex: 1;
-  margin: 0 8px;
-  padding: 12px;
-  background-color: #e2e8f0; /* Light gray */
-  border-radius: 8px;
-  color: #1a202c; /* Dark text */
-  font-weight: 600;
-}
-
-footer button:hover {
-  background-color: #cbd5e0; /* Slightly darker gray */
 }
 
 /* Responsive Design */
