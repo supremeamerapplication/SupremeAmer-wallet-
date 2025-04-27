@@ -1,5 +1,7 @@
 ```
 solidity
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
@@ -62,6 +64,16 @@ contract SupremeAmer is ERC20, Ownable {
         emit RewardsClaimed(msg.sender, userRewards);
     }
 
+    function unstake(uint256 _amount) public {
+        require(_amount > 0, "Invalid unstake amount");
+        require(stakingBalances[msg.sender] >= _amount, "Insufficient staked balance");
+
+        stakingBalances[msg.sender] -= _amount;
+        _transfer(address(this), msg.sender, _amount);
+
+        emit Unstaked(msg.sender, _amount);
+    }
+
     function setTransferFee(uint256 _fee) public onlyOwner {
         transferFee = _fee;
     }
@@ -73,14 +85,5 @@ contract SupremeAmer is ERC20, Ownable {
     function setOwnerRewardPercentage(uint256 _percentage) public onlyOwner {
         ownerRewardPercentage = _percentage;
     }
-  j
-solidity
-    function unstake(uint256 _amount) public {
-        require(_amount > 0, "Invalid unstake amount");
-        require(stakingBalances[msg.sender] >= _amount, "Insufficient staked balance");
-
-        stakingBalances[msg.sender] -= _amount;
-        _transfer(address(this), msg.sender, _amount);
-
-        emit Unstaked(msg.sender, _amount);
-      )
+}
+```
