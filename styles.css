@@ -1,187 +1,86 @@
-/* General Styles */
-body {
-  font-family: 'Inter', sans-serif; /* Modern font */
-  background-color: #000; /* Dark blue background */
-  color: #ffffff; /* White text color */
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
+```
+solidity
+pragma solidity ^0.8.0;
 
-.container {
-  max-width: 400px;
-  width: 100%;
-  background-color: #ffffff; /* White card background */
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-  padding: 24px;
-  box-sizing: border-box;
-  color: #0d1f44; /* Dark blue text for content inside the container */
-}
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-/* Header */
-h1 {
-  font-size: 1.8rem;
-  text-align: center;
-  margin-bottom: 20px;
-  color: #0d1f44; /* Deep blue */
-  font-weight: 700;
-}
+contract SupremeAmer is ERC20, Ownable {
+    uint256 public constant TOTAL_SUPPLY = 100 * 10**11 * 10**18; 
+    uint256 public transferFee = 6 * 10**16; 
+    uint256 public stakingRewardRate = 10 * 10**16; 
+    uint256 public stakingPeriod = 30 days;
+    uint256 public ownerRewardPercentage = 20 * 10**16; 
 
-/* Wallet Buttons */
-button {
-  padding: 12px 16px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  width: 100%;
-  margin-bottom: 16px;
-}
+    mapping(address => uint256) public stakingBalances;
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+    event TransferWithFee(address indexed from, address indexed to, uint256 amount, uint256 fee);
+    event Staked(address indexed user, uint256 amount);
+    event Unstaked(address indexed user, uint256 amount);
+    event RewardsClaimed(address indexed user, uint256 amount);
 
-#connect-wallet {
-  background: linear-gradient(90deg, #ff7a18, #ff3f81); /* Orange to pink gradient */
-  color: white;
-}
+    constructor() ERC20("SupremeAmer", "SA") {
+        _mint(msg.sender, TOTAL_SUPPLY);
+    }
 
-#connect-wallet:hover {
-  background: linear-gradient(90deg, #ff6112, #e62e6f); /* Darker gradient */
-}
+    function transfer(address _to, uint256 _amount) public override {
+        uint256 fee = (_amount * transferFee) / 10**18;
+        uint256 amountAfterFee = _amount - fee;
 
-#disconnect-wallet {
-  background-color: #ef4444; /* Red */
-  color: white;
-}
+        _transfer(msg.sender, _to, amountAfterFee);
+        if (fee > 0) {
+            _transfer(msg.sender, owner(), fee);
+        }
 
-#disconnect-wallet:hover {
-  background-color: #dc2626; /* Darker Red */
-}
+        emit TransferWithFee(msg.sender, _to, _amount, fee);
+    }
 
-/* Wallet Details */
-#wallet-details {
-  text-align: center;
-  margin: 20px 0;
-  border: 2px solid #3b82f6; /* Blue border */
-  border-radius: 12px; /* Rounded corners */
-  padding: 20px;
-  background-color: #f8fafc; /* Soft light background */
-}
+    function stake(uint256 _amount) public {
+        require(_amount > 0, "Invalid stake amount");
+        require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
 
-#wallet-address {
-  font-weight: 700;
-  color: #1a202c; /* Dark gray text */
-  font-size: 0.9rem;
-  word-wrap: break-word;
-  margin-top: 10px;
-  padding: 8px;
-  border: 1px solid #cbd5e0; /* Light gray border */
-  border-radius: 8px; /* Rounded corners for wallet address */
-  background-color: #ffffff; /* White background for address */
-}
+        _transfer(msg.sender, address(this), _amount);
+        stakingBalances[msg.sender] += _amount;
 
-#balance {
-  font-size: 1.4rem;
-  color: #0d1f44; /* Dark blue text */
-  margin-top: 10px;
-  padding: 12px;
-  border: 2px solid #3b82f6; /* Blue border for the balance */
-  border-radius: 8px; /* Rounded corners */
-  background-color: #f8fafc; /* Light background */
-}
+        emit Staked(msg.sender, _amount);
+    }
 
-/* Forms */
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+    function calculateRewards(address _user) public view returns (uint256) {
+        uint256 stakedAmount = stakingBalances[_user];
+        uint256 reward = (stakedAmount * stakingRewardRate * stakingPeriod) / 365 days;
+        return reward;
+    }
 
-input {
-  padding: 12px;
-  margin-bottom: 15px;
-  width: 100%;
-  border: 1px solid #cbd5e0; /* Light border */
-  border-radius: 8px;
-  font-size: 14px;
-  background-color: #f9fafb; /* Light background */
-  box-sizing: border-box;
-}
+    function claimRewards() public {
+        uint256 rewards = calculateRewards(msg.sender);
+        uint256 ownerRewards = (rewards * ownerRewardPercentage) / 10**18;
+        uint256 userRewards = rewards - ownerRewards;
 
-input:focus {
-  border-color: #3b82f6; /* Blue border on focus */
-  outline: none;
-  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* Blue shadow */
-}
+        _transfer(address(this), owner(), ownerRewards);
+        _transfer(address(this), msg.sender, userRewards);
 
-/* Status Messages */
-#send-status, #transaction-status {
-  margin-top: 10px;
-  font-size: 0.85rem;
-  color: #6b7280; /* Gray */
-}
+        emit RewardsClaimed(msg.sender, userRewards);
+    }
 
-/* Footer Buttons */
-#footer {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
+    function setTransferFee(uint256 _fee) public onlyOwner {
+        transferFee = _fee;
+    }
 
-footer button {
-  flex: 1;
-  margin: 0 8px;
-  padding: 12px;
-  background-color: #3b82f6; /* Blue */
-  border-radius: 8px;
-  color: #ffffff; /* White text */
-  font-weight: 600;
-  transition: all 0.3s ease-in-out;
-}
+    function setStakingRewardRate(uint256 _rate) public onlyOwner {
+        stakingRewardRate = _rate;
+    }
 
-footer button:hover {
-  background-color: #2563eb; /* Slightly darker blue */
-  transform: translateY(-2px);
-}
+    function setOwnerRewardPercentage(uint256 _percentage) public onlyOwner {
+        ownerRewardPercentage = _percentage;
+    }
+  j
+solidity
+    function unstake(uint256 _amount) public {
+        require(_amount > 0, "Invalid unstake amount");
+        require(stakingBalances[msg.sender] >= _amount, "Insufficient staked balance");
 
-/* Copy Button */
-#copy-button {
-  background-color: #3b82f6; /* Blue */
-  color: white;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  font-size: 14px;
-  width: 100%;
-}
+        stakingBalances[msg.sender] -= _amount;
+        _transfer(address(this), msg.sender, _amount);
 
-#copy-button:hover {
-  background-color: #2563eb; /* Darker Blue */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2); /* Blue shadow */
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .container {
-    padding: 16px;
-  }
-
-  button {
-    font-size: 14px;
-  }
-
-  input {
-    font-size: 14px;
-  }
-}
+        emit Unstaked(msg.sender, _amount);
+      )
