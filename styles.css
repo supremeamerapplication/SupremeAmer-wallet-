@@ -1,89 +1,65 @@
-```
-solidity
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract SupremeAmer is ERC20, Ownable {
-    uint256 public constant TOTAL_SUPPLY = 100 * 10**11 * 10**18; 
-    uint256 public transferFee = 6 * 10**16; 
-    uint256 public stakingRewardRate = 10 * 10**16; 
-    uint256 public stakingPeriod = 30 days;
-    uint256 public ownerRewardPercentage = 20 * 10**16; 
+contract SupremeAmerToken is ERC20, Ownable {
+    uint256 public constant TOTAL_SUPPLY = 100_000_000_000 * 10**18; // 100 billion tokens
+    uint256 public constant FEE_PERCENTAGE = 6; // 6% fee
+    uint256 public constant STAKING_PERIOD = 30 days; // Staking period of 30 days
 
-    mapping(address => uint256) public stakingBalances;
+    struct Stake {
+        uint256 amount;
+        uint256 startTime;
+    }
 
-    event TransferWithFee(address indexed from, address indexed to, uint256 amount, uint256 fee);
-    event Staked(address indexed user, uint256 amount);
-    event Unstaked(address indexed user, uint256 amount);
-    event RewardsClaimed(address indexed user, uint256 amount);
+    mapping(address => Stake) public stakes;
 
     constructor() ERC20("SupremeAmer", "SA") {
-        _mint(msg.sender, TOTAL_SUPPLY);
+        _mint(msg.sender, TOTAL_SUPPLY); // Mint initial supply to the contract owner
     }
 
-    function transfer(address _to, uint256 _amount) public override {
-        uint256 fee = (_amount * transferFee) / 10**18;
-        uint256 amountAfterFee = _amount - fee;
-
-        _transfer(msg.sender, _to, amountAfterFee);
-        if (fee > 0) {
-            _transfer(msg.sender, owner(), fee);
-        }
-
-        emit TransferWithFee(msg.sender, _to, _amount, fee);
+    // Apply a 6% fee to transfers and withdrawals
+    function _transfer(address sender, address recipient, uint256 amount) internal override {
+        uint256 fee = (amount * FEE_PERCENTAGE) / 100;
+        uint256 amountAfterFee = amount - fee;
+        super._transfer(sender, recipient, amountAfterFee);
+        super._transfer(sender, address(this), fee); // Send fee to contract
     }
 
-    function stake(uint256 _amount) public {
-        require(_amount > 0, "Invalid stake amount");
-        require(balanceOf(msg.sender) >= _amount, "Insufficient balance");
+    // Stake tokens for 30 days
+    function stakeTokens(uint256 amount) external {
+        require(amount > 0, "Cannot stake 0 tokens");
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
 
-        _transfer(msg.sender, address(this), _amount);
-        stakingBalances[msg.sender] += _amount;
+        // Transfer tokens to the contract for staking
+        _transfer(msg.sender, address(this), amount);
 
-        emit Staked(msg.sender, _amount);
+        // Update staking details
+        Stake storage userStake = stakes[msg.sender];
+        userStake.amount += amount;
+        userStake.startTime = block.timestamp;
     }
 
-    function calculateRewards(address _user) public view returns (uint256) {
-        uint256 stakedAmount = stakingBalances[_user];
-        uint256 reward = (stakedAmount * stakingRewardRate * stakingPeriod) / 365 days;
-        return reward;
+    // Withdraw staked tokens after 30 days
+    function withdrawStakedTokens() external {
+        Stake storage userStake = stakes[msg.sender];
+        require(userStake.amount > 0, "No staked tokens to withdraw");
+        require(block.timestamp >= userStake.startTime + STAKING_PERIOD, "Staking period not yet completed");
+
+        uint256 stakedAmount = userStake.amount;
+        userStake.amount = 0; // Reset staked amount
+
+        // Transfer staked tokens back to the user
+        super._transfer(address(this), msg.sender, stakedAmount);
     }
 
-    function claimRewards() public {
-        uint256 rewards = calculateRewards(msg.sender);
-        uint256 ownerRewards = (rewards * ownerRewardPercentage) / 10**18;
-        uint256 userRewards = rewards - ownerRewards;
+    // Owner can withdraw accumulated fees
+    function withdrawFees() external onlyOwner {
+        uint256 contractBalance = balanceOf(address(this));
+        require(contractBalance > 0, "No fees to withdraw");
 
-        _transfer(address(this), owner(), ownerRewards);
-        _transfer(address(this), msg.sender, userRewards);
-
-        emit RewardsClaimed(msg.sender, userRewards);
-    }
-
-    function unstake(uint256 _amount) public {
-        require(_amount > 0, "Invalid unstake amount");
-        require(stakingBalances[msg.sender] >= _amount, "Insufficient staked balance");
-
-        stakingBalances[msg.sender] -= _amount;
-        _transfer(address(this), msg.sender, _amount);
-
-        emit Unstaked(msg.sender, _amount);
-    }
-
-    function setTransferFee(uint256 _fee) public onlyOwner {
-        transferFee = _fee;
-    }
-
-    function setStakingRewardRate(uint256 _rate) public onlyOwner {
-        stakingRewardRate = _rate;
-    }
-
-    function setOwnerRewardPercentage(uint256 _percentage) public onlyOwner {
-        ownerRewardPercentage = _percentage;
+        super._transfer(address(this), msg.sender, contractBalance);
     }
 }
-```
