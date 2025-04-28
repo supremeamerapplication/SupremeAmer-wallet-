@@ -1,101 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> SupremeAmer Crypto Wallet</title>
-  <link rel="stylesheet" href="styles.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> SupremeAmer Crypto Wallet</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="font-sans bg-black-100 text-gray-800">
-  <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold text-center mb-4">SupremeAmer Crypto Wallet</h1>
-    <div class="flex justify-center mb-4">
-      <button id="connect-wallet" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Connect Wallet
-      </button>
-      <button id="disconnect-wallet" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-4 hidden">
-        Disconnect Wallet
-      </button>
+<body class="font-sans bg-black text-white">
+    <div class="container mx-auto p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">SupremeAmer Crypto Wallet</h1>
+        <button id="connect-wallet" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"> Connect Wallet </button>
+        <button id="disconnect-wallet" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-4 hidden"> Disconnect Wallet </button>
     </div>
-    <div id="wallet-details" class="text-center">
-      <p id="wallet-address" class="font-semibold"></p>
-      <p id="balance" class="text-gray-600"></p>
+    <div class="container mx-auto p-4">
+        <div id="wallet-details" class="text-left">
+            <p id="wallet-address" class="font-semibold"></p>
+            <p id="balance" class="text-lg font-bold">Balance:</p>
+            <p id="ngn-balance">NGN: 0</p>
+            <p id="usd-balance">USD: 0</p>
+            <p id="rub-balance">RUB: 0</p>
+            <p id="kwd-balance">KWD: 0</p>
+            <p id="eth-balance">ETH: 0</p>
+            <p id="usdt-balance">USDT: 0</p>
+        </div>
+        <div id="additional-actions" class="mt-6 text-center hidden">
+            <button id="send-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4"> Send </button>
+            <button id="receive-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mb-4"> Receive </button>
+            <button id="history-button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4"> History </button>
+        </div>
+        <!-- Existing Send, Receive, and History Buttons -->
+        <div class="buttons">
+            <button id="send">Send</button>
+            <button id="receive">Receive</button>
+            <button id="history">History</button>
+        </div>
+        <!-- Add Ethereum Live Chart -->
+        <div id="ethereum-chart" style="margin-top: 20px;">
+            <!-- TradingView Widget -->
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+                new TradingView.widget({
+                    "width": "100%",
+                    "height": 400,
+                    "symbol": "BINANCE:ETHUSDT",
+                    "interval": "D",
+                    "timezone": "Etc/UTC",
+                    "theme": "dark",
+                    "style": "1",
+                    "locale": "en",
+                    "toolbar_bg": "#f1f3f6",
+                    "enable_publishing": false,
+                    "hide_top_toolbar": true,
+                    "hide_legend": false,
+                    "save_image": false,
+                    "container_id": "ethereum-chart"
+                });
+            </script>
+        </div>
     </div>
-    <div id="additional-actions" class="mt-6 text-center hidden">
-      <button id="send-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4">
-        Send
-      </button>
-      <button id="receive-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mb-4">
-        Receive
-      </button>
-      <button id="history-button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4">
-        History
-      </button>
+    <div id="mining-section">
+        <p id="mining-balance">Mining Balance: 0 SA Points</p>
+        <button id="start-mining">Start Mining</button>
     </div>
-
-    <!-- Existing Send, Receive, and History Buttons -->
-    <div class="buttons">
-      <button id="send">Send</button>
-      <button id="receive">Receive</button>
-      <button id="history">History</button>
+    <div id="import-token-section">
+        <h2>Import Token</h2>
+        <input type="text" id="contract-address" placeholder="Enter Token Contract Address">
+        <button id="import-token">Import Token</button>
     </div>
-
-    <!-- Add Ethereum Live Chart -->
-    <div id="ethereum-chart" style="margin-top: 20px;">
-      <!-- TradingView Widget -->
-      <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-      <script type="text/javascript">
-        new TradingView.widget({
-          "width": "100%",
-          "height": 400,
-          "symbol": "BINANCE:ETHUSDT",
-          "interval": "D",
-          "timezone": "Etc/UTC",
-          "theme": "light",
-          "style": "1",
-          "locale": "en",
-          "toolbar_bg": "#f1f3f6",
-          "enable_publishing": false,
-          "hide_top_toolbar": true,
-          "hide_legend": false,
-          "save_image": false,
-          "container_id": "ethereum-chart"
-        });
-      </script>
-    </div>
-  </div>
-  <div id="mining-section">
-  <p id="mining-balance">Mining Balance: 0 SA Points</p>
-  <button id="start-mining">Start Mining</button>
+    <!-- Footer with Home, Dapp, and Discover Buttons -->
+    <footer class="bg-black border-t border-gray-300 mt-6 p-4">
+        <div class="flex justify-around">
+            <button id="home-button" class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded"> Home </button>
+            <a href="game.html" id="discover-button" class="bg-purple-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">DAPP</a>
+            
+<!-- Discover Button Leading to discover.html -->
+<a href="discover.html" id="discover-button" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"> Discover </a>
 </div>
-
-
-
-<div id="import-token-section">
-  <h2>Import Token</h2>
-  <input type="text" id="contract-address" placeholder="Enter Token Contract Address">
-  <button id="import-token">Import Token</button>
-</div>
-
- <!-- Footer with Home, Dapp, and Discover Buttons -->
-<footer class="bg-white border-t border-gray-300 mt-6 p-4">
-  <div class="flex justify-around">
-    <button id="home-button" class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">
-      Home
-    </button>
-  
-    <a href="game.html" id="discover-button" class="bg-purple-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">DAPP</a>
-   
-    <!-- Discover Button Leading to discover.html -->
-    <a href="discover.html" id="discover-button" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-      Discover
-    </a>
-  </div>
 </footer>
-
-  <script src="wallet.js"></script>
+<script src="wallet.js"></script>
 </body>
 </html>
