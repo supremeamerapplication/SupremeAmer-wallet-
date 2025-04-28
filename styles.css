@@ -2,7 +2,7 @@
 body {
   font-family: "Inter", sans-serif;
   background-color: #000;
-  color: #333;
+  color: #fff;
   margin: 0;
   padding: 0;
 }
@@ -21,7 +21,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-radius: 12px;
+  border-radius: 17px;
 }
 
 header h1 {
@@ -117,7 +117,7 @@ footer {
   margin-top: 20px;
   padding: 10px 0;
   font-size: 0.9em;
-  color: #666;
+  color: #fff;
 }
 
 /* Responsive Design */
