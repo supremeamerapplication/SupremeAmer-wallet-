@@ -18,12 +18,17 @@
         <div id="wallet-details" class="text-left">
             <p id="wallet-address" class="font-semibold"></p>
             <p id="balance" class="text-lg font-bold">Balance:</p>
-            <p id="ngn-balance">NGN: 0</p>
-            <p id="usd-balance">USD: 0</p>
-            <p id="rub-balance">RUB: 0</p>
-            <p id="kwd-balance">KWD: 0</p>
-            <p id="eth-balance">ETH: 0</p>
-            <p id="usdt-balance">USDT: 0</p>
+            
+<select id="currency-select">
+    <option value="NGN">NGN</option>
+    <option value="USD">USD</option>
+    <option value="RUB">RUB</option>
+    <option value="KWD">KWD</option>
+    <option value="ETH">ETH</option>
+    <option value="USDT">USDT</option>
+</select>
+<p id="selected-currency-balance"></p>
+
         </div>
         <div id="additional-actions" class="mt-6 text-center hidden">
             <button id="send-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mb-4"> Send </button>
