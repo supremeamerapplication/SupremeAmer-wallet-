@@ -150,3 +150,16 @@ input:focus {
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
+#currency-select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#selected-currency-balance {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
