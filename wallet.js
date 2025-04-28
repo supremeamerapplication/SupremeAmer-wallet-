@@ -151,3 +151,47 @@ document.addEventListener('DOMContentLoaded', () => {
     connectWalletButton.disabled = true;
   }
 });
+
+const connectWallet = async () => {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            const accounts = await window.ethereum.request({
+                method: 'eth_requestAccounts',
+            });
+            console.log(accounts);
+
+            if (window.ethereum && window.ethereum.isMetaMask) {
+                console.log('MetaMask is installed and available');
+            }
+
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                console.log('Mobile device detected');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    } else {
+        console.log('MetaMask not detected');
+    }
+};
+
+connectWallet();
+
+const currencySelect = document.getElementById('currency-select');
+const selectedCurrencyBalance = document.getElementById('selected-currency-balance');
+
+const getBalance = async (currency) => {
+    return Math.floor(Math.random() * 1000);
+};
+
+currencySelect.addEventListener('change', async () => {
+    const selectedCurrency = currencySelect.value;
+    const balance = await getBalance(selectedCurrency);
+    selectedCurrencyBalance.innerText = `${selectedCurrency}: ${balance}`;
+});
+
+const initialCurrency = currencySelect.value;
+getBalance(initialCurrency).then((balance) => {
+    selectedCurrencyBalance.innerText = `${initialCurrency}: ${balance}`;
+});
+
