@@ -28,6 +28,41 @@
     <option value="USDT">USDT</option>
 </select>
 <p id="selected-currency-balance"></p>
+             <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .wallet {
+            text-align: left;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .balance {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="wallet">
+        <h1>SupremeAmer Wallet</h1>
+        <div class="balance" id="balance">$SA: 0</div>
+        <button onclick="window.location.href='index.html'">Go to Mining Page</button>
+    </div>
+
+
 
         </div>
         <div id="additional-actions" class="mt-6 text-center hidden">
@@ -62,6 +97,14 @@
                     "save_image": false,
                     "container_id": "ethereum-chart"
                 });
+                // Load the balance from local storage
+        function loadBalance() {
+            const balance = localStorage.getItem('minedCoins') || 0;
+            document.getElementById('balance').textContent = `$SA: ${parseFloat(balance).toFixed(4)}`;
+        }
+
+        // Load balance on page load
+        window.onload = loadBalance;
             </script>
         </div>
     </div>
