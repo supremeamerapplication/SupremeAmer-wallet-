@@ -1,161 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SupremeAmer Mining Game</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <style>
-    #coin-logo {
-      width: 150px;
-      height: 150px;
-      margin: 20px auto;
-      display: block;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <marquee behavior="scroll" direction="left" style="background-color: #333; color: #fff; padding: 10px; font-size: 18px;">Welcome to $SA🚀💰💰🚀🎉</marquee>
+    <title>Mining Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .mining {
+            text-align: center;
+            background: green;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: auto;
+        }
+        .mined-coins {
+            font-size: 2em;
+            margin: 20px 0;
+            color: orange;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .footer {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background: orange;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .timer {
+            font-size: 2em;
+            margin: 20px 0;
+            color: red;
+        }
+    </style>
 </head>
-<body class="font-sans bg-gray-100 text-gray-800">
-  <div class="container mx-auto p-4 text-center">
-    <h1 class="text-3xl font-bold mb-6">SupremeAmer Mining Game</h1>
-    <img id="coin-logo" src="coin-logo.png" alt="Coin Logo">
-
-    <!-- MetaMask Connection -->
-    <button id="connect-wallet" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-      Connect MetaMask
-    </button>
-    <p id="wallet-status" class="mt-4"></p>
-
-    <!-- Mining Information -->
-    <div id="mining-info" class="hidden">
-      <p>Mining Balance: <span id="mining-balance">0.0000</span> SA Points</p>
-      <p>Time Remaining: <span id="countdown-timer">7:00:00</span></p>
+<body>
+    <div class="mining">
+        <h1>SUPREMEAMER 💰⛏️⛏️</h1>
+        <div class="mined-coins" id="minedCoins">Mined Coins: 0</div>
+        <div class="timer" id="timer">Time remaining: 12 hours</div>
+        <button onclick="startMining()">Start Mining</button>
     </div>
-  </div>
-
-  <!-- Footer Navigation -->
-  <footer class="bg-white border-t border-gray-300 mt-6 p-4">
-    <div class="flex justify-around">
-      <a href="swap.html" id="swap-button" class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">
-        Swap
-      </a>
-      <a href="task.html" id="task-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-        Task
-      </a>
-      <a href="boast.html" id="boast-button" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-        Boost
-      </a>
-      <a href="transfer.html" id="transfer-button" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">
-        Transfer
-      </a>
+    <div class="footer">
+        <button onclick="window.location.href='index.html'">🏠</button>
+        <button onclick="window.location.href='Task.html'">📜</button>
+        <button onclick="window.location.href='wallet.html'">💸</button>
     </div>
-  </footer>
+    <script>
 
-  <script>
-    let miningBalance = 0;
-    let miningRate = 0.0007; // SA Points per second
-    let miningDuration = 7 * 60 * 60; // 7 hours in seconds
-    let miningEndTime;
-    let walletAddress = null;
+let minedCoins = parseFloat(localStorage.getItem('minedCoins')) || 0;
+let miningInterval;
+let timerInterval;
+let elapsedTime = parseInt(localStorage.getItem('elapsedTime')) || 0;
+let remainingTime = localStorage.getItem('remainingTime');
 
-    const serverApiUrl = "https://your-backend-api.com"; // Replace with your backend API URL
+if (!remainingTime) {
+  remainingTime = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+  localStorage.setItem('remainingTime', remainingTime);
+}
 
-    // MetaMask Connection
-    async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const accounts = await provider.send("eth_requestAccounts", []);
-          walletAddress = accounts[0];
-          document.getElementById("wallet-status").textContent = `Connected: ${walletAddress}`;
-          document.getElementById("connect-wallet").classList.add("hidden");
-          document.getElementById("mining-info").classList.remove("hidden");
+function startMining() {
+  if (!miningInterval) {
+    miningInterval = setInterval(mineCoins, 1000); // mine coins every second
+    timerInterval = setInterval(updateTimer, 1000); // update timer every second
+  }
+}
 
-          // Fetch Mining Data from Server
-          fetchMiningData(walletAddress);
-        } catch (error) {
-          console.error("Error connecting to MetaMask:", error);
-        }
-      } else {
-        alert("Please install MetaMask to use this feature.");
-      }
-    }
+function mineCoins() {
+  minedCoins += 0.0002; // increment mined coins by 0.0002
+  localStorage.setItem('minedCoins', minedCoins);
+  updateMinedCoinsDisplay();
+}
 
-    // Fetch Mining Data
-    async function fetchMiningData(address) {
-      try {
-        const response = await fetch(`${serverApiUrl}/getMiningData?address=${address}`);
-        const data = await response.json();
-        miningBalance = data.balance;
-        miningEndTime = data.endTime;
-        updateMiningInfo();
-        startMining();
-      } catch (error) {
-        console.error("Error fetching mining data:", error);
-      }
-    }
+function updateMinedCoinsDisplay() {
+  document.getElementById('minedCoins').textContent = `Mined Coins: ${minedCoins.toFixed(4)}`;
+}
 
-    // Update Mining Info
-    function updateMiningInfo() {
-      const remainingTime = Math.max(miningEndTime - Math.floor(Date.now() / 1000), 0);
-      document.getElementById("mining-balance").textContent = miningBalance.toFixed(4);
-      document.getElementById("countdown-timer").textContent = formatTime(remainingTime);
-    }
+function updateTimer() {
+  elapsedTime += 1000; // increment elapsed time by 1 second
+  localStorage.setItem('elapsedTime', elapsedTime);
+  remainingTime = 12 * 60 * 60 * 1000 - elapsedTime;
+  localStorage.setItem('remainingTime', remainingTime);
+  if (remainingTime <= 0) {
+    stopMining();
+  } else {
+    const hours = Math.floor(remainingTime / (60 * 60 * 1000));
+    const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+    const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+    const formattedTime = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}.`;
+    document.getElementById('timer').textContent = formattedTime;
+  }
+}
 
-    // Format Time
-    function formatTime(seconds) {
-      const hours = Math.floor(seconds / 3600);
-      const minutes = Math.floor((seconds % 3600) / 60);
-      const secs = seconds % 60;
-      return `${hours}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-    }
+function padZero(value, length = 2) {
+  return String(value).padStart(length, '0');
+}
 
-    // Start Mining
-    function startMining() {
-      if (!miningEndTime || miningEndTime < Math.floor(Date.now() / 1000)) {
-        console.log("Mining period has ended.");
-        return;
-      }
+function stopMining() {
+  clearInterval(miningInterval);
+  clearInterval(timerInterval);
+  alert('Mining stopped!');
+}
 
-      const miningInterval = setInterval(() => {
-        const currentTime = Math.floor(Date.now() / 1000);
-        if (currentTime >= miningEndTime) {
-          clearInterval(miningInterval);
-          console.log("Mining period has ended.");
-          return;
-        }
+window.onload = function() {
+  updateMinedCoinsDisplay();
+  updateTimer();
+  if (localStorage.getItem('elapsedTime')) {
+    startMining();
+  }
+};
 
-        miningBalance += miningRate;
-        updateMiningInfo();
+// Continue mining even when page is offline
+window.addEventListener('beforeunload', function() {
+  localStorage.setItem('minedCoins', minedCoins);
+  localStorage.setItem('elapsedTime', elapsedTime);
+  localStorage.setItem('remainingTime', remainingTime);
+});
 
-        // Save Mining Data to Server
-        saveMiningData();
-      }, 1000);
-    }
+window.addEventListener('offline', function() {
+  localStorage.setItem('minedCoins', minedCoins);
+  localStorage.setItem('elapsedTime', elapsedTime);
+  localStorage.setItem('remainingTime', remainingTime);
+});
 
-    // Save Mining Data
-    async function saveMiningData() {
-      try {
-        const response = await fetch(`${serverApiUrl}/saveMiningData`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            address: walletAddress,
-            balance: miningBalance,
-            endTime: miningEndTime,
-          }),
-        });
-        const data = await response.json();
-        console.log("Mining data saved:", data);
-      } catch (error) {
-        console.error("Error saving mining data:", error);
-      }
-    }
-
-    // Event Listener
-    document.getElementById("connect-wallet").addEventListener("click", connectWallet);
-  </script>
+    </script>
 </body>
 </html>
