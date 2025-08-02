@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SupremeAmer Wallet</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- web3.js for BNB/ETH -->
+  <!-- Appwrite SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@12.0.1"></script>
+  <!-- web3.js for EVM chains -->
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <!-- TonWeb for TON -->
   <script src="https://cdn.jsdelivr.net/npm/tonweb@0.0.49/dist/tonweb.js"></script>
+  <!-- Stellar SDK -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stellar-sdk/11.1.0/stellar-sdk.min.js"></script>
+  <!-- QRCodeJS for QR code rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body class="bg-gradient-to-t from-black to-gray-900 min-h-screen text-white flex flex-col">
 
@@ -18,38 +24,94 @@
     <div>
       <button id="connect-wallet" class="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded text-white font-bold">Connect Wallet</button>
       <button id="disconnect-wallet" class="bg-red-500 hover:bg-red-700 py-2 px-4 rounded text-white font-bold hidden">Disconnect</button>
+      <button id="loginBtn" class="bg-green-500 hover:bg-green-700 py-2 px-4 rounded text-white font-bold">Login</button>
+      <button id="logoutBtn" class="bg-red-500 hover:bg-red-700 py-2 px-4 rounded text-white font-bold hidden">Logout</button>
     </div>
   </header>
 
-  <!-- Main Wallet -->
-  <main class="flex-1 flex flex-col items-center px-2">
-    <div class="w-full max-w-md bg-white text-black rounded-lg shadow-lg p-4 mt-2">
+  <!-- Login Modal -->
+  <div id="auth-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 hidden">
+    <div class="bg-white text-black rounded-lg p-6 w-full max-w-xs">
+      <h2 id="auth-title" class="text-lg font-bold mb-2">Login</h2>
+      <form id="authForm" class="space-y-3">
+        <input type="email" id="auth-email" placeholder="Email" required class="w-full p-2 border rounded" />
+        <input type="text" id="auth-username" placeholder="Username" required class="w-full p-2 border rounded" />
+        <input type="password" id="auth-password" placeholder="Password" required class="w-full p-2 border rounded" />
+        <button type="submit" class="w-full py-2 bg-blue-600 text-white rounded">Login</button>
+        <button type="button" id="googleLogin" class="w-full py-2 mt-2 bg-red-600 text-white rounded">Login with Google</button>
+        <div class="mt-2 text-center"><a href="#" id="switchAuth" class="text-blue-600 underline">Register</a></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <nav class="fixed bottom-0 left-0 w-full bg-black flex justify-around py-2 border-t border-gray-700 z-40">
+    <button class="tab flex-1 py-2 text-white" data-tab="tokens">Tokens</button>
+    <button class="tab flex-1 py-2 text-white" data-tab="activity">Activity</button>
+    <button class="tab flex-1 py-2 text-white" data-tab="mining">Mining</button>
+    <button class="tab flex-1 py-2 text-white" data-tab="affiliate">Affiliate</button>
+    <button class="tab flex-1 py-2 text-white" data-tab="profile">Profile</button>
+  </nav>
+
+  <!-- Floating send/receive buttons -->
+  <div class="fixed bottom-16 right-6 flex flex-col gap-2 z-50">
+    <button id="send-fab" class="bg-green-500 text-white p-4 rounded-full shadow-lg">Send</button>
+    <button id="receive-fab" class="bg-blue-500 text-white p-4 rounded-full shadow-lg">Receive</button>
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col items-center px-2 pb-24">
+
+    <!-- Tokens Tab -->
+    <section id="tokens-tab" class="tab-content w-full max-w-md mx-auto mt-4">
       <div id="wallet-details" class="mb-4">
         <p id="wallet-address" class="font-semibold break-all"></p>
-        <div id="balances" class="mb-2">
-          <p id="bnb-balance"></p>
-          <p id="eth-balance"></p>
-          <p id="ton-balance"></p>
-          <p id="supremeamer-balance"></p>
+        <div class="token-list space-y-2 mt-4">
+          <!-- Example for each token -->
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">SupremeAmer</span>
+            <span id="sa-balance">0.0000</span>
+          </div>
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">BNB</span>
+            <span id="bnb-balance">0.0000</span>
+          </div>
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">ETH</span>
+            <span id="eth-balance">0.0000</span>
+          </div>
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">DOGE</span>
+            <span id="doge-balance">0.0000</span>
+          </div>
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">DOGS</span>
+            <span id="dogs-balance">0.0000</span>
+          </div>
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">USDT</span>
+            <span id="usdt-balance">0.0000</span>
+          </div>
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">TON</span>
+            <span id="ton-balance">0.0000</span>
+          </div>
+          <div class="flex justify-between items-center bg-white text-black rounded-lg p-3 shadow">
+            <span class="font-bold">Stellar</span>
+            <span id="stellar-balance">0.0000</span>
+          </div>
         </div>
-        <label class="block text-sm mb-2">Currency</label>
-        <select id="currency-select" class="w-full mb-2 p-2 rounded border">
-          <option value="BNB">BNB</option>
-          <option value="ETH">ETH</option>
-          <option value="TON">TON</option>
-          <option value="SA">SupremeAmer</option>
-        </select>
-        <p id="selected-currency-balance"></p>
       </div>
-      <div class="flex flex-wrap gap-2 justify-center mt-4">
-        <button id="send-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Send</button>
-        <button id="receive-button" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Receive</button>
-        <button id="history-button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">History</button>
-      </div>
-    </div>
+    </section>
 
-    <!-- Mining Section -->
-    <div id="mining-section" class="w-full max-w-md bg-white text-black rounded-lg p-4 shadow mt-4">
+    <!-- Activity Tab -->
+    <section id="activity-tab" class="tab-content w-full max-w-md mx-auto mt-4 hidden">
+      <h2 class="text-xl font-bold mb-2">Transaction History</h2>
+      <div id="history-list" class="space-y-2"></div>
+    </section>
+
+    <!-- Mining Tab -->
+    <section id="mining-tab" class="tab-content w-full max-w-md mx-auto mt-4 hidden">
       <h2 class="text-lg font-bold mb-2">Mine SupremeAmer Token</h2>
       <div id="mining-status" class="mb-2"></div>
       <div id="mining-speed" class="mb-2 text-sm"></div>
@@ -57,208 +119,63 @@
       <button id="claimMining" class="bg-blue-500 px-4 py-2 rounded mb-2 w-full" disabled>Claim</button>
       <button id="upgradeBtn" class="bg-yellow-500 px-4 py-2 rounded w-full">Upgrade Mining Speed ($5/100days)</button>
       <div id="upgrade-status" class="mt-2 text-sm"></div>
-    </div>
+    </section>
 
-    <!-- Affiliate Section -->
-    <div id="affiliate-section" class="w-full max-w-md bg-white text-black rounded-lg p-4 shadow mt-4">
+    <!-- Affiliate Tab -->
+    <section id="affiliate-tab" class="tab-content w-full max-w-md mx-auto mt-4 hidden">
       <h2 class="text-lg font-bold mb-2">Affiliate Program</h2>
       <p>Your referral link: <span id="refLink"></span></p>
       <p>Commission earned: <span id="commission"></span></p>
       <button onclick="location='affiliate.html'" class="bg-green-500 px-4 py-2 rounded mt-2 w-full">Go to Affiliate Page</button>
-    </div>
+    </section>
 
-    <!-- Token Import -->
-    <div id="import-token-section" class="w-full max-w-md bg-white text-black rounded-lg p-4 shadow mt-4">
-      <h2 class="text-lg font-bold mb-2">Import Token</h2>
-      <input type="text" id="contract-address" placeholder="Token Contract Address" class="w-full mb-2 p-2 rounded border" />
-      <button id="import-token" class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded w-full">Import Token</button>
-    </div>
-
-    <!-- Ethereum Chart Widget -->
-    <div class="w-full max-w-md mt-4">
-      <div id="ethereum-chart" class="rounded-lg overflow-hidden" style="height: 400px;"></div>
-    </div>
+    <!-- Profile Tab -->
+    <section id="profile-tab" class="tab-content w-full max-w-md mx-auto mt-4 hidden">
+      <h2 class="text-lg font-bold mb-2">User Profile</h2>
+      <div class="bg-white text-black rounded-lg p-4 shadow space-y-2">
+        <p>Email: <span id="profile-email"></span></p>
+        <p>Username: <span id="profile-username"></span></p>
+        <p>User ID: <span id="profile-id"></span></p>
+      </div>
+    </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-black border-t border-gray-300 p-4 flex justify-around mt-6">
-    <button id="home-button" class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Home</button>
-    <a href="game.html" class="bg-purple-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">DAPP</a>
-    <a href="discover.html" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">Discover</a>
-  </footer>
+  <!-- Send Modal -->
+  <div id="send-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="bg-white text-black rounded-lg p-6 w-full max-w-xs">
+      <h2 class="text-lg font-bold mb-2">Send Token</h2>
+      <select id="send-token-select" class="w-full mb-2 p-2 rounded border">
+        <option value="SA">SupremeAmer</option>
+        <option value="BNB">BNB</option>
+        <option value="ETH">ETH</option>
+        <option value="DOGE">DOGE</option>
+        <option value="DOGS">DOGS</option>
+        <option value="USDT">USDT</option>
+        <option value="TON">TON</option>
+        <option value="Stellar">Stellar</option>
+      </select>
+      <input type="text" id="send-to-address" placeholder="Recipient Address" class="w-full mb-2 p-2 rounded border"/>
+      <input type="number" id="send-amount" placeholder="Amount" class="w-full mb-2 p-2 rounded border"/>
+      <button id="send-confirm" class="w-full py-2 bg-green-600 text-white rounded">Send</button>
+      <button id="send-cancel" class="w-full py-2 mt-2 bg-gray-600 text-white rounded">Cancel</button>
+    </div>
+  </div>
 
-  <!-- JS -->
-  <script>
-    // Wallet state
-    let account = null;
-    let chain = null;
-    let tonAddress = null;
-    let miningActive = false, miningStartTime = 0, minedAmount = 0, upgraded = false, upgradeExpiry = 0;
-    const MINING_SPEED = 0.0001, UPGRADED_SPEED = 0.008, CLAIM_INTERVAL = 8 * 3600 * 1000;
-    // Contract addresses
-    const SUPREMEAMER_CONTRACT = "0x06dB6BA51c18348A4C47465CAB643E62038969dd";
-    const BNB_CONTRACT = "0xbaf120fF881eFE99008413696f41204F8c8FD889";
-    const ETH_CONTRACT = "0xbaf120fF881eFE99008413696f41204F8c8FD889";
-    const TON_CONTRACT = "UQCbMdF0QIoNHI9Ag6mh35IZBmetVvfYDoIzoXKL95JTLlIJ";
-    let web3;
+  <!-- Receive Modal -->
+  <div id="receive-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+    <div class="bg-white text-black rounded-lg p-6 w-full max-w-xs flex flex-col items-center">
+      <h2 class="text-lg font-bold mb-2">Receive</h2>
+      <div id="receive-qr"></div>
+      <p id="receive-address" class="mt-2 font-mono break-all"></p>
+      <button id="receive-close" class="w-full py-2 mt-4 bg-gray-600 text-white rounded">Close</button>
+    </div>
+  </div>
 
-    // Connect Wallet (TrustWallet/MetaMask/TON)
-    document.getElementById('connect-wallet').onclick = async function() {
-      if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        try {
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
-          let accounts = await web3.eth.getAccounts();
-          account = accounts[0];
-          chain = await web3.eth.getChainId();
-          document.getElementById('wallet-address').textContent = `Wallet: ${account}`;
-          document.getElementById('connect-wallet').classList.add('hidden');
-          document.getElementById('disconnect-wallet').classList.remove('hidden');
-          loadBalances();
-        } catch (e) {
-          alert("Wallet connection failed.");
-        }
-      } else if (window.ton) {
-        // TON Connect
-        tonAddress = await window.ton.request('ton_getAddress');
-        document.getElementById('wallet-address').textContent = `TON Wallet: ${tonAddress}`;
-        document.getElementById('connect-wallet').classList.add('hidden');
-        document.getElementById('disconnect-wallet').classList.remove('hidden');
-        loadBalances();
-      } else {
-        alert("Please install Trust Wallet, MetaMask, or TON wallet extension.");
-      }
-    };
+  <!-- TradingView ETH Chart -->
+  <div class="w-full max-w-md mx-auto mt-4 mb-24">
+    <div id="ethereum-chart" class="rounded-lg overflow-hidden" style="height: 400px;"></div>
+  </div>
 
-    document.getElementById('disconnect-wallet').onclick = function() {
-      account = null;
-      tonAddress = null;
-      document.getElementById('wallet-address').textContent = "";
-      document.getElementById('connect-wallet').classList.remove('hidden');
-      document.getElementById('disconnect-wallet').classList.add('hidden');
-      document.getElementById('bnb-balance').textContent = "";
-      document.getElementById('eth-balance').textContent = "";
-      document.getElementById('ton-balance').textContent = "";
-      document.getElementById('supremeamer-balance').textContent = "";
-    };
-
-    // Load balances
-    async function loadBalances() {
-      if (account && web3) {
-        let bnb = await web3.eth.getBalance(account);
-        document.getElementById('bnb-balance').textContent = "BNB: " + web3.utils.fromWei(bnb, "ether");
-        let eth = await web3.eth.getBalance(account);
-        document.getElementById('eth-balance').textContent = "ETH: " + web3.utils.fromWei(eth, "ether");
-        // SupremeAmer token (BSC-20) balance
-        let abi = [{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"type":"function"}];
-        let contract = new web3.eth.Contract(abi, SUPREMEAMER_CONTRACT);
-        let sa = await contract.methods.balanceOf(account).call();
-        document.getElementById('supremeamer-balance').textContent = "SupremeAmer: " + web3.utils.fromWei(sa, "ether");
-      }
-      if (tonAddress) {
-        // TON balance
-        const tonweb = new TonWeb();
-        const balance = await tonweb.getBalance(tonAddress);
-        document.getElementById('ton-balance').textContent = "TON: " + TonWeb.utils.fromNano(balance);
-      }
-    }
-
-    // Currency select logic
-    document.getElementById('currency-select').onchange = function() {
-      let selected = this.value;
-      let val = "";
-      if (selected === "BNB") val = document.getElementById('bnb-balance').textContent;
-      if (selected === "ETH") val = document.getElementById('eth-balance').textContent;
-      if (selected === "TON") val = document.getElementById('ton-balance').textContent;
-      if (selected === "SA") val = document.getElementById('supremeamer-balance').textContent;
-      document.getElementById('selected-currency-balance').textContent = val;
-    };
-
-    // Mining Logic
-    function updateMiningUI() {
-      document.getElementById('mining-status').textContent =
-        `Mining: ${miningActive ? "Active" : "Stopped"} | Mined: ${minedAmount.toFixed(6)} SA`;
-      document.getElementById('mining-speed').textContent =
-        `Speed: ${upgraded && Date.now() < upgradeExpiry ? UPGRADED_SPEED : MINING_SPEED} /sec`;
-      document.getElementById('claimMining').disabled = !(miningActive && Date.now() - miningStartTime >= CLAIM_INTERVAL);
-      document.getElementById('upgrade-status').textContent = upgraded && Date.now() < upgradeExpiry
-        ? `Upgraded until ${new Date(upgradeExpiry).toLocaleDateString()}`
-        : 'Upgrade not active';
-    }
-    function startMiningLoop() {
-      if(!miningActive) return;
-      let speed = upgraded && Date.now() < upgradeExpiry ? UPGRADED_SPEED : MINING_SPEED;
-      let interval = setInterval(()=>{
-        if(!miningActive || Date.now() - miningStartTime >= CLAIM_INTERVAL){
-          clearInterval(interval);
-          document.getElementById('claimMining').disabled = false;
-          return;
-        }
-        minedAmount += speed;
-        updateMiningUI();
-      }, 1000);
-    }
-    document.getElementById('startMining').onclick = ()=>{
-      miningActive = true;
-      miningStartTime = Date.now();
-      minedAmount = 0;
-      updateMiningUI();
-      startMiningLoop();
-    };
-    document.getElementById('claimMining').onclick = async ()=>{
-      if(!(miningActive && Date.now() - miningStartTime >= CLAIM_INTERVAL)) return;
-      miningActive = false;
-      let netMined = minedAmount * 0.94;  // 6% fee
-      minedAmount = 0;
-      updateMiningUI();
-      alert(`Claimed ${netMined.toFixed(6)} SA to wallet!`);
-      // For production: call smart contract to mint or transfer mined tokens
-    };
-    document.getElementById('upgradeBtn').onclick = ()=>{
-      // For production: payment logic (send $5 in BNB/ETH/TON to upgrade)
-      upgraded = true;
-      upgradeExpiry = Date.now() + 100*24*3600*1000;
-      updateMiningUI();
-      alert("Upgrade activated for 100 days!");
-    };
-
-    // Affiliate Logic
-    document.getElementById('refLink').textContent = location.origin + "/register.html?ref=" + (account || tonAddress || "");
-    document.getElementById('commission').textContent = "$0.00"; // For demo
-
-    // Import Token
-    document.getElementById('import-token').onclick = ()=>{
-      let contractAddr = document.getElementById('contract-address').value;
-      if (!contractAddr) return alert("Please enter a contract address.");
-      alert("Token imported! (For demo)");
-      // For production: add ERC20/BEP20 contract to list and show balances
-    };
-
-    // TradingView widget for ETH chart
-    let tvScript = document.createElement('script');
-    tvScript.src = "https://s3.tradingview.com/tv.js";
-    tvScript.onload = () => {
-      new TradingView.widget({
-        "width": "100%",
-        "height": 400,
-        "symbol": "BINANCE:ETHUSDT",
-        "interval": "D",
-        "theme": "dark",
-        "container_id": "ethereum-chart"
-      });
-    };
-    document.body.appendChild(tvScript);
-
-    // Send/Receive/History logic: For demonstration only
-    document.getElementById('send-button').onclick = function(){
-      alert("Send feature: Use TrustWallet/MetaMask for sending tokens.");
-    };
-    document.getElementById('receive-button').onclick = function(){
-      alert("Your receive address: " + (account || tonAddress || ""));
-    };
-    document.getElementById('history-button').onclick = function(){
-      alert("Transaction history: View in TrustWallet or block explorer.");
-    };
-  </script>
+  <script src="wallet.js"></script>
 </body>
 </html>
