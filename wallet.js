@@ -1,5 +1,4 @@
-  
-  const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+   const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
   const APPWRITE_PROJECT = '6839d9640019316a160d';
   const APPWRITE_DB_ID = '6839dcca000190bf99f6';
   const APPWRITE_COLLECTION_ID = 'users';
