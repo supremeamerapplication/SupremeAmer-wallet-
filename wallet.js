@@ -343,8 +343,4 @@
       // not logged in
     }
   })();
-  // ----------- END wallet.js CODE -----------
-  </script>
-
-</body>
-</html>
+ 
