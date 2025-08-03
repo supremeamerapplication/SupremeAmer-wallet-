@@ -176,7 +176,14 @@
     <div id="ethereum-chart" class="rounded-lg overflow-hidden" style="height: 400px;"></div>
   </div>
 
-  <!-- JavaScript code for wallet functionality -->
+<div class="footer-floating">
+  <div class="footer-actions">
+    <button onclick="document.getElementById('send-modal').classList.remove('hidden')">Send</button>
+    <button onclick="document.getElementById('receive-modal').classList.remove('hidden')">Receive</button>
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Top</button>
+  </div>
+</div>
+  
   <script>
   // Appwrite Credentials
   const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
