@@ -1,379 +1,56 @@
-:root {
-  --primary: #7c3aed;
-  --accent: #22d3ee;
-  --background: linear-gradient(135deg, #18181b 0%, #312e81 100%);
-  --card-gradient: linear-gradient(120deg, #fff 0%, #f3f3f3 100%);
-  --radius: 18px;
-  --shadow: 0 2px 16px rgba(40,42,55,0.10);
-  --footer-height: 72px;
-  --tab-height: 60px;
-  --transition: 0.22s cubic-bezier(.47,1.64,.41,.8);
-}
-
-body {
-  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-  background: var(--background);
-  color: #fff;
-  min-height: 100vh;
-  margin: 0;
-  transition: background 1s;
-}
-
-header {
-  background: rgba(36,34,63,.96);
-  box-shadow: 0 2px 8px rgba(40,42,55,0.08);
-  padding: 1em 2em;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0; z-index: 10;
-  animation: fadeInDown .4s;
-}
-
-header h1 {
-  font-size: 2em;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-button,
-input[type="submit"] {
-  background: var(--primary);
-  color: #fff;
-  font-weight: 600;
-  border: none;
-  border-radius: 12px;
-  padding: 0.7em 1.5em;
-  margin: 0.2em 0;
-  box-shadow: 0 2px 8px rgba(36,34,63,0.11);
-  cursor: pointer;
-  transition: background var(--transition), box-shadow var(--transition), transform .2s;
-}
-
-button:hover,
-input[type="submit"]:hover {
-  background: var(--accent);
-  box-shadow: 0 4px 16px rgba(124,58,237,0.14);
-  transform: scale(1.04);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-button.fab {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  font-size: 1.2em;
-  box-shadow: 0 6px 20px rgba(36,34,63,0.14);
-  background: var(--accent);
-  color: #fff;
-  transition: background .2s, box-shadow .2s, transform .2s;
-  position: relative;
-  overflow: hidden;
-}
-button.fab:hover {
-  background: var(--primary);
-  transform: scale(1.08);
-}
-
-.token-list {
-  margin-top: 2em;
-  display: grid;
-  gap: 18px;
-}
-.token-list > div {
-  background: var(--card-gradient);
-  color: #222;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 1em 1.5em;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.13em;
-  transition: transform .15s, box-shadow .15s;
-  position: relative;
-  overflow: hidden;
-}
-.token-list > div:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 6px 24px rgba(40,42,55,0.12);
-}
-
-nav {
-  position: fixed;
-  bottom: var(--footer-height);
-  left: 0;
-  width: 100%;
-  background: rgba(36,34,63,0.96);
-  box-shadow: 0 -2px 6px rgba(40,42,55,0.10);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height: var(--tab-height);
-  z-index: 100;
-  border-top: 1px solid #2d2a46;
-  animation: fadeInUp .5s;
-}
-
-nav button {
-  background: none;
-  color: #e0e7ff;
-  border: none;
-  border-radius: 0;
-  font-weight: 600;
-  font-size: 1.08em;
-  transition: color .18s, border-bottom .18s;
-  padding: 0.7em 0;
-  flex: 1;
-  outline: none;
-}
-
-nav button.active,
-nav button:focus {
-  color: var(--accent);
-  border-bottom: 3px solid var(--accent);
-}
-
-.tab-content {
-  animation: fadeIn .45s;
-  min-height: 180px;
-}
-
-/* Modals */
-#auth-modal,
-#send-modal,
-#receive-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(18,16,31,0.84);
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn .37s;
-}
-#auth-modal > div,
-#send-modal > div,
-#receive-modal > div {
-  background: #fff;
-  color: #222;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(40,42,55,0.18);
-  padding: 2em;
-  min-width: 300px;
-  max-width: 93vw;
-  animation: popIn .39s;
-  position: relative;
-}
-
-#auth-modal input,
-#send-modal input,
-#send-modal select {
-  width: 100%;
-  margin-bottom: 1.1em;
-  padding: 0.8em;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
-  font-size: 1em;
-  transition: border-color .18s, box-shadow .18s;
-}
-#auth-modal input:focus,
-#send-modal input:focus,
-#send-modal select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px #818cf8;
-}
-
-#auth-modal button,
-#send-modal button {
-  width: 100%;
-  margin-top: 0.7em;
-}
-
-#receive-qr {
-  margin: 1.2em 0;
-  box-shadow: 0 2px 14px rgba(34,211,238,0.11);
-  border-radius: 14px;
-  background: #fff;
-  padding: 0.4em;
-}
-
-/* Transaction History */
-#history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9em;
-  margin-top: 1.5em;
-}
-#history-list > div {
-  background: var(--card-gradient);
-  color: #222;
-  border-radius: 14px;
-  box-shadow: var(--shadow);
-  padding: 1em 1.3em;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1em;
-  transition: box-shadow .18s;
-  animation: fadeIn .45s;
-}
-#history-list > div:hover {
-  box-shadow: 0 4px 18px rgba(40,42,55,0.13);
-}
-
-/* Mining Tab */
-#mining-status {
-  font-weight: 600;
-  margin-bottom: 0.6em;
-  color: var(--primary);
-  transition: color .18s;
-}
-#mining-speed {
-  font-size: 0.98em;
-  color: var(--accent);
-  margin-bottom: 0.4em;
-}
-#upgrade-status {
-  font-size: 0.97em;
-  color: var(--primary);
-  margin-top: 0.5em;
-  min-height: 1.1em;
-  transition: color .18s;
-}
-
-/* Affiliate Tab */
-#affiliate-tab p,
-#affiliate-tab span {
-  font-size: 1.04em;
-  word-break: break-all;
-  color: var(--primary-light);
-}
-#affiliate-tab button {
-  margin-top: 1.2em;
-}
-
-/* Profile Tab */
-#profile-tab .bg-white {
-  background: var(--card-gradient);
-  color: #222;
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 1.6em 1.2em;
-  margin-top: 1em;
-  font-size: 1.03em;
-  animation: popIn .4s;
-}
-
-/* Chart */
-#ethereum-chart {
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 3px 18px rgba(40,42,55,0.11);
-  margin: 1.5em 0;
-  background: #1e293b;
-  animation: fadeIn .5s;
-}
-
-/* Floating Footer */
 .footer-floating {
   position: fixed;
-  bottom: 0;
   left: 0;
+  bottom: 0;
   width: 100vw;
-  height: var(--footer-height);
-  background: rgba(36,34,63,0.92);
-  backdrop-filter: blur(10px);
+  height: 76px;
+  background: linear-gradient(90deg, #7c3aed 0%, #22d3ee 100%);
+  box-shadow: 0 -4px 24px rgba(34,211,238,0.22), 0 -1px 0 #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 999;
-  box-shadow: 0 -2px 18px rgba(40,42,55,0.12);
-  animation: fadeInUp .53s;
+  z-index: 9999;
+  border-top: 2px solid #fff;
+  animation: fadeInUp .5s;
+  transition: background .3s;
 }
 
 .footer-floating .footer-actions {
   display: flex;
-  gap: 22px;
+  gap: 32px;
 }
+
 .footer-floating .footer-actions button {
   font-size: 1.1em;
   padding: 0.8em 2.2em;
-  box-shadow: 0 2px 12px rgba(40,42,55,0.10);
   border-radius: 24px;
-  background: var(--primary-light);
-  color: #fff;
+  background: #fff;
+  color: #7c3aed;
   font-weight: 700;
-  transition: background .16s, box-shadow .16s, transform .16s;
+  box-shadow: 0 2px 14px rgba(34,211,238,0.14);
+  border: none;
+  transition: background .2s, color .2s, box-shadow .2s, transform .2s;
 }
+
 .footer-floating .footer-actions button:hover {
-  background: var(--accent);
-  box-shadow: 0 8px 32px rgba(34,211,238,0.16);
-  transform: translateY(-2px) scale(1.05);
+  background: #22d3ee;
+  color: #fff;
+  transform: scale(1.07);
+  box-shadow: 0 8px 32px rgba(34,211,238,0.17);
 }
 
-@media (max-width: 700px) {
-  .footer-floating .footer-actions button {
-    font-size: 1em;
-    padding: 0.7em 1.2em;
-  }
-}
-
-@media (max-width: 500px) {
-  header {
-    padding: 1em .7em;
-    font-size: 1.13em;
-  }
-  #auth-modal > div,
-  #send-modal > div,
-  #receive-modal > div {
-    padding: 1.2em;
-    min-width: 98vw;
-    border-radius: 12px;
-  }
-  .token-list {
-    grid-template-columns: 1fr;
+@media (max-width: 600px) {
+  .footer-floating .footer-actions {
     gap: 12px;
   }
+  .footer-floating .footer-actions button {
+    font-size: 1em;
+    padding: 0.7em 1.1em;
+  }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  background: #312e81;
+/* Optional: Smooth fade-in animation for footer */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
 }
-::-webkit-scrollbar-thumb {
-  background: #4b5563;
-  border-radius: 5px;
-}
-
-/* Utility classes */
-.hidden { display: none !important; }
-.visible { display: block !important; }
-
-#wallet-address {
-  font-weight: 600;
-  font-size: 1.05em;
-  background: linear-gradient(90deg,#7c3aed,#22d3ee);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradientMove 3s infinite linear;
-}
-@keyframes gradientMove {
-  0% {background-position: 0%;}
-  100% {background-position: 100%;}
-}
-
-/* Animations */
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-@keyframes fadeInDown { from{opacity:0;transform:translateY(-20px);} to{opacity:1;transform:translateY(0);} }
-@keyframes fadeInUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
-@keyframes popIn { 0%{opacity:0;transform:scale(.85);} 80%{opacity:.98;transform:scale(1.04);} 100%{opacity:1;transform:scale(1);} }
