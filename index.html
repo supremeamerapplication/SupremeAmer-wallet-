@@ -1,185 +1,119 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SupremeAmer Web3 Wallet</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SupremeAmer Wallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@0xsequence/connect@1.1.3"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4">
-  <div class="max-w-md mx-auto space-y-6">
-    <h1 class="text-2xl font-bold text-center">SupremeAmer Wallet</h1>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-lg mx-auto p-4">
 
-    <!-- Navigation Tabs -->
-    <div class="flex justify-between bg-gray-800 p-2 rounded mb-4">
-      <button onclick="switchTab('wallet')" class="w-full text-center">Wallet</button>
-      <button onclick="switchTab('mining')" class="w-full text-center">Mining</button>
-      <button onclick="switchTab('affiliate')" class="w-full text-center">Affiliate</button>
+    <!-- Wallet Header -->
+    <h1 class="text-2xl font-bold mb-4">SupremeAmer Wallet</h1>
+    <div id="wallet-connection" class="mb-4">
+      <button id="connect-wallet" class="bg-blue-600 text-white px-4 py-2 rounded">🔐 Connect Wallet</button>
     </div>
 
-    <!-- Wallet Section -->
-    <div id="walletTab" class="tab-section">
-      <div class="bg-gray-800 p-4 rounded">
-        <button onclick="createWallet()" class="bg-blue-500 w-full p-2 rounded">Create New Wallet</button>
-        <div id="walletInfo" class="mt-4 space-y-2 hidden">
-          <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-          <p><strong>Private Key:</strong> <span id="walletPK"></span></p>
-          <p><strong>Mnemonic:</strong> <span id="walletMnemonic"></span></p>
-          <button onclick="downloadEncrypted()" class="bg-green-600 w-full p-2 rounded">Download Backup (Encrypted)</button>
-        </div>
+    <!-- Balances Dashboard -->
+    <div id="dashboard" class="bg-white p-4 rounded shadow mb-4">
+      <p class="font-semibold mb-2">📊 Your Balances</p>
+      <div id="balance-list">
+        <p>Fetching...</p>
       </div>
-
-      <div class="bg-gray-800 p-4 rounded mt-4">
-        <h2 class="text-lg font-semibold mb-2">Restore Wallet</h2>
-        <textarea id="restoreInput" rows="4" class="w-full p-2 rounded text-black" placeholder="Enter mnemonic or upload encrypted JSON"></textarea>
-        <input type="file" id="fileInput" onchange="loadEncrypted(event)" class="w-full mt-2" />
-        <input type="password" id="restorePassword" class="w-full mt-2 p-2 rounded text-black" placeholder="Enter password for decryption" />
-        <button onclick="restoreWallet()" class="bg-yellow-500 w-full mt-2 p-2 rounded">Restore</button>
-      </div>
-
-      <div class="bg-gray-800 p-4 rounded mt-4">
-        <h2 class="text-lg font-semibold mb-2">Wallet Actions</h2>
-        <p><strong>ETH Balance:</strong> <span id="ethBalance">-</span></p>
-        <input type="text" id="sendTo" class="w-full p-2 rounded text-black mt-2" placeholder="Recipient Address" />
-        <input type="number" id="sendAmount" class="w-full p-2 rounded text-black mt-2" placeholder="Amount in ETH" />
-        <button onclick="sendETH()" class="bg-purple-600 w-full mt-2 p-2 rounded">Send ETH</button>
-      </div>
+      <p class="text-xs text-gray-500 mt-2" id="price-note"></p>
     </div>
 
     <!-- Mining Section -->
-    <div id="miningTab" class="tab-section hidden bg-gray-800 p-4 rounded">
-      <h2 class="text-lg font-semibold mb-2">Mining DApp</h2>
-      <p><strong>Mining Rate:</strong> <span id="miningRate">0.0001/sec</span></p>
-      <p><strong>Last Claim:</strong> <span id="lastClaim">-</span></p>
-      <p><strong>Mineable Amount:</strong> <span id="minedAmount">0</span></p>
-      <button onclick="claimMining()" class="bg-green-500 w-full mt-2 p-2 rounded">Claim Tokens</button>
-      <button onclick="upgradeMining()" class="bg-blue-700 w-full mt-2 p-2 rounded">Upgrade Speed ($5)</button>
+    <div class="bg-white p-4 rounded shadow mb-4">
+      <h2 class="font-semibold mb-2">⛏️ Mining</h2>
+      <p>Earn 0.0001 SAT/sec. Claim every 8hrs. Upgrade to 0.008/sec for $5!</p>
+      <p>⏱️ Claimed: <span id="mined-amount">0</span> SAT</p>
+      <button id="claim-btn" class="mt-2 bg-green-600 text-white px-4 py-1 rounded">Claim</button>
     </div>
 
-    <!-- Affiliate Section -->
-    <div id="affiliateTab" class="tab-section hidden bg-gray-800 p-4 rounded">
-      <h2 class="text-lg font-semibold mb-2">Affiliate Program</h2>
-      <p>Share this link:</p>
-      <input readonly id="referralLink" value="https://supremeamer.com/?ref=yourID" class="w-full p-2 rounded text-black" />
-      <p>Total Referrals: <span id="refCount">0</span></p>
-      <p>Total Earnings: <span id="refEarnings">0 SupremeAmer</span></p>
-      <button class="bg-yellow-500 w-full mt-2 p-2 rounded">Withdraw</button>
+    <!-- Transfer Section -->
+    <div class="bg-white p-4 rounded shadow mb-4">
+      <h2 class="font-semibold mb-2">💸 Transfer</h2>
+      <input type="text" placeholder="Recipient Address" id="transfer-to" class="w-full p-2 mb-2 border rounded" />
+      <input type="number" placeholder="Amount" id="transfer-amount" class="w-full p-2 mb-2 border rounded" />
+      <button id="transfer-btn" class="bg-yellow-600 text-white px-4 py-2 rounded w-full">Send (1.5% fee)</button>
+    </div>
+
+    <!-- Affiliate Dashboard -->
+    <div class="bg-white p-4 rounded shadow mb-4">
+      <h2 class="font-semibold mb-2">🤝 Affiliate</h2>
+      <p>Your referral link:</p>
+      <input type="text" readonly id="ref-link" class="w-full p-2 mb-2 border rounded"/>
+      <p>Total Referrals: <span id="ref-count">0</span></p>
+    </div>
+
+    <!-- Footer Navigation -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white shadow flex justify-around py-3 text-sm">
+      <button onclick="scrollToSection('dashboard')">🏠 Wallet</button>
+      <button onclick="scrollToSection('mined-amount')">⛏️ Mine</button>
+      <button onclick="scrollToSection('transfer-to')">💸 Transfer</button>
+      <button onclick="scrollToSection('ref-link')">🤝 Affiliate</button>
     </div>
   </div>
 
   <script>
-    let wallet, encryptedJson;
-    let miningRate = 0.0001;
-    let lastClaimTime = Date.now();
+    let wallet, mined = 0, startTime = Date.now();
 
-    const provider = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/eth");
+    // Connect Sequence Wallet
+    document.getElementById("connect-wallet").onclick = async () => {
+      const connect = new sequence.SequenceConnect();
+      const details = await connect.connect({
+        app: "SupremeAmer Wallet",
+        network: "bsc" // or "ethereum"
+      });
+      wallet = details.session;
+      alert("Wallet connected!");
+      document.getElementById("ref-link").value = location.href + "?ref=" + wallet.address;
+      loadPrices();
+    };
 
-    function switchTab(tab) {
-      document.querySelectorAll('.tab-section').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`${tab}Tab`).classList.remove('hidden');
+    // Mining Logic
+    setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      mined = (elapsed * 0.0001).toFixed(6);
+      document.getElementById("mined-amount").textContent = mined;
+    }, 1000);
+
+    document.getElementById("claim-btn").onclick = () => {
+      alert(`Claimed ${mined} SAT!`);
+      mined = 0;
+      startTime = Date.now();
+    };
+
+    // Transfer Logic
+    document.getElementById("transfer-btn").onclick = () => {
+      const to = document.getElementById("transfer-to").value;
+      const amt = parseFloat(document.getElementById("transfer-amount").value);
+      const fee = amt * 0.015;
+      const sendAmount = amt - fee;
+      alert(`Sending ${sendAmount} SAT to ${to} (1.5% fee applied)`);
+    };
+
+    // Scroll to section
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     }
 
-    async function createWallet() {
-      wallet = ethers.Wallet.createRandom();
-      document.getElementById('walletAddress').textContent = wallet.address;
-      document.getElementById('walletPK').textContent = wallet.privateKey;
-      document.getElementById('walletMnemonic').textContent = wallet.mnemonic.phrase;
-      document.getElementById('walletInfo').classList.remove('hidden');
-      updateBalance();
-      lastClaimTime = Date.now();
-      updateMiningUI();
-      encryptedJson = await wallet.encrypt(prompt("Set a password for backup encryption:"));
+    // Load token prices from CoinGecko
+    async function loadPrices() {
+      const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=binancecoin,ethereum,toncoin&vs_currencies=usd,ngn');
+      const data = await res.json();
+      const prices = `
+        BNB: $${data.binancecoin.usd} / ₦${data.binancecoin.ngn}<br/>
+        ETH: $${data.ethereum.usd} / ₦${data.ethereum.ngn}<br/>
+        TON: $${data.toncoin.usd} / ₦${data.toncoin.ngn}
+      `;
+      document.getElementById("balance-list").innerHTML = prices;
+      document.getElementById("price-note").textContent = "Prices via CoinGecko";
     }
-
-    function downloadEncrypted() {
-      const blob = new Blob([encryptedJson], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "wallet_backup.json";
-      link.click();
-    }
-
-    async function restoreWallet() {
-      const input = document.getElementById('restoreInput').value.trim();
-      const password = document.getElementById('restorePassword').value.trim();
-      try {
-        if (input.split(" ").length === 12) {
-          wallet = ethers.Wallet.fromMnemonic(input);
-        } else {
-          wallet = await ethers.Wallet.fromEncryptedJson(input, password);
-        }
-        wallet = wallet.connect(provider);
-        Swal.fire("Wallet Restored", wallet.address, "success");
-        updateBalance();
-        lastClaimTime = Date.now();
-        updateMiningUI();
-      } catch (err) {
-        Swal.fire("Error", err.message, "error");
-      }
-    }
-
-    async function loadEncrypted(event) {
-      const file = event.target.files[0];
-      const text = await file.text();
-      document.getElementById('restoreInput').value = text;
-    }
-
-    async function updateBalance() {
-      if (!wallet) return;
-      const balance = await provider.getBalance(wallet.address);
-      document.getElementById('ethBalance').textContent = ethers.utils.formatEther(balance) + " ETH";
-    }
-
-    async function sendETH() {
-      if (!wallet) return alert("Wallet not loaded");
-      const to = document.getElementById('sendTo').value.trim();
-      const amount = document.getElementById('sendAmount').value.trim();
-      try {
-        const tx = await wallet.sendTransaction({
-          to,
-          value: ethers.utils.parseEther(amount)
-        });
-        Swal.fire("Transaction Sent", tx.hash, "success");
-      } catch (err) {
-        Swal.fire("Error", err.message, "error");
-      }
-    }
-
-    function updateMiningUI() {
-      const now = Date.now();
-      const elapsed = Math.min((now - lastClaimTime), 8 * 3600 * 1000); // max 8 hours
-      const mined = elapsed / 1000 * miningRate;
-      const timeLeft = 8 * 3600 * 1000 - elapsed;
-      document.getElementById('lastClaim').textContent = new Date(lastClaimTime).toLocaleTimeString();
-      document.getElementById('minedAmount').textContent = mined.toFixed(6);
-      document.getElementById('miningTimeLeft').textContent = (timeLeft > 0 ? Math.floor(timeLeft / 1000 / 60) + ' min left' : 'Ready to claim');
-    }
-
-    function claimMining() {
-      const now = Date.now();
-      const elapsed = Math.min((now - lastClaimTime), 8 * 3600 * 1000);
-      const mined = elapsed / 1000 * miningRate;
-      if (elapsed === 0) {
-        Swal.fire("Wait", "Nothing to claim yet.", "info");
-        return;
-      }
-      // Logic to transfer mined tokens can be added here
-      Swal.fire("Claimed!", `${mined.toFixed(6)} tokens added to your balance.`, "success");
-      lastClaimTime = now;
-      updateMiningUI();
-    }
-
-    function upgradeMining() {
-      miningRate = 0.008;
-      Swal.fire("Upgrade Complete", "Mining rate increased to 0.008/sec for 100 days.", "success");
-      updateMiningUI();
-    }
-
-    setInterval(updateMiningUI, 10000);
   </script>
 </body>
 </html>
-
