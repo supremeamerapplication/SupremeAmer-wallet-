@@ -56,5 +56,57 @@
 async function importWallet() {
   const mnemonic = prompt("Enter mnemonic");
   if (!mnemonic) return;
-  const
+  const wallet = ethers.Wallet.fromPhrase(mnemonic);
+  provider = new ethers.BrowserProvider(window.ethereum);
+  signer = wallet.connect(provider);
+  setupUI(wallet.address);
+}
 
+async function setupUI(address) {
+  document.getElementById("connect-wallet").classList.add("hidden");
+  document.getElementById("main-dashboard").classList.remove("hidden");
+  document.getElementById("wallet-address").textContent = address;
+  updateBalances(address);
+}
+
+async function updateBalances(address) {
+  const bnb = await provider.getBalance(address);
+  document.getElementById("bnb-balance").textContent = ethers.formatEther(bnb);
+
+  const ethProvider = new ethers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_ID");
+  const ethBalance = await ethProvider.getBalance(address);
+  document.getElementById("eth-balance").textContent = ethers.formatEther(ethBalance);
+
+  supremeAmerContract = new ethers.Contract(supremeAmerAddress, supremeAmerABI, provider);
+  const tokenBalance = await supremeAmerContract.balanceOf(address).catch(() => 0);
+  document.getElementById("supremeamer-balance").textContent = tokenBalance.toString();
+}
+
+async function sendTokens() {
+  const to = document.getElementById("send-to").value;
+  const amount = document.getElementById("send-amount").value;
+  const token = document.getElementById("token-type").value;
+  if (!to || !amount) return alert("Enter valid details");
+
+  let tx;
+  if (token === "bnb") {
+    tx = await signer.sendTransaction({ to, value: ethers.parseEther(amount) });
+  } else if (token === "eth") {
+    const ethProvider = new ethers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_ID");
+    const ethSigner = signer.connect(ethProvider);
+    tx = await ethSigner.sendTransaction({ to, value: ethers.parseEther(amount) });
+  } else {
+    supremeAmerContract = supremeAmerContract.connect(signer);
+    tx = await supremeAmerContract.transfer(to, amount);
+  }
+  await tx.wait();
+  alert("Transaction sent!");
+}
+
+function disconnectWallet() {
+  location.reload();
+}
+
+  </script>
+</body>
+</html>
