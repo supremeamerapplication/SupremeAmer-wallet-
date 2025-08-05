@@ -4,108 +4,214 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SupremeAmer Web3 Wallet</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@0xsequence/waas@1.2.0/dist/waas.js"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4">
-  <div class="max-w-md mx-auto space-y-6">
-    <h1 class="text-2xl font-bold text-center">SupremeAmer Wallet</h1>
+<body class="bg-gray-100 text-gray-800">
 
-    <!-- Wallet Creation -->
-    <div class="bg-gray-800 p-4 rounded">
-      <button onclick="createWallet()" class="bg-blue-500 w-full p-2 rounded">Create New Wallet</button>
-      <div id="walletInfo" class="mt-4 space-y-2 hidden">
-        <p><strong>Address:</strong> <span id="walletAddress"></span></p>
-        <p><strong>Private Key:</strong> <span id="walletPK"></span></p>
-        <p><strong>Mnemonic:</strong> <span id="walletMnemonic"></span></p>
-        <button onclick="downloadEncrypted()" class="bg-green-600 w-full p-2 rounded">Download Backup (Encrypted)</button>
-      </div>
-    </div>
-
-    <!-- Wallet Restore -->
-    <div class="bg-gray-800 p-4 rounded">
-      <h2 class="text-lg font-semibold mb-2">Restore Wallet</h2>
-      <textarea id="restoreInput" rows="4" class="w-full p-2 rounded text-black" placeholder="Enter mnemonic or upload encrypted JSON"></textarea>
-      <input type="file" id="fileInput" onchange="loadEncrypted(event)" class="w-full mt-2" />
-      <input type="password" id="restorePassword" class="w-full mt-2 p-2 rounded text-black" placeholder="Enter password for decryption" />
-      <button onclick="restoreWallet()" class="bg-yellow-500 w-full mt-2 p-2 rounded">Restore</button>
-    </div>
-
-    <!-- Balance & Send -->
-    <div class="bg-gray-800 p-4 rounded">
-      <h2 class="text-lg font-semibold mb-2">Wallet Actions</h2>
-      <p><strong>ETH Balance:</strong> <span id="ethBalance">-</span></p>
-      <input type="text" id="sendTo" class="w-full p-2 rounded text-black mt-2" placeholder="Recipient Address" />
-      <input type="number" id="sendAmount" class="w-full p-2 rounded text-black mt-2" placeholder="Amount in ETH" />
-      <button onclick="sendETH()" class="bg-purple-600 w-full mt-2 p-2 rounded">Send ETH</button>
+  <!-- Mnemonic Modal -->
+  <div id="mnemonic-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-sm">
+      <h3 class="text-lg font-bold mb-2">Import Wallet</h3>
+      <input type="text" id="mnemonic-input" class="w-full border px-3 py-2 rounded mb-2" placeholder="Enter mnemonic phrase"/>
+      <button id="import-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg w-full mb-2">Import</button>
+      <button onclick="closeMnemonicModal()" class="text-red-600 underline w-full">Cancel</button>
     </div>
   </div>
 
+  <div class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div id="wallet-section" class="w-full max-w-md bg-white p-6 rounded-xl shadow-xl">
+      <h2 class="text-2xl font-bold mb-4 text-center">SupremeAmer Wallet</h2>
+      <div id="connect-wallet" class="flex flex-col gap-4">
+        <button id="create-wallet-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg">Create Wallet</button>
+        <button id="import-wallet-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg">Import Wallet</button>
+      </div>
+      <div id="main-dashboard" class="hidden">
+        <p class="text-center mb-4 font-semibold">Connected Address: <span id="wallet-address" class="break-all"></span></p>
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold mb-2">Balances</h3>
+          <div id="balances" class="space-y-2">
+            <p>BNB: <span id="bnb-balance">Loading...</span></p>
+            <p>ETH: <span id="eth-balance">Loading...</span></p>
+            <p>SupremeAmer: <span id="supremeamer-balance">Loading...</span></p>
+          </div>
+        </div>
+        <div class="mb-4">
+          <h3 class="text-lg font-semibold mb-2">Send Tokens</h3>
+          <input type="text" id="send-to" placeholder="Recipient Address" class="w-full border px-3 py-2 rounded mb-2" />
+          <input type="number" id="send-amount" placeholder="Amount" class="w-full border px-3 py-2 rounded mb-2" min="0" step="any" />
+          <select id="token-type" class="w-full border px-3 py-2 rounded mb-2">
+            <option value="bnb">BNB</option>
+            <option value="eth">ETH</option>
+            <option value="supremeamer">SupremeAmer</option>
+          </select>
+          <button id="send-btn" class="bg-purple-600 text-white px-4 py-2 rounded-lg w-full">Send</button>
+        </div>
+        <div class="text-center">
+          <button onclick="disconnectWallet()" class="text-sm text-red-600 underline">Disconnect</button>
+        </div>
+      </div>
+      <div id="feedback" class="text-center text-sm mt-4 text-red-600"></div>
+    </div>
+  </div>
   <script>
-    let wallet, encryptedJson;
-    const provider = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/eth");
+    let provider, signer, walletAddress;
+    let supremeAmerContract;
 
-    async function createWallet() {
-      wallet = ethers.Wallet.createRandom();
-      document.getElementById('walletAddress').textContent = wallet.address;
-      document.getElementById('walletPK').textContent = wallet.privateKey;
-      document.getElementById('walletMnemonic').textContent = wallet.mnemonic.phrase;
-      document.getElementById('walletInfo').classList.remove('hidden');
+    // SupremeAmer token contract details (add missing ERC20 ABI)
+    const supremeAmerAddress = "0x06dB6BA51c18348A4C47465CAB643E62038969dd";
+    const supremeAmerABI = [
+      // ERC20 balanceOf
+      { "constant": true, "inputs": [{ "name": "owner", "type": "address" }], "name": "balanceOf", "outputs": [{ "name": "balance", "type": "uint256" }], "type": "function", "stateMutability": "view" },
+      // ERC20 transfer
+      { "constant": false, "inputs": [{ "name": "to", "type": "address" }, { "name": "value", "type": "uint256" }], "name": "transfer", "outputs": [{ "name": "", "type": "bool" }], "type": "function" },
+      // Owner & events (as in your original ABI)
+      {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},
+      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},
+      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
+      {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}
+    ];
 
-      encryptedJson = await wallet.encrypt(prompt("Set a password for backup encryption:"));
+    // UI Elements
+    const feedback = document.getElementById("feedback");
+    const sendBtn = document.getElementById("send-btn");
+    const createWalletBtn = document.getElementById("create-wallet-btn");
+    const importWalletBtn = document.getElementById("import-wallet-btn");
+    const importBtn = document.getElementById("import-btn");
+
+    // Show/hide mnemonic modal
+    importWalletBtn.onclick = () => {
+      document.getElementById('mnemonic-modal').classList.remove('hidden');
+    };
+    function closeMnemonicModal() {
+      document.getElementById('mnemonic-modal').classList.add('hidden');
+      document.getElementById("mnemonic-input").value = '';
+      feedback.textContent = '';
     }
 
-    function downloadEncrypted() {
-      const blob = new Blob([encryptedJson], { type: "application/json" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "wallet_backup.json";
-      link.click();
-    }
-
-    async function restoreWallet() {
-      const input = document.getElementById('restoreInput').value.trim();
-      const password = document.getElementById('restorePassword').value.trim();
+    // Create Wallet
+    createWalletBtn.onclick = async () => {
+      feedback.textContent = '';
       try {
-        if (input.split(" ").length === 12) {
-          wallet = ethers.Wallet.fromMnemonic(input);
+        const wallet = ethers.Wallet.createRandom();
+        if (!window.ethereum) throw new Error("MetaMask or Web3 provider not found.");
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = wallet.connect(provider);
+        walletAddress = wallet.address;
+        setupUI(walletAddress);
+      } catch (err) {
+        feedback.textContent = `Error: ${err.message}`;
+      }
+    };
+
+    // Import Wallet
+    importBtn.onclick = async () => {
+      feedback.textContent = '';
+      const mnemonic = document.getElementById("mnemonic-input").value.trim();
+      if (!mnemonic) return feedback.textContent = "Please enter a mnemonic phrase.";
+      try {
+        const wallet = ethers.Wallet.fromPhrase(mnemonic);
+        if (!window.ethereum) throw new Error("MetaMask or Web3 provider not found.");
+        provider = new ethers.BrowserProvider(window.ethereum);
+        signer = wallet.connect(provider);
+        walletAddress = wallet.address;
+        closeMnemonicModal();
+        setupUI(walletAddress);
+      } catch (err) {
+        feedback.textContent = `Error: ${err.message}`;
+      }
+    };
+
+    // Setup UI after connection
+    async function setupUI(address) {
+      document.getElementById("connect-wallet").classList.add("hidden");
+      document.getElementById("main-dashboard").classList.remove("hidden");
+      document.getElementById("wallet-address").textContent = address;
+      await updateBalances(address);
+    }
+
+    // Update token balances
+    async function updateBalances(address) {
+      feedback.textContent = '';
+      document.getElementById("bnb-balance").textContent = "Loading...";
+      document.getElementById("eth-balance").textContent = "Loading...";
+      document.getElementById("supremeamer-balance").textContent = "Loading...";
+      try {
+        // BNB (assume BSC mainnet)
+        const bnb = await provider.getBalance(address);
+        document.getElementById("bnb-balance").textContent = ethers.formatEther(bnb);
+
+        // ETH
+        const ethProvider = new ethers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_ID");
+        const ethBalance = await ethProvider.getBalance(address);
+        document.getElementById("eth-balance").textContent = ethers.formatEther(ethBalance);
+
+        // SupremeAmer (ERC20)
+        supremeAmerContract = new ethers.Contract(supremeAmerAddress, supremeAmerABI, provider);
+        let tokenBalance = "0";
+        try {
+          tokenBalance = await supremeAmerContract.balanceOf(address);
+        } catch { /* skip */ }
+        document.getElementById("supremeamer-balance").textContent = ethers.formatUnits(tokenBalance, 18);
+      } catch (err) {
+        feedback.textContent = "Error fetching balances: " + err.message;
+      }
+    }
+
+    // Validate Ethereum address
+    function isValidAddress(addr) {
+      try { return ethers.isAddress(addr); }
+      catch { return false; }
+    }
+
+    // Send tokens
+    sendBtn.onclick = async () => {
+      feedback.textContent = '';
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sending...";
+      const to = document.getElementById("send-to").value.trim();
+      const amount = document.getElementById("send-amount").value.trim();
+      const token = document.getElementById("token-type").value;
+
+      if (!isValidAddress(to)) {
+        feedback.textContent = "Invalid recipient address.";
+        sendBtn.disabled = false; sendBtn.textContent = "Send";
+        return;
+      }
+      if (!amount || isNaN(amount) || Number(amount) <= 0) {
+        feedback.textContent = "Enter a valid amount.";
+        sendBtn.disabled = false; sendBtn.textContent = "Send";
+        return;
+      }
+
+      try {
+        let tx;
+        if (token === "bnb") {
+          tx = await signer.sendTransaction({ to, value: ethers.parseEther(amount) });
+        } else if (token === "eth") {
+          const ethProvider = new ethers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_ID");
+          const ethSigner = signer.connect(ethProvider);
+          tx = await ethSigner.sendTransaction({ to, value: ethers.parseEther(amount) });
         } else {
-          wallet = await ethers.Wallet.fromEncryptedJson(input, password);
+          supremeAmerContract = supremeAmerContract.connect(signer);
+          tx = await supremeAmerContract.transfer(to, ethers.parseUnits(amount, 18));
         }
-        wallet = wallet.connect(provider);
-        alert("Wallet restored: " + wallet.address);
-        updateBalance();
+        await tx.wait();
+        feedback.textContent = "Transaction sent!";
+        await updateBalances(walletAddress);
       } catch (err) {
-        alert("Restore failed: " + err.message);
+        feedback.textContent = "Transaction failed: " + err.message;
       }
-    }
+      sendBtn.disabled = false;
+      sendBtn.textContent = "Send";
+    };
 
-    async function loadEncrypted(event) {
-      const file = event.target.files[0];
-      const text = await file.text();
-      document.getElementById('restoreInput').value = text;
-    }
-
-    async function updateBalance() {
-      if (!wallet) return;
-      const balance = await provider.getBalance(wallet.address);
-      document.getElementById('ethBalance').textContent = ethers.utils.formatEther(balance) + " ETH";
-    }
-
-    async function sendETH() {
-      if (!wallet) return alert("Wallet not loaded");
-      const to = document.getElementById('sendTo').value.trim();
-      const amount = document.getElementById('sendAmount').value.trim();
-      try {
-        const tx = await wallet.sendTransaction({
-          to,
-          value: ethers.utils.parseEther(amount)
-        });
-        alert("Transaction sent: " + tx.hash);
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
+    // Disconnect
+    function disconnectWallet() {
+      location.reload();
     }
   </script>
 </body>
