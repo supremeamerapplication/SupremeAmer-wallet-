@@ -648,34 +648,115 @@
             color: var(--light);
         }
 
-        @media (max-width: 968px) {
+        .permission-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .permission-content {
+            background: var(--dark-secondary);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .permission-content h2 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+
+        .permission-content p {
+            margin-bottom: 25px;
+            color: var(--gray);
+        }
+
+        .permission-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .permission-btn {
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .permission-btn.allow {
+            background: var(--primary);
+            color: white;
+        }
+
+        .permission-btn.allow:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        .permission-btn.deny {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+        }
+
+        .permission-btn.deny:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 1200px) {
             .content {
                 flex-direction: column;
             }
             
-            .search-bar {
+            .player-section, .songs-section {
+                width: 100%;
+            }
+            
+            .album-art {
                 width: 200px;
+                height: 200px;
             }
         }
 
         @media (max-width: 768px) {
             header {
-                flex-wrap: wrap;
+                flex-direction: column;
                 gap: 15px;
+                padding: 15px 0;
             }
             
             .search-bar {
-                order: 3;
                 width: 100%;
+                max-width: 100%;
             }
             
             .tabs {
                 width: 100%;
-                justify-content: center;
+                overflow-x: auto;
+                padding: 5px 0;
+            }
+            
+            .tab {
+                padding: 10px 15px;
+                font-size: 14px;
+                white-space: nowrap;
             }
             
             .controls {
-                gap: 15px;
+                gap: 10px;
             }
             
             .control-btn {
@@ -689,8 +770,117 @@
             }
             
             .album-art {
-                width: 200px;
-                height: 200px;
+                width: 180px;
+                height: 180px;
+            }
+            
+            .song-item {
+                padding: 12px;
+            }
+            
+            .song-details h3 {
+                font-size: 14px;
+            }
+            
+            .song-details p {
+                font-size: 12px;
+            }
+            
+            .song-duration {
+                font-size: 12px;
+            }
+            
+            .action-btn {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .permission-content {
+                padding: 20px;
+            }
+            
+            .permission-buttons {
+                flex-direction: column;
+            }
+            
+            .permission-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .logo h1 {
+                font-size: 28px;
+            }
+            
+            .player-section, .songs-section {
+                padding: 20px;
+            }
+            
+            .album-art {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .song-info h2 {
+                font-size: 20px;
+            }
+            
+            .song-info p {
+                font-size: 14px;
+            }
+            
+            .progress {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .progress-bar {
+                width: 100%;
+            }
+            
+            .time {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .volume-control {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .logo h1 {
+                font-size: 24px;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            
+            .album-art {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .controls {
+                flex-wrap: wrap;
+            }
+            
+            .song-item {
+                flex-wrap: wrap;
+            }
+            
+            .song-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -786,7 +976,7 @@
                     <label for="audio-file" class="file-input-label">
                         <i class="fas fa-upload"></i> Select Local Audio File
                     </label>
-                    <input type="file" id="audio-file" class="file-input" accept="audio/*">
+                    <input type="file" id="audio-file" class="file-input" accept="audio/*" multiple>
                     <p>Upload your own music to play</p>
                 </div>
             </div>
@@ -820,6 +1010,17 @@
         </div>
         <div class="close-lyrics">
             <i class="fas fa-times"></i>
+        </div>
+    </div>
+
+    <div class="permission-modal" id="permission-modal">
+        <div class="permission-content">
+            <h2>Access Your Music</h2>
+            <p>Suplay would like to access your local audio files to create your personal music library. This will allow you to play your own music directly in the app.</p>
+            <div class="permission-buttons">
+                <button class="permission-btn allow" id="allow-access">Allow Access</button>
+                <button class="permission-btn deny" id="deny-access">Not Now</button>
+            </div>
         </div>
     </div>
 
@@ -914,6 +1115,9 @@
             const lyricsContainer = document.querySelector('.lyrics-container');
             const lyricsText = document.querySelector('.lyrics-text');
             const closeLyrics = document.querySelector('.close-lyrics');
+            const permissionModal = document.getElementById('permission-modal');
+            const allowAccessBtn = document.getElementById('allow-access');
+            const denyAccessBtn = document.getElementById('deny-access');
 
             // App state
             let currentSongIndex = 0;
@@ -921,9 +1125,17 @@
             let isShuffle = false;
             let isRepeat = false;
             let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            let audioPermission = localStorage.getItem('audioPermission') || false;
 
             // Initialize the app
             function init() {
+                // Check if we have permission to access audio
+                if (!audioPermission) {
+                    permissionModal.style.display = 'flex';
+                } else {
+                    permissionModal.style.display = 'none';
+                }
+                
                 renderSongs();
                 loadSong(currentSongIndex);
                 
@@ -941,6 +1153,8 @@
                 searchInput.addEventListener('input', filterSongs);
                 lyricsBtn.addEventListener('click', showLyrics);
                 closeLyrics.addEventListener('click', hideLyrics);
+                allowAccessBtn.addEventListener('click', grantAudioPermission);
+                denyAccessBtn.addEventListener('click', denyAudioPermission);
                 
                 // Add click events to tabs
                 tabs.forEach(tab => {
@@ -953,6 +1167,27 @@
 
                 // Load favorites from localStorage
                 updateFavorites();
+            }
+
+            // Grant audio permission
+            function grantAudioPermission() {
+                audioPermission = true;
+                localStorage.setItem('audioPermission', true);
+                permissionModal.style.display = 'none';
+                showNotification('Audio access granted!');
+                
+                // Enable file input
+                fileInput.disabled = false;
+            }
+
+            // Deny audio permission
+            function denyAudioPermission() {
+                audioPermission = false;
+                localStorage.setItem('audioPermission', false);
+                permissionModal.style.display = 'none';
+                
+                // Disable file input
+                fileInput.disabled = true;
             }
 
             // Render songs to the list
@@ -1148,28 +1383,36 @@
 
             // Handle file upload
             function handleFileUpload(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const url = URL.createObjectURL(file);
-                    audio.src = url;
-                    
-                    // Add to songs list
-                    songs.unshift({
-                        id: Date.now(),
-                        title: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
-                        artist: "Local File",
-                        duration: "--:--",
-                        cover: "",
-                        url: url,
-                        lyrics: "Lyrics not available for local files."
-                    });
+                if (!audioPermission) {
+                    showNotification('Please grant audio access first');
+                    permissionModal.style.display = 'flex';
+                    return;
+                }
+                
+                const files = e.target.files;
+                if (files.length > 0) {
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const url = URL.createObjectURL(file);
+                        
+                        // Add to songs list
+                        songs.unshift({
+                            id: Date.now() + i,
+                            title: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
+                            artist: "Local File",
+                            duration: "--:--",
+                            cover: "",
+                            url: url,
+                            lyrics: "Lyrics not available for local files."
+                        });
+                    }
                     
                     currentSongIndex = 0;
                     loadSong(currentSongIndex);
                     renderSongs();
                     playSong();
                     
-                    showNotification('Local file added to library!');
+                    showNotification('Local files added to library!');
                 }
             }
 
