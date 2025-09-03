@@ -1,434 +1,511 @@
-<!doctype html>
+import pygame
+import sys
+import random
+import math
 
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SupremeAmer — Telegram Mini App</title>
-  <style>
-    :root{
-      --bg:#0b1020; --card:#0f1724; --accent:#ffb86b; --muted:#96a0b8; --glass: rgba(255,255,255,0.04);
-      --sat-size:72px;
-    }
-    *{box-sizing:border-box;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    html,body,#app{height:100%;margin:0;background:linear-gradient(180deg,#06070b 0%, #071022 60%);color:#e6eef8}
-    .app{max-width:480px;margin:0 auto;display:flex;flex-direction:column;height:100%;padding:12px}/* header */
-header{display:flex;align-items:center;gap:12px;padding:8px 4px}
-.brand{display:flex;align-items:center;gap:8px}
-.logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#ffd37a,#ff7ea6);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b1020}
-.title{font-size:16px;font-weight:700}
-.subtitle{font-size:12px;color:var(--muted)}
+# Initialize pygame
+pygame.init()
 
-/* main card */
-.card{background:var(--card);border-radius:16px;padding:16px;margin-top:10px;box-shadow:0 8px 30px rgba(4,8,20,0.6)}
+# Screen dimensions
+WIDTH, HEIGHT = 1000, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Mortal Kombat PyGame Edition")
 
-/* mining area */
-.mining-wrap{display:flex;gap:12px;align-items:center}
-.sat-visual{width:var(--sat-size);height:var(--sat-size);border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff7d9 0%, #ffd37a 20%, #ffb86b 45%, #ff7e6d 100%);display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 6px 20px rgba(255,184,107,0.12)}
-.sat-visual .coin{width:60%;height:60%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#2b1b07}
+# Colors
+RED = (220, 20, 60)
+BLUE = (30, 144, 255)
+GREEN = (50, 205, 50)
+YELLOW = (255, 215, 0)
+PURPLE = (128, 0, 128)
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+DARK_GRAY = (30, 30, 30)
+LIGHT_GRAY = (100, 100, 100)
+ORANGE = (255, 165, 0)
+DARK_RED = (139, 0, 0)
 
-/* rotation */
-.rotating{animation:spin 2.2s linear infinite}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+# Fonts
+title_font = pygame.font.SysFont("arial", 48, bold=True)
+font_large = pygame.font.SysFont("arial", 32, bold=True)
+font_medium = pygame.font.SysFont("arial", 24)
+font_small = pygame.font.SysFont("arial", 18)
 
-/* vapour/fire */
-.vapour{position:absolute;left:50%;transform:translateX(-50%);bottom:-20px;width:80px;height:40px;pointer-events:none;}
-.vapour .flame{position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:10px;height:10px;border-radius:50%;opacity:0.9;filter:blur(8px);animation:rise 1.2s ease-in-out infinite}
-.vapour .f1{background:rgba(255,180,110,0.9);animation-delay:0s}
-.vapour .f2{background:rgba(255,110,80,0.7);width:14px;height:14px;animation-delay:0.15s}
-.vapour .f3{background:rgba(255,230,150,0.6);width:22px;height:22px;animation-delay:0.28s}
-@keyframes rise{0%{transform:translate(-50%,6px) scale(0.8);opacity:0.6}50%{transform:translate(-50%,-6px) scale(1.05);opacity:1}100%{transform:translate(-50%,-26px) scale(0.6);opacity:0}}
+# Game states
+MENU = 0
+PLAYING = 1
+GAME_OVER = 2
+PAUSED = 3
+game_state = MENU
 
-.stats{flex:1}
-.stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0}
-.big{font-size:18px;font-weight:700}
-.muted{color:var(--muted);font-size:12px}
+# Clock for controlling frame rate
+clock = pygame.time.Clock()
 
-.progress{height:12px;background:var(--glass);border-radius:999px;overflow:hidden;margin-top:8px}
-.progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#ffb86b,#ff7ea6)}
+# Load images (placeholder code - in a real game you'd load actual images)
+def create_surface(width, height, color):
+    surf = pygame.Surface((width, height), pygame.SRCALPHA)
+    pygame.draw.rect(surf, color, (0, 0, width, height))
+    return surf
 
-.controls{display:flex;gap:8px;margin-top:12px}
-.btn{flex:1;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);border:1px solid rgba(255,255,255,0.03);text-align:center;font-weight:700}
-.btn.primary{background:linear-gradient(90deg,#ffb86b,#ff7ea6);color:#0b1020}
+# Create placeholder images
+scorpion_img = create_surface(60, 100, RED)
+subzero_img = create_surface(60, 100, BLUE)
+background_img = create_surface(WIDTH, HEIGHT, DARK_GRAY)
+pygame.draw.rect(background_img, LIGHT_GRAY, (0, HEIGHT-50, WIDTH, 50))
 
-/* tabs */
-.tabs{display:flex;gap:8px;margin-top:12px}
-.tab{flex:1;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.03);text-align:center;font-weight:700}
-.tab.active{background:linear-gradient(90deg,#0f1724,#122035);border:1px solid rgba(255,255,255,0.05)}
+# Blood effect class
+class BloodEffect:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.particles = []
+        for _ in range(15):
+            self.particles.append({
+                'x': x,
+                'y': y,
+                'dx': random.uniform(-3, 3),
+                'dy': random.uniform(-3, 3),
+                'size': random.randint(2, 5),
+                'life': random.randint(20, 40)
+            })
+    
+    def update(self):
+        for particle in self.particles[:]:
+            particle['x'] += particle['dx']
+            particle['y'] += particle['dy']
+            particle['life'] -= 1
+            if particle['life'] <= 0:
+                self.particles.remove(particle)
+        return len(self.particles) > 0
+    
+    def draw(self, surface):
+        for particle in self.particles:
+            pygame.draw.circle(surface, RED, 
+                              (int(particle['x']), int(particle['y'])), 
+                              particle['size'])
 
-/* tasks list */
-.tasks-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.task{padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);font-size:13px}
-.task small{display:block;color:var(--muted);font-size:11px}
-.task .ok{margin-top:8px;padding:6px;border-radius:8px;background:rgba(255,255,255,0.03);font-weight:700;text-align:center}
+# Fighter class
+class Fighter:
+    def __init__(self, x, y, width, height, color, controls, name):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.vel = 8
+        self.jump_vel = 20
+        self.is_jumping = False
+        self.jump_count = 10
+        self.health = 100
+        self.controls = controls
+        self.name = name
+        self.attacking = False
+        self.attack_cooldown = 0
+        self.attack_power = 10
+        self.kicks = []
+        self.special_cooldown = 0
+        self.facing_right = True if x < WIDTH/2 else False
+        self.hit_effect = False
+        self.hit_timer = 0
+        
+    def draw(self, surface):
+        # Draw character with hit effect
+        color = self.color
+        if self.hit_effect:
+            color = YELLOW  # Flash yellow when hit
+            
+        pygame.draw.rect(surface, color, (self.x, self.y, self.width, self.height))
+        
+        # Draw face details
+        eye_size = 10
+        mouth_size = 15
+        if self.facing_right:
+            pygame.draw.rect(surface, BLACK, (self.x + self.width - 25, self.y + 15, eye_size, eye_size))
+            pygame.draw.rect(surface, BLACK, (self.x + self.width - 25, self.y + 40, mouth_size, 5))
+        else:
+            pygame.draw.rect(surface, BLACK, (self.x + 15, self.y + 15, eye_size, eye_size))
+            pygame.draw.rect(surface, BLACK, (self.x + 15, self.y + 40, mouth_size, 5))
+            
+        # Draw kicks
+        for kick in self.kicks:
+            pygame.draw.rect(surface, YELLOW, kick)
+            
+    def move(self, keys, opponent):
+        if self.attacking:
+            return
+            
+        if keys[self.controls["left"]] and self.x > 0:
+            self.x -= self.vel
+            self.facing_right = False
+        if keys[self.controls["right"]] and self.x < WIDTH - self.width:
+            self.x += self.vel
+            self.facing_right = True
+            
+        # Prevent characters from overlapping
+        if self.x + self.width > opponent.x and self.x < opponent.x + opponent.width:
+            if self.x < opponent.x:
+                self.x = opponent.x - self.width
+            else:
+                self.x = opponent.x + opponent.width
+                
+        # Jump mechanics
+        if not self.is_jumping:
+            if keys[self.controls["up"]] and self.y == HEIGHT - 150:
+                self.is_jumping = True
+        else:
+            if self.jump_count >= -10:
+                neg = 1
+                if self.jump_count < 0:
+                    neg = -1
+                self.y -= (self.jump_count ** 2) * 0.5 * neg
+                self.jump_count -= 1
+            else:
+                self.is_jumping = False
+                self.jump_count = 10
+                self.y = HEIGHT - 150
+                
+    def attack(self):
+        if not self.attacking and self.attack_cooldown == 0:
+            self.attacking = True
+            self.attack_cooldown = 20
+            
+            # Create a kick rectangle based on which way the fighter is facing
+            if self.facing_right:
+                kick_rect = pygame.Rect(self.x + self.width, self.y + 20, 30, 20)
+            else:
+                kick_rect = pygame.Rect(self.x - 30, self.y + 20, 30, 20)
+                
+            self.kicks.append(kick_rect)
+            
+    def special_attack(self):
+        if not self.attacking and self.special_cooldown == 0:
+            self.attacking = True
+            self.special_cooldown = 60
+            
+            # Create 3 kicks for special attack
+            for i in range(3):
+                if self.facing_right:
+                    kick_rect = pygame.Rect(self.x + self.width + i*40, self.y + 20, 30, 20)
+                else:
+                    kick_rect = pygame.Rect(self.x - 30 - i*40, self.y + 20, 30, 20)
+                    
+                self.kicks.append(kick_rect)
+                
+    def update(self, opponent):
+        # Update hit effect timer
+        if self.hit_effect:
+            self.hit_timer -= 1
+            if self.hit_timer <= 0:
+                self.hit_effect = False
+                
+        # Update attack cooldown
+        if self.attack_cooldown > 0:
+            self.attack_cooldown -= 1
+            
+        if self.special_cooldown > 0:
+            self.special_cooldown -= 1
+            
+        # Update kicks
+        kick_speed = 15
+        for kick in self.kicks[:]:
+            if self.facing_right:
+                kick.x += kick_speed
+            else:
+                kick.x -= kick_speed
+                
+            # Check if kick hits opponent
+            if kick.colliderect(pygame.Rect(opponent.x, opponent.y, opponent.width, opponent.height)):
+                opponent.health -= self.attack_power
+                opponent.hit_effect = True
+                opponent.hit_timer = 5
+                blood_effects.append(BloodEffect(kick.x, kick.y))
+                self.kicks.remove(kick)
+                
+            # Remove kick if it goes off screen
+            elif kick.x > WIDTH or kick.x < -30:
+                self.kicks.remove(kick)
+                
+        # Reset attacking state
+        if self.attacking and not self.kicks and self.attack_cooldown == 0:
+            self.attacking = False
 
-/* wallet */
-.wallet-form{display:flex;gap:8px;margin-top:8px}
-input[type=text]{flex:1;padding:10px;border-radius:10px;background:#07122a;border:1px solid rgba(255,255,255,0.03);color:inherit}
+# Create fighters
+player1 = Fighter(200, HEIGHT - 150, 60, 100, RED, 
+                 {"left": pygame.K_a, "right": pygame.K_d, "up": pygame.K_w, "attack": pygame.K_f, "special": pygame.K_g},
+                 "Scorpion")
 
-/* footer nav */
-footer{position:fixed;left:0;right:0;bottom:8px;display:flex;justify-content:center}
-.nav{width:100%;max-width:480px;padding:6px 12px;background:transparent;display:flex;gap:8px}
-.nav button{flex:1;padding:12px;border-radius:12px;background:linear-gradient(90deg,#0b1220,#071022);border:1px solid rgba(255,255,255,0.03);font-weight:800}
+player2 = Fighter(700, HEIGHT - 150, 60, 100, BLUE, 
+                 {"left": pygame.K_LEFT, "right": pygame.K_RIGHT, "up": pygame.K_UP, "attack": pygame.K_k, "special": pygame.K_l},
+                 "Sub-Zero")
 
-/* responsive small tweaks */
-@media(min-width:520px){.app{margin-top:24px}}
+# Background elements
+class BackgroundElement:
+    def __init__(self, x, y, size, color, speed):
+        self.x = x
+        self.y = y
+        self.size = size
+        self.color = color
+        self.speed = speed
+        
+    def update(self):
+        self.x -= self.speed
+        if self.x < -self.size:
+            self.x = WIDTH + random.randint(0, 100)
+            self.y = random.randint(50, HEIGHT - 200)
+            
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, (self.x, self.y, self.size, self.size))
 
-  </style>
-</head>
-<body>
-  <div id="app" class="app">
-    <header>
-      <div class="brand">
-        <div class="logo">S</div>
-        <div>
-          <div class="title">SupremeAmer Network</div>
-          <div class="subtitle">Mine SAT • Complete tasks • Earn</div>
-        </div>
-      </div>
-      <div style="margin-left:auto;text-align:right">
-        <div id="userTag" class="muted">Not connected</div>
-      </div>
-    </header><main class="card" id="mainCard">
-  <!-- Mining View -->
-  <div id="miningView">
-    <div class="mining-wrap">
-      <div style="position:relative">
-        <div id="satVisual" class="sat-visual">
-          <div class="coin rotating" id="coin">SAT</div>
-          <div class="vapour" id="vapour" style="display:none">
-            <div class="flame f3"></div>
-            <div class="flame f2"></div>
-            <div class="flame f1"></div>
-          </div>
-        </div>
-      </div>
-      <div class="stats">
-        <div class="stat-row"><div class="muted">Mining speed</div><div id="speedDisplay" class="big">0.2 SAT/hr</div></div>
-        <div class="stat-row"><div class="muted">Total mined</div><div id="totalMined" class="big">0 SAT</div></div>
-        <div class="stat-row"><div class="muted">Today's mined</div><div id="dailyMined" class="big">0 SAT</div></div>
-        <div class="muted">24h progress</div>
-        <div class="progress"><i id="progressFill"></i></div>
-        <div class="controls">
-          <div class="btn primary" id="claimBtn">Claim (available)</div>
-          <div class="btn" id="upgradeBtn">Upgrade 0.8/hr • 0.0009 BNB</div>
-        </div>
-      </div>
-    </div>
+# Create background elements
+background_elements = []
+for _ in range(15):
+    size = random.randint(5, 20)
+    x = random.randint(0, WIDTH)
+    y = random.randint(50, HEIGHT - 200)
+    color = (random.randint(100, 200), random.randint(100, 200), random.randint(100, 200))
+    speed = random.uniform(0.5, 2.5)
+    background_elements.append(BackgroundElement(x, y, size, color, speed))
 
-    <div style="margin-top:14px;display:flex;gap:8px;align-items:center;justify-content:space-between">
-      <div class="muted">Streak: <span id="streak">0</span> days</div>
-      <div class="muted">Next reward: <span id="nextReward">1 SAT</span></div>
-    </div>
-  </div>
+# Blood effects
+blood_effects = []
 
-  <!-- Earn / Tasks View (hidden by default) -->
-  <div id="earnView" style="display:none">
-    <h3 style="margin-top:8px">Earn — Tasks & Referrals</h3>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <div style="flex:1;padding:8px;background:rgba(255,255,255,0.02);border-radius:10px">
-        <div class="muted">Referral link</div>
-        <div id="refLink" style="word-break:break-all;margin-top:6px;font-weight:700">—</div>
-        <div class="muted" style="font-size:12px;margin-top:6px">Get +1 SAT for each referred user after they claim first time.</div>
-      </div>
-    </div>
+# Round system
+round_time = 99  # seconds
+round_start_time = 0
+current_round = 1
+max_rounds = 3
+player1_wins = 0
+player2_wins = 0
 
-    <h4 style="margin-top:10px">Tasks</h4>
-    <div class="tasks-grid" id="tasksGrid">
-      <!-- tasks injected here -->
-    </div>
-  </div>
-
-  <!-- Wallet View -->
-  <div id="walletView" style="display:none">
-    <h3>Wallet</h3>
-    <div class="muted">Connect BNB wallet (paste address or use WalletConnect in your bot)</div>
-    <div class="wallet-form">
-      <input type="text" id="walletInput" placeholder="0x... or BNB address" />
-      <button class="btn" id="saveWallet">Save</button>
-    </div>
-    <div style="margin-top:10px"><strong>Connected:</strong> <span id="walletAddr">Not connected</span></div>
-  </div>
-
-</main>
-
-<footer>
-  <div class="nav">
-    <button class="tab active" id="tabMining">Mining</button>
-    <button class="tab" id="tabEarn">Earn</button>
-    <button class="tab" id="tabWallet">Wallet</button>
-  </div>
-</footer>
-
-  </div>  <script>
-    /* ---------- Configuration & constants ---------- */
-    const DEFAULT_SPEED_HR = 0.2; // sat per hour
-    const UPGRADED_SPEED_HR = 0.8;
-    const UPGRADE_PRICE_BNB = 0.0009;
-    const CLAIM_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24h
-    const TASK_REWARD = 0.1; // sat per task
-
-    // derived
-    const DEFAULT_SPEED_S = DEFAULT_SPEED_HR / 3600; // sat per second
-    const UPGRADED_SPEED_S = UPGRADED_SPEED_HR / 3600;
-
-    /* ---------- Simple local storage App state (replace with Appwrite on backend) ---------- */
-    const state = {
-      totalMined: Number(localStorage.getItem('totalMined')) || 0,
-      dailyMined: Number(localStorage.getItem('dailyMined')) || 0,
-      miningSpeedPerSec: Number(localStorage.getItem('miningSpeedPerSec')) || DEFAULT_SPEED_S,
-      miningStartedAt: Number(localStorage.getItem('miningStartedAt')) || Date.now(),
-      lastClaimAt: Number(localStorage.getItem('lastClaimAt')) || 0,
-      streak: Number(localStorage.getItem('streak')) || 0,
-      lastClaimDate: localStorage.getItem('lastClaimDate') || null,
-      walletAddr: localStorage.getItem('walletAddr') || '',
-      tasksCompleted: JSON.parse(localStorage.getItem('tasksCompleted') || '[]')
-    };
-
-    /* ---------- UI refs ---------- */
-    const totalMinedEl = document.getElementById('totalMined');
-    const dailyMinedEl = document.getElementById('dailyMined');
-    const speedDisplayEl = document.getElementById('speedDisplay');
-    const progressFillEl = document.getElementById('progressFill');
-    const vapourEl = document.getElementById('vapour');
-    const claimBtn = document.getElementById('claimBtn');
-    const upgradeBtn = document.getElementById('upgradeBtn');
-    const streakEl = document.getElementById('streak');
-    const nextRewardEl = document.getElementById('nextReward');
-    const walletAddrEl = document.getElementById('walletAddr');
-    const walletInput = document.getElementById('walletInput');
-    const saveWalletBtn = document.getElementById('saveWallet');
-
-    /* Tabs */
-    const tabMining = document.getElementById('tabMining');
-    const tabEarn = document.getElementById('tabEarn');
-    const tabWallet = document.getElementById('tabWallet');
-    const miningView = document.getElementById('miningView');
-    const earnView = document.getElementById('earnView');
-    const walletView = document.getElementById('walletView');
-
-    /* Tasks */
-    const tasksGrid = document.getElementById('tasksGrid');
-
-    /* ---------- Helper functions ---------- */
-    function saveState(){
-      localStorage.setItem('totalMined', state.totalMined);
-      localStorage.setItem('dailyMined', state.dailyMined);
-      localStorage.setItem('miningSpeedPerSec', state.miningSpeedPerSec);
-      localStorage.setItem('miningStartedAt', state.miningStartedAt);
-      localStorage.setItem('lastClaimAt', state.lastClaimAt);
-      localStorage.setItem('streak', state.streak);
-      localStorage.setItem('lastClaimDate', state.lastClaimDate);
-      localStorage.setItem('walletAddr', state.walletAddr);
-      localStorage.setItem('tasksCompleted', JSON.stringify(state.tasksCompleted));
-    }
-
-    function formatSat(n){ return (Math.round((n+Number.EPSILON)*1000000)/1000000).toString().replace(/\.0+$/,'') }
-
-    /* ---------- Mining loop (client-side) ---------- */
-    let lastTick = Date.now();
-    function tick(){
-      const now = Date.now();
-      const dt = (now - lastTick) / 1000; // seconds
-      lastTick = now;
-
-      // Add mining progress
-      const add = state.miningSpeedPerSec * dt;
-      state.totalMined += add;
-
-      // Check day rollover for dailyMined
-      const utcNow = new Date();
-      const todayKey = utcNow.toISOString().slice(0,10);
-      if(state._dailyKey !== todayKey){ state._dailyKey = todayKey; state.dailyMined = 0; }
-      state.dailyMined += add;
-
-      // Update UI
-      totalMinedEl.textContent = formatSat(state.totalMined) + ' SAT';
-      dailyMinedEl.textContent = formatSat(state.dailyMined) + ' SAT';
-      const secondsSinceStartOfDay = (utcNow.getHours()*3600 + utcNow.getMinutes()*60 + utcNow.getSeconds());
-      const progressPercent = Math.min(100, ((secondsSinceStartOfDay) / 86400) * 100); // approximate daily progress into 24h
-      progressFillEl.style.width = progressPercent + '%';
-
-      // Vapour animation active while mining (always active here)
-      vapourEl.style.display = state.miningSpeedPerSec > 0 ? 'block':'none';
-
-      // Save occasionally (throttle)
-      if(now % 5000 < 50) saveState();
-
-      requestAnimationFrame(tick);
-    }
-
-    /* ---------- Claim logic ---------- */
-    function canClaim(){
-      const now = Date.now();
-      return (now - state.lastClaimAt) >= CLAIM_INTERVAL_MS;
-    }
-
-    function updateClaimButton(){
-      if(canClaim()){
-        claimBtn.textContent = 'Claim (available)';
-        claimBtn.classList.add('primary');
-      } else {
-        // show time remaining
-        const left = CLAIM_INTERVAL_MS - (Date.now() - state.lastClaimAt);
-        const hrs = Math.floor(left/3600000); const mins = Math.floor((left%3600000)/60000);
-        claimBtn.textContent = `Claim available in ${hrs}h ${mins}m`;
-        claimBtn.classList.remove('primary');
-      }
-    }
-
-    claimBtn.addEventListener('click', ()=>{
-      if(!canClaim()) return updateClaimButton();
-      // credit the user daily mined
-      const amount = Math.max(0, state.dailyMined);
-      // Award daily streak reward
-      const todayKey = new Date().toISOString().slice(0,10);
-      if(state.lastClaimDate === todayKey){
-        // already claimed today (shouldn't happen due to 24h rule) - just return
-        return alert('You have already claimed today.');
-      }
-
-      // Update streak: if last claim was yesterday then increment, otherwise reset
-      const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-      const yesterdayKey = yesterday.toISOString().slice(0,10);
-      if(state.lastClaimDate === yesterdayKey){ state.streak = Math.min(90, state.streak + 1); }
-      else { state.streak = 1; }
-
-      // Daily streak reward: 1..500 over 1..90 days (simple linear mapping)
-      const reward = Math.min(500, Math.max(1, Math.round((state.streak/90) * 500)));
-
-      // Add base claim (the day's mined) + streak reward
-      const totalAward = amount + reward;
-      state.totalMined += reward; // reward in SAT
-
-      // Reset daily counters
-      state.dailyMined = 0;
-      state.lastClaimAt = Date.now();
-      state.lastClaimDate = todayKey;
-
-      saveState(); updateClaimButton();
-      alert(`Claim successful! You received your day's mining + streak reward: ${formatSat(totalAward)} SAT (includes ${reward} SAT streak reward).`)
-    });
-
-    setInterval(updateClaimButton, 30000);
-
-    /* ---------- Upgrade flow (simulated) ---------- */
-    upgradeBtn.addEventListener('click', async ()=>{
-      if(!state.walletAddr){
-        if(!confirm('To upgrade you must connect your wallet. Save wallet address now?')) return;
-        if(walletInput.value) { state.walletAddr = walletInput.value.trim(); saveState(); refreshWalletUI(); }
-        else return alert('Please paste your BNB address first.')
-      }
-
-      // NOTE: production - trigger real on-chain payment flow (BNB) and verify tx. Here we simulate.
-      const ok = confirm(`Upgrade mining speed to ${UPGRADED_SPEED_HR} SAT/hr for ${UPGRADE_PRICE_BNB} BNB? (This demo simulates payment)`);
-      if(!ok) return;
-      // TODO: verify BNB tx using backend; after verification set upgrade expiry
-      state.miningSpeedPerSec = UPGRADED_SPEED_S;
-      state._upgradeExpires = Date.now() + (30*24*60*60*1000); // 30 days
-      saveState();
-      speedDisplayEl.textContent = `${UPGRADED_SPEED_HR} SAT/hr (upgraded)`;
-      alert('Upgrade applied (simulated). In production you must verify an on-chain payment before upgrading.');
-    });
-
-    /* ---------- Wallet save ---------- */
-    saveWalletBtn.addEventListener('click', ()=>{
-      const v = walletInput.value.trim();
-      if(!v) return alert('Paste your wallet address');
-      state.walletAddr = v; saveState(); refreshWalletUI();
-      alert('Wallet saved locally. For real payments use WalletConnect or on-chain verification.');
-    });
-
-    function refreshWalletUI(){
-      walletAddrEl.textContent = state.walletAddr ? state.walletAddr : 'Not connected';
-      walletInput.value = state.walletAddr || '';
-    }
-
-    /* ---------- Tabs handling ---------- */
-    tabMining.addEventListener('click', ()=>{switchTab('mining')});
-    tabEarn.addEventListener('click', ()=>{switchTab('earn')});
-    tabWallet.addEventListener('click', ()=>{switchTab('wallet')});
-
-    function switchTab(tab){
-      tabMining.classList.remove('active'); tabEarn.classList.remove('active'); tabWallet.classList.remove('active');
-      miningView.style.display='none'; earnView.style.display='none'; walletView.style.display='none';
-      if(tab==='mining'){ tabMining.classList.add('active'); miningView.style.display='block'; }
-      if(tab==='earn'){ tabEarn.classList.add('active'); earnView.style.display='block'; }
-      if(tab==='wallet'){ tabWallet.classList.add('active'); walletView.style.display='block'; }
-    }
-
-    /* ---------- Tasks list (sample categories & tasks) ---------- */
-    const TASKS = [
-      {id:'social_join',cat:'Social',title:'Join Telegram Channel',desc:'Join our main channel',reward: TASK_REWARD},
-      {id:'follow_x',cat:'Social',title:'Follow on X/Twitter',desc:'Follow @SupremeAmer',reward: TASK_REWARD},
-      {id:'watch_vid',cat:'Engagement',title:'Watch Promo Video',desc:'Watch 30s promo',reward: TASK_REWARD},
-      {id:'visit_partner',cat:'Partners',title:'Visit Partner Site',desc:'Visit link and stay 20s',reward: TASK_REWARD},
-      {id:'invite',cat:'Referral',title:'Invite a Friend',desc:'Share your referral link',reward: 1}
-    ];
-
-    function renderTasks(){
-      tasksGrid.innerHTML='';
-      TASKS.forEach(t=>{
-        const done = state.tasksCompleted.includes(t.id);
-        const el = document.createElement('div'); el.className='task';
-        el.innerHTML = `<strong>${t.title}</strong><small>${t.desc}</small><div style=\"margin-top:8px;display:flex;gap:6px\">`+
-          `<div style=\"flex:1;font-weight:700\">${t.reward} SAT</div>`+
-          `<div style=\"width:110px\"><button class=\"ok\" data-id=\"${t.id}\">${done? 'Completed' : 'Do Task'}</button></div>`+
-        `</div>`;
-        tasksGrid.appendChild(el);
-      });
-
-      // attach handlers
-      document.querySelectorAll('.ok').forEach(btn=>btn.addEventListener('click', async (e)=>{
-        const id = e.currentTarget.dataset.id; if(state.tasksCompleted.includes(id)) return alert('Already completed.');
-        // In production: verify with backend (e.g. check channel membership / tx) before crediting.
-        // Here we simulate immediate credit.
-        state.tasksCompleted.push(id);
-        // credit reward
-        const t = TASKS.find(x=>x.id===id);
-        state.totalMined += t.reward;
-        saveState(); renderTasks();
-        alert(`Task completed: +${t.reward} SAT`);
-      }));
-    }
-
-    /* ---------- Referral link (basic) ---------- */
-    function buildReferralLink(){
-      // If inside Telegram WebApp we may get user id via initData - left as placeholder
-      const user = (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) ? Telegram.WebApp.initDataUnsafe.user : null;
-      const uid = user ? (user.id || 'guest') : (localStorage.getItem('supremeUserId') || 'guest');
-      const base = 'https://t.me/YourBot?start=';
-      const ref = `${base}ref_${uid}`;
-      return ref;
-    }
-
-    /* ---------- Init ---------- */
-    function init(){
-      // If we had server-side Appwrite, we'd load real user data here.
-      speedDisplayEl.textContent = state.miningSpeedPerSec === UPGRADED_SPEED_S ? `${UPGRADED_SPEED_HR} SAT/hr (upgraded)` : `${DEFAULT_SPEED_HR} SAT/hr`;
-      streakEl.textContent = state.streak;
-      nextRewardEl.textContent = Math.min(500, Math.max(1, Math.round((state.streak/90) * 500))) + ' SAT';
-      refreshWalletUI();
-      document.getElementById('refLink').textContent = buildReferralLink();
-      renderTasks();
-      requestAnimationFrame(tick);
-      setInterval(()=>{ // update small ui pieces regularly
-        document.getElementById('speedDisplay').textContent = (state.miningSpeedPerSec * 3600).toFixed(2) + ' SAT/hr';
-        updateClaimButton();
-        streakEl.textContent = state.streak;
-        nextRewardEl.textContent = Math.min(500, Math.max(1, Math.round((state.streak/90) * 500))) + ' SAT';
-      }, 2000);
-    }
-
-    init();
-
-    /* ---------- Notes for integration ---------- */
-    /*
-      - Replace localStorage state with Appwrite calls: store users collection with fields (telegram_id, wallet_address, totalMined, dailyMined, miningSpeedPerSec, lastClaimAt, streak, tasksCompleted, upgradeExpiry)
-      - Replace simulated payment flow with an on-chain verification: user sends 0.0009 BNB to your project address, backend verifies tx hash & amount, then sets miningSpeedPerSec to upgraded value and expiry.
-      - Task verification: use Telegram Bot API to verify channel membership, or require proof (tx hash, screenshot) and verify server-side.
-      - For Telegram WebApp: use Telegram.WebApp.initData and initDataUnsafe to get telegram user object & prefill referral links.
-      - Security: don't trust client for awarding coins. Always validate & credit server-side.
-    */
-  </script></body>
-</html>
+# Main game loop
+while True:
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+            
+        if event.type == pygame.KEYDOWN:
+            # Menu controls
+            if game_state == MENU:
+                if event.key == pygame.K_SPACE:
+                    game_state = PLAYING
+                    # Reset game state
+                    player1.health = 100
+                    player2.health = 100
+                    player1.x = 200
+                    player2.x = 700
+                    player1.kicks = []
+                    player2.kicks = []
+                    round_start_time = pygame.time.get_ticks()
+                    
+            # Pause controls
+            elif game_state == PLAYING:
+                if event.key == pygame.K_p:
+                    game_state = PAUSED
+                    
+            # Game over controls
+            elif game_state == GAME_OVER:
+                if event.key == pygame.K_r:
+                    game_state = PLAYING
+                    # Reset game state
+                    player1.health = 100
+                    player2.health = 100
+                    player1.x = 200
+                    player2.x = 700
+                    player1.kicks = []
+                    player2.kicks = []
+                    round_start_time = pygame.time.get_ticks()
+                elif event.key == pygame.K_m:
+                    game_state = MENU
+                    current_round = 1
+                    player1_wins = 0
+                    player2_wins = 0
+                    
+            # Paused state controls
+            elif game_state == PAUSED:
+                if event.key == pygame.K_p:
+                    game_state = PLAYING
+                elif event.key == pygame.K_m:
+                    game_state = MENU
+                    current_round = 1
+                    player1_wins = 0
+                    player2_wins = 0
+                    
+            # Fighting controls
+            if game_state == PLAYING:
+                if event.key == player1.controls["attack"]:
+                    player1.attack()
+                if event.key == player1.controls["special"]:
+                    player1.special_attack()
+                if event.key == player2.controls["attack"]:
+                    player2.attack()
+                if event.key == player2.controls["special"]:
+                    player2.special_attack()
+    
+    # Get key presses
+    keys = pygame.key.get_pressed()
+    
+    # Update game state
+    if game_state == PLAYING:
+        player1.move(keys, player2)
+        player2.move(keys, player1)
+        
+        player1.update(player2)
+        player2.update(player1)
+        
+        # Update background elements
+        for element in background_elements:
+            element.update()
+            
+        # Update blood effects
+        for effect in blood_effects[:]:
+            if not effect.update():
+                blood_effects.remove(effect)
+        
+        # Check for game over
+        elapsed_time = (pygame.time.get_ticks() - round_start_time) // 1000
+        remaining_time = max(0, round_time - elapsed_time)
+        
+        if player1.health <= 0 or player2.health <= 0 or remaining_time <= 0:
+            # Determine round winner
+            if player1.health > player2.health:
+                player1_wins += 1
+            elif player2.health > player1.health:
+                player2_wins += 1
+            # If it's a tie or time ran out, no one wins
+            
+            # Check if match is over
+            if player1_wins >= 2 or player2_wins >= 2 or current_round >= max_rounds:
+                game_state = GAME_OVER
+            else:
+                # Next round
+                current_round += 1
+                player1.health = 100
+                player2.health = 100
+                player1.x = 200
+                player2.x = 700
+                player1.kicks = []
+                player2.kicks = []
+                round_start_time = pygame.time.get_ticks()
+    
+    # Drawing
+    screen.fill(DARK_GRAY)
+    
+    # Draw floor
+    pygame.draw.rect(screen, LIGHT_GRAY, (0, HEIGHT - 50, WIDTH, 50))
+    
+    # Draw background elements
+    for element in background_elements:
+        element.draw(screen)
+    
+    # Draw health bars
+    pygame.draw.rect(screen, DARK_RED, (50, 20, 300, 30))
+    pygame.draw.rect(screen, DARK_RED, (WIDTH - 350, 20, 300, 30))
+    
+    pygame.draw.rect(screen, RED, (50, 20, player1.health * 3, 30))
+    pygame.draw.rect(screen, BLUE, (WIDTH - 50 - player2.health * 3, 20, player2.health * 3, 30))
+    
+    # Draw round timer
+    if game_state == PLAYING:
+        timer_text = font_large.render(f"{remaining_time}", True, YELLOW)
+        screen.blit(timer_text, (WIDTH/2 - timer_text.get_width()/2, 20))
+    
+    # Draw round info
+    round_text = font_medium.render(f"Round {current_round}", True, WHITE)
+    screen.blit(round_text, (WIDTH/2 - round_text.get_width()/2, 60))
+    
+    # Draw score
+    score_text = font_medium.render(f"{player1_wins} - {player2_wins}", True, GREEN)
+    screen.blit(score_text, (WIDTH/2 - score_text.get_width()/2, 90))
+    
+    # Draw player names
+    p1_name_text = font_medium.render(player1.name, True, WHITE)
+    p2_name_text = font_medium.render(player2.name, True, WHITE)
+    screen.blit(p1_name_text, (50, 60))
+    screen.blit(p2_name_text, (WIDTH - 50 - p2_name_text.get_width(), 60))
+    
+    # Draw blood effects
+    for effect in blood_effects:
+        effect.draw(screen)
+    
+    # Draw fighters
+    player1.draw(screen)
+    player2.draw(screen)
+    
+    # Draw UI based on game state
+    if game_state == MENU:
+        title_text = title_font.render("MORTAL KOMBAT", True, RED)
+        screen.blit(title_text, (WIDTH/2 - title_text.get_width()/2, 100))
+        
+        subtitle_text = font_large.render("PyGame Edition", True, YELLOW)
+        screen.blit(subtitle_text, (WIDTH/2 - subtitle_text.get_width()/2, 170))
+        
+        start_text = font_medium.render("Press SPACE to Start", True, GREEN)
+        screen.blit(start_text, (WIDTH/2 - start_text.get_width()/2, 300))
+        
+        controls_text = font_small.render("Player 1: A/D to move, W to jump, F to attack, G for special", True, WHITE)
+        screen.blit(controls_text, (WIDTH/2 - controls_text.get_width()/2, 400))
+        
+        controls_text2 = font_small.render("Player 2: Arrows to move, K to attack, L for special", True, WHITE)
+        screen.blit(controls_text2, (WIDTH/2 - controls_text2.get_width()/2, 430))
+        
+        controls_text3 = font_small.render("Press P to pause during game", True, WHITE)
+        screen.blit(controls_text3, (WIDTH/2 - controls_text3.get_width()/2, 460))
+        
+    elif game_state == GAME_OVER:
+        if player1_wins > player2_wins:
+            winner_text = font_large.render(f"{player1.name} WINS THE MATCH!", True, RED)
+        else:
+            winner_text = font_large.render(f"{player2.name} WINS THE MATCH!", True, BLUE)
+            
+        screen.blit(winner_text, (WIDTH/2 - winner_text.get_width()/2, 100))
+        
+        restart_text = font_medium.render("Press R to Restart", True, GREEN)
+        screen.blit(restart_text, (WIDTH/2 - restart_text.get_width()/2, 200))
+        
+        menu_text = font_medium.render("Press M for Menu", True, YELLOW)
+        screen.blit(menu_text, (WIDTH/2 - menu_text.get_width()/2, 250))
+        
+    elif game_state == PAUSED:
+        overlay = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        screen.blit(overlay, (0, 0))
+        
+        pause_text = font_large.render("GAME PAUSED", True, YELLOW)
+        screen.blit(pause_text, (WIDTH/2 - pause_text.get_width()/2, 200))
+        
+        continue_text = font_medium.render("Press P to Continue", True, WHITE)
+        screen.blit(continue_text, (WIDTH/2 - continue_text.get_width()/2, 250))
+        
+        menu_text = font_medium.render("Press M for Menu", True, WHITE)
+        screen.blit(menu_text, (WIDTH/2 - menu_text.get_width()/2, 300))
+    
+    # Draw cooldown indicators
+    if game_state == PLAYING:
+        # Player 1 special cooldown
+        if player1.special_cooldown > 0:
+            pygame.draw.rect(screen, PURPLE, (50, HEIGHT - 80, 100, 20))
+            pygame.draw.rect(screen, (100, 0, 100), (50, HEIGHT - 80, 100 * (player1.special_cooldown/60), 20))
+            cooldown_text = font_small.render(f"{player1.special_cooldown//10 + 1}", True, WHITE)
+            screen.blit(cooldown_text, (100, HEIGHT - 78))
+        else:
+            pygame.draw.rect(screen, PURPLE, (50, HEIGHT - 80, 100, 20))
+            ready_text = font_small.render("SPECIAL READY", True, WHITE)
+            screen.blit(ready_text, (55, HEIGHT - 78))
+            
+        # Player 2 special cooldown
+        if player2.special_cooldown > 0:
+            pygame.draw.rect(screen, PURPLE, (WIDTH - 150, HEIGHT - 80, 100, 20))
+            pygame.draw.rect(screen, (100, 0, 100), (WIDTH - 150, HEIGHT - 80, 100 * (player2.special_cooldown/60), 20))
+            cooldown_text = font_small.render(f"{player2.special_cooldown//10 + 1}", True, WHITE)
+            screen.blit(cooldown_text, (WIDTH - 100, HEIGHT - 78))
+        else:
+            pygame.draw.rect(screen, PURPLE, (WIDTH - 150, HEIGHT - 80, 100, 20))
+            ready_text = font_small.render("SPECIAL READY", True, WHITE)
+            screen.blit(ready_text, (WIDTH - 145, HEIGHT - 78))
+    
+    # Update display
+    pygame.display.flip()
+    
+    # Control frame rate
+    clock.tick(60)
