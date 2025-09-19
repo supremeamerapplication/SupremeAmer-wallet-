@@ -3,27 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wallet</title>
+    <title>Web3 Wallet</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="wallet-container">
-        <h1>My Digital Wallet</h1>
-        <div class="balance-section">
-            <h2>Current Balance:</h2>
-            <p id="balance-display">$0.00</p>
-        </div>
-        <div class="transaction-section">
-            <h2>Transactions:</h2>
-            <ul id="transaction-list">
-                <!-- Transactions will be added here by JavaScript -->
-            </ul>
-        </div>
-        <div class="actions-section">
-            <button id="add-funds-btn">Add Funds</button>
-            <button id="send-funds-btn">Send Funds</button>
-        </div>
+        <header>
+            <h1>Web3 Wallet</h1>
+        </header>
+
+        <section id="connect-section" class="card">
+            <button id="connect-btn" class="primary-btn">Connect Wallet</button>
+            <p id="status-message"></p>
+        </section>
+
+        <section id="wallet-info" class="card" style="display:none;">
+            <p class="balance-display">Balance: <span id="balance">0.00 ETH</span></p>
+            <p class="address-display">Address: <span id="address"></span></p>
+            <button id="disconnect-btn" class="secondary-btn">Disconnect</button>
+        </section>
+
+        <section id="transaction-form" class="card" style="display:none;">
+            <h2>Send ETH</h2>
+            <form id="send-form">
+                <input type="text" id="recipient-input" placeholder="Recipient Address" required>
+                <input type="number" id="amount-input" placeholder="Amount (ETH)" step="0.001" required>
+                <button type="submit" class="primary-btn">Send Transaction</button>
+            </form>
+        </section>
     </div>
+
+    <!-- WalletConnect dependencies via CDN -->
+    <script type="text/javascript" src="https://unpkg.com/@walletconnect/qrcode-modal@1.8.0/dist/umd/index.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.js"></script>
+
     <script src="game.js"></script>
 </body>
 </html>
