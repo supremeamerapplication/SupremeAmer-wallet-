@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wallet Connection and Crypto Prices</title>
+    <title>Connect to Mobile Wallet</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,7 +47,7 @@
 <body>
     <div class="container">
         <h1>Connect to Your Wallet</h1>
-        <button id="connectButton">Connect to MetaMask</button>
+        <button id="connectButton">Connect Wallet</button>
         <div id="account" class="account"></div>
         <div id="prices" class="prices"></div>
     </div>
@@ -60,11 +60,12 @@
 
         async function connectWallet() {
             if (typeof window.ethereum === 'undefined') {
-                alert('Please install MetaMask or another wallet!');
+                alert('Please install a crypto wallet like MetaMask or Trust Wallet!');
                 return;
             }
 
             try {
+                // Request account access
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const account = accounts[0];
                 accountDiv.innerText = `Connected: ${account}`;
