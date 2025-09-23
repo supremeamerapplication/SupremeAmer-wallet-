@@ -3,29 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="My Crush - A modern social media platform for connecting with friends">
-    <meta name="theme-color" content="#e91e63">
     <title>My Crush - Social Media App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/appwrite@10.0.0"></script>
     <style>
-        /* Enhanced CSS with better organization and new features */
         :root {
             --primary-color: #e91e63;
             --primary-light: #f8bbd0;
             --primary-dark: #ad1457;
             --secondary-color: #03a9f4;
-            --success-color: #4caf50;
-            --error-color: #f44336;
-            --warning-color: #ff9800;
             --text-color: #333;
             --bg-color: #f5f5f5;
             --card-bg: #ffffff;
             --border-color: #e0e0e0;
-            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --success-color: #4caf50;
+            --error-color: #f44336;
+            --warning-color: #ff9800;
+            --shadow: 0 2px 10px rgba(0,0,0,0.08);
             --transition: all 0.3s ease;
             --border-radius: 12px;
-            --gradient: linear-gradient(135deg, #e91e63, #03a9f4);
         }
 
         [data-theme="dark"] {
@@ -44,55 +40,105 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: var(--bg-color);
+            background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
             transition: var(--transition);
-            padding-bottom: 80px;
+            padding-bottom: 60px;
         }
 
-        /* Enhanced Header */
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            padding: 0 15px;
+        }
+
+        /* Header */
         .header {
             position: sticky;
             top: 0;
-            background: var(--card-bg);
-            padding: 15px 20px;
+            background-color: var(--card-bg);
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             box-shadow: var(--shadow);
-            z-index: 1000;
+            z-index: 100;
             backdrop-filter: blur(10px);
+            background-color: rgba(var(--card-bg-rgb), 0.8);
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Enhanced Navigation */
+        .logo i {
+            font-size: 1.2em;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--card-bg);
+            background-color: var(--card-bg);
             display: flex;
             justify-content: space-around;
-            padding: 12px 0;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            z-index: 1000;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
             backdrop-filter: blur(10px);
+            background-color: rgba(var(--card-bg-rgb), 0.9);
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             color: var(--text-color);
             position: relative;
             padding: 8px 16px;
@@ -102,33 +148,698 @@
 
         .nav-item.active {
             color: var(--primary-color);
-            background: var(--primary-light);
-            transform: translateY(-5px);
+            background-color: var(--primary-light);
         }
 
         .nav-icon {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             margin-bottom: 4px;
-            transition: var(--transition);
         }
 
-        /* Enhanced Cards */
+        .badge {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        /* Cards */
         .card {
-            background: var(--card-bg);
+            background-color: var(--card-bg);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             overflow: hidden;
             transition: var(--transition);
-            border: 1px solid var(--border-color);
         }
 
         .card:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
             transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
 
-        /* Loading States */
+        .post-card {
+            padding: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 2px solid var(--primary-light);
+        }
+
+        .username {
+            font-weight: bold;
+        }
+
+        .timestamp {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            position: relative;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        .action-btn.liked {
+            color: var(--primary-color);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            padding: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Auth pages */
+        .auth-container {
+            max-width: 400px;
+            margin: 30px auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+        }
+
+        .auth-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Messages */
+        .message-thread {
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+            animation: messageIn 0.3s ease;
+        }
+
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.sent {
+            background-color: var(--primary-light);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            background-color: var(--card-bg);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message-input {
+            display: flex;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            right: 0;
+        }
+
+        .message-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-right: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Notifications */
+        .notification-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .notification-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        .notification-item.unread {
+            background-color: var(--primary-light);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        /* Profile */
+        .profile-header {
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .stat {
+            text-align: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .stat:hover {
+            background-color: var(--primary-light);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        /* Search */
+        .search-container {
+            margin-bottom: 15px;
+            position: sticky;
+            top: 70px;
+            z-index: 10;
+            background-color: var(--bg-color);
+            padding: 10px 0;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .user-list {
+            margin-top: 15px;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .user-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Utilities */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 { margin-top: 10px; }
+        .mt-2 { margin-top: 20px; }
+        .mb-1 { margin-bottom: 10px; }
+        .mb-2 { margin-bottom: 20px; }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .bottom-nav {
+                display: none;
+            }
+
+            .desktop-nav {
+                display: flex;
+            }
+
+            body {
+                padding-bottom: 0;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid var(--border-color);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Comment section */
+        .comments-container {
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+
+        .comment {
+            display: flex;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .comment-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        .comment-content {
+            flex: 1;
+            background-color: var(--bg-color);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .comment-input {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .comment-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin-right: 10px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        /* Login prompt */
+        .login-prompt {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .login-prompt i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        /* Error message */
+        .error-message {
+            background-color: var(--error-color);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Success message */
+        .success-message {
+            background-color: var(--success-color);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Appwrite connection status */
+        .connection-status {
+            position: fixed;
+            top: 70px;
+            right: 15px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            animation: slideInRight 0.5s ease;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .connection-status.connected {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 90;
+            transition: var(--transition);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Story section */
+        .stories-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            padding: 2px;
+            margin-bottom: 5px;
+        }
+
+        .story-username {
+            font-size: 0.8rem;
+            max-width: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Image upload preview */
+        .image-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Online status indicator */
+        .online-indicator {
+            width: 12px;
+            height: 12px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 2px solid white;
+        }
+
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Skeleton loading */
         .skeleton {
             background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
             background-size: 200% 100%;
@@ -141,980 +852,2488 @@
             100% { background-position: -200% 0; }
         }
 
-        /* Enhanced Buttons */
-        .btn {
-            padding: 12px 24px;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-            font-size: 0.9rem;
-            position: relative;
-            overflow: hidden;
+        .skeleton-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: var(--gradient);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
-        }
-
-        /* Enhanced Forms */
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--border-radius);
-            background: var(--card-bg);
-            color: var(--text-color);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
-        }
-
-        /* Enhanced Messages */
-        .message {
-            padding: 12px 18px;
-            margin-bottom: 12px;
-            border-radius: 20px;
-            max-width: 80%;
-            word-wrap: break-word;
-            position: relative;
-            animation: messageAppear 0.3s ease;
-        }
-
-        @keyframes messageAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card-bg);
-            color: var(--text-color);
-            padding: 12px 24px;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            z-index: 10000;
-            animation: toastSlide 0.3s ease;
-        }
-
-        @keyframes toastSlide {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-        }
-
-        /* Responsive Improvements */
-        @media (min-width: 768px) {
-            .container {
-                max-width: 600px;
-                margin: 0 auto;
-            }
-            
-            .bottom-nav {
-                display: none;
-            }
-            
-            .desktop-sidebar {
-                display: block;
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .container {
-                max-width: 800px;
-            }
-        }
-
-        /* Dark mode improvements */
-        [data-theme="dark"] .skeleton {
-            background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
-        }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Focus styles for accessibility */
-        button:focus-visible,
-        input:focus-visible,
-        textarea:focus-visible {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
-        }
-
-        /* Print styles */
-        @media print {
-            .bottom-nav,
-            .header,
-            .btn {
-                display: none !important;
-            }
-            
-            .page {
-                display: block !important;
-                break-inside: avoid;
-            }
-        }
-
-        /* Enhanced features */
-        .online-indicator {
-            width: 12px;
+        .skeleton-text {
             height: 12px;
-            background: var(--success-color);
-            border-radius: 50%;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            border: 2px solid var(--card-bg);
+            margin-bottom: 8px;
+            border-radius: 4px;
         }
 
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            color: #888;
-            font-style: italic;
+        .skeleton-text.short {
+            width: 60%;
         }
 
-        .typing-dots {
-            display: flex;
-            margin-left: 5px;
-        }
-
-        .typing-dot {
-            width: 4px;
-            height: 4px;
-            background: #888;
-            border-radius: 50%;
-            margin: 0 1px;
-            animation: typing 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
-        }
-
-        /* Enhanced image gallery */
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 5px;
+        .skeleton-image {
+            height: 200px;
+            border-radius: 8px;
             margin-top: 10px;
         }
 
-        .gallery-image {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .gallery-image:hover {
-            transform: scale(1.05);
-        }
-
-        /* Image modal */
-        .image-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-
-        .image-modal img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
-
-        .image-modal-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: white;
-            font-size: 2rem;
-            cursor: pointer;
-        }
-
-        /* Enhanced search with filters */
-        .search-filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-
-        .filter-chip {
-            padding: 8px 16px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: var(--transition);
-        }
-
-        .filter-chip.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        /* Progress bar */
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--gradient);
-            transition: width 0.3s ease;
-        }
-
-        /* Enhanced notifications */
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: var(--error-color);
-            color: white;
-            border-radius: 10px;
-            min-width: 18px;
-            height: 18px;
-            font-size: 0.7rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Connection status improvements */
-        .connection-status {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            padding: 8px 16px;
-            border-radius: var(--border-radius);
-            font-size: 0.8rem;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Enhanced voice recorder */
-        .voice-recorder {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            margin: 15px 0;
-            box-shadow: var(--shadow);
-        }
-
-        .voice-waveform {
-            width: 100%;
-            height: 60px;
-            background: var(--bg-color);
-            border-radius: 8px;
-            margin: 15px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Performance optimizations */
-        .lazy-image {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .lazy-image.loaded {
-            opacity: 1;
-        }
-
-        /* Security enhancements */
-        .security-badge {
-            display: inline-flex;
-            align-items: center;
-            background: var(--success-color);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 5px;
+        [data-theme="dark"] .skeleton {
+            background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+            background-size: 200% 100%;
         }
     </style>
 </head>
 <body>
-    <!-- Enhanced Header with Status Indicators -->
+    <!-- Appwrite Connection Status -->
+    <div id="connectionStatus" class="connection-status" style="display: none;">Connecting to Appwrite...</div>
+
+    <!-- Header -->
     <header class="header">
-        <div class="logo">My Crush</div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <div class="sa-points" id="saPointsDisplay" style="display: none;">
-                <i class="fas fa-coins"></i> <span id="saPoints">0.000</span> SA
-            </div>
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <div class="logo">
+            <i class="fas fa-heart"></i>
+            <span>My Crush</span>
+        </div>
+        <div class="header-actions">
+            <button class="theme-toggle" id="themeToggle">
                 <i class="fas fa-moon"></i>
-            </button>
-            <button id="notificationsButton" aria-label="Notifications" style="background: none; border: none; position: relative;">
-                <i class="fas fa-bell"></i>
-                <span class="notification-badge" id="headerNotificationBadge" style="display: none;">0</span>
             </button>
         </div>
     </header>
 
-    <!-- Connection Status -->
-    <div id="connectionStatus" class="connection-status" style="display: none;">
-        <i class="fas fa-wifi"></i> Connecting to Appwrite...
-    </div>
-
-    <!-- Offline Indicator -->
-    <div id="offlineStatus" class="connection-status" style="display: none; background: var(--warning-color); color: white;">
-        <i class="fas fa-wifi-slash"></i> You are offline
-    </div>
-
     <!-- Main Content -->
     <main class="container">
-        <!-- Enhanced Pages with Skeleton Loading -->
+        <!-- Home/Feed Page -->
         <section id="homePage" class="page active">
-            <div class="page-header" style="padding: 20px 0;">
-                <h2 style="margin: 0; font-size: 1.5rem;">Your Feed</h2>
-                <p style="color: #888; margin-top: 5px;">Latest posts from your network</p>
+            <h2 class="text-center">Your Feed</h2>
+            <div class="stories-container" id="storiesContainer">
+                <div class="spinner"></div>
             </div>
             <div id="feedContainer">
-                <!-- Skeleton loading -->
-                <div class="card" style="padding: 20px;">
-                    <div style="display: flex; align-items: center; margin-bottom: 15px;">
-                        <div class="skeleton" style="width: 40px; height: 40px; border-radius: 50%;"></div>
-                        <div style="margin-left: 10px; flex: 1;">
-                            <div class="skeleton" style="width: 60%; height: 16px; margin-bottom: 5px;"></div>
-                            <div class="skeleton" style="width: 40%; height: 12px;"></div>
-                        </div>
-                    </div>
-                    <div class="skeleton" style="width: 100%; height: 100px; margin-bottom: 15px;"></div>
-                    <div class="skeleton" style="width: 100%; height: 200px;"></div>
-                </div>
+                <div class="spinner"></div>
             </div>
         </section>
 
-        <!-- Other pages remain similar but enhanced -->
-        <!-- ... -->
+        <!-- Messages Page -->
+        <section id="messagesPage" class="page">
+            <h2 class="text-center">Messages</h2>
+            <div id="conversationsContainer">
+                <div class="spinner"></div>
+            </div>
+        </section>
 
+        <!-- Chat Page -->
+        <section id="chatPage" class="page">
+            <div class="chat-header">
+                <button id="backToMessages" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h3 id="chatUserName">User Name</h3>
+            </div>
+            <div class="message-thread" id="messageThread">
+                <div class="spinner"></div>
+            </div>
+            <div class="message-input">
+                <input type="text" id="messageInput" placeholder="Type a message...">
+                <button id="sendMessageBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </section>
+
+        <!-- New Post Page -->
+        <section id="newPostPage" class="page">
+            <h2 class="text-center">Create Post</h2>
+            <form id="newPostForm">
+                <div class="form-group">
+                    <textarea class="form-input form-textarea" id="postContent" placeholder="What's on your mind? (280 characters max)" maxlength="280" required></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="file" id="postImage" accept="image/*" class="form-input">
+                    <img id="imagePreview" class="image-preview" alt="Image preview">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-plus"></i> Create Post
+                </button>
+            </form>
+        </section>
+
+        <!-- Notifications Page -->
+        <section id="notificationsPage" class="page">
+            <h2 class="text-center">Notifications</h2>
+            <div id="notificationsContainer">
+                <div class="spinner"></div>
+            </div>
+        </section>
+
+        <!-- Profile Page -->
+        <section id="profilePage" class="page">
+            <div class="profile-header">
+                <div class="avatar-container">
+                    <img src="" alt="Profile" class="profile-avatar" id="profileAvatar">
+                    <span class="online-indicator"></span>
+                </div>
+                <h2 id="profileName">User Name</h2>
+                <p id="profileBio">Bio goes here</p>
+                <button class="btn btn-primary mt-1" id="editProfileBtn">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </button>
+                <button class="btn btn-secondary mt-1" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+            <div class="profile-stats">
+                <div class="stat" id="postsStat">
+                    <div class="stat-value" id="postsCount">0</div>
+                    <div class="stat-label">Posts</div>
+                </div>
+                <div class="stat" id="followingStat">
+                    <div class="stat-value" id="followingCount">0</div>
+                    <div class="stat-label">Following</div>
+                </div>
+                <div class="stat" id="followersStat">
+                    <div class="stat-value" id="followersCount">0</div>
+                    <div class="stat-label">Followers</div>
+                </div>
+            </div>
+            <div id="userPostsContainer">
+                <div class="spinner"></div>
+            </div>
+        </section>
+
+        <!-- Search Page -->
+        <section id="searchPage" class="page">
+            <h2 class="text-center">Search</h2>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search users...">
+            </div>
+            <div id="searchResults">
+                <p class="text-center">Start typing to search for users</p>
+            </div>
+        </section>
+
+        <!-- Auth Pages -->
+        <section id="authPage" class="page">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" data-tab="login">Login</div>
+                    <div class="auth-tab" data-tab="register">Register</div>
+                </div>
+                
+                <form id="loginForm" class="auth-form">
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    <div class="form-group">
+                        <input type="email" class="form-input" id="loginEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="loginPassword" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <div class="text-center mt-2">
+                        <button type="button" class="btn btn-secondary" id="googleLogin">
+                            <i class="fab fa-google"></i> Login with Google
+                        </button>
+                    </div>
+                    <div class="text-center mt-2">
+                        <button type="button" id="continueAsGuest">Continue as Guest</button>
+                    </div>
+                </form>
+
+                <form id="registerForm" class="auth-form" style="display: none;">
+                    <div id="registerError" class="error-message" style="display: none;"></div>
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="registerName" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-input" id="registerEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="registerPassword" placeholder="Password" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" class="form-input" id="registerConfirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </form>
+            </div>
+        </section>
     </main>
 
-    <!-- Enhanced Bottom Navigation -->
-    <nav class="bottom-nav" aria-label="Main navigation">
-        <div class="nav-item active" data-page="homePage" aria-label="Home">
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-page="homePage">
             <div class="nav-icon"><i class="fas fa-home"></i></div>
             <span>Home</span>
         </div>
-        <div class="nav-item" data-page="searchPage" aria-label="Search">
-            <div class="nav-icon"><i class="fas fa-search"></i></div>
-            <span>Search</span>
-        </div>
-        <div class="nav-item" data-page="newPostPage" aria-label="New Post">
-            <div class="nav-icon"><i class="fas fa-plus"></i></div>
-            <span>New Post</span>
-        </div>
-        <div class="nav-item" data-page="messagesPage" aria-label="Messages">
+        <div class="nav-item" data-page="messagesPage">
             <div class="nav-icon"><i class="fas fa-comments"></i></div>
             <span>Messages</span>
         </div>
-        <div class="nav-item" data-page="profilePage" aria-label="Profile">
+        <div class="nav-item" data-page="newPostPage">
+            <div class="nav-icon"><i class="fas fa-plus-square"></i></div>
+            <span>New Post</span>
+        </div>
+        <div class="nav-item" data-page="notificationsPage">
+            <div class="nav-icon"><i class="fas fa-bell"></i>
+                <span class="badge" id="notificationBadge" style="display: none;">0</span>
+            </div>
+            <span>Notifications</span>
+        </div>
+        <div class="nav-item" data-page="profilePage">
             <div class="nav-icon"><i class="fas fa-user"></i></div>
             <span>Profile</span>
         </div>
     </nav>
 
-    <!-- Enhanced Modals -->
-    <!-- ... -->
+    <!-- Floating Action Button -->
+    <button class="fab" id="fabButton" style="display: none;">
+        <i class="fas fa-plus"></i>
+    </button>
 
-    <!-- Service Worker Registration -->
+    <!-- Edit Profile Modal -->
+    <div class="modal-backdrop" id="editProfileModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <input type="text" class="form-input" id="editDisplayName" placeholder="Display Name" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-input form-textarea" id="editBio" placeholder="Bio"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="file" id="editAvatar" accept="image/*" class="form-input">
+                    <img id="avatarPreview" class="image-preview" alt="Avatar preview">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div class="modal-backdrop" id="commentModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Comments</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div id="commentsContainer">
+                <div class="spinner"></div>
+            </div>
+            <div class="comment-input">
+                <input type="text" id="commentInput" placeholder="Write a comment...">
+                <button id="postCommentBtn" class="btn btn-primary">Post</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Register service worker for PWA functionality
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('SW registered: ', registration);
-                    })
-                    .catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
-                    });
-            });
-        }
+        // Appwrite Configuration
+        const APPWRITE_ENDPOINT = 'https://cloud.appwrite.io/v1';
+        const APPWRITE_PROJECT_ID = 'your-project-id'; // Replace with your Appwrite project ID
+        const APPWRITE_PLATFORM_WEB_ID = 'your-platform-web-id'; // Replace with your platform web ID
 
-        // Enhanced Appwrite Configuration with Environment Variables
-        const APPWRITE_CONFIG = {
-            endpoint: 'https://fra.cloud.appwrite.io/v1',
-            projectId: 'mycrush-production', // Replace with your project ID
-            databaseId: 'production_db',
-            collections: {
-                users: 'users',
-                posts: 'posts',
-                comments: 'comments',
-                likes: 'likes',
-                messages: 'messages',
-                notifications: 'notifications',
-                saPoints: 'sa_points'
-            },
-            buckets: {
-                avatars: 'avatars',
-                postImages: 'post_images',
-                voiceMessages: 'voice_messages'
-            }
-        };
+        // Database IDs
+        const DATABASE_ID = 'mycrush_db';
+        const USERS_COLLECTION_ID = 'users';
+        const POSTS_COLLECTION_ID = 'posts';
+        const COMMENTS_COLLECTION_ID = 'comments';
+        const FOLLOWS_COLLECTION_ID = 'follows';
+        const MESSAGES_COLLECTION_ID = 'messages';
+        const NOTIFICATIONS_COLLECTION_ID = 'notifications';
+        const STORIES_COLLECTION_ID = 'stories';
 
-        // Enhanced Error Handling
-        class AppError extends Error {
-            constructor(message, code, userFriendlyMessage) {
-                super(message);
-                this.name = 'AppError';
-                this.code = code;
-                this.userFriendlyMessage = userFriendlyMessage;
-                this.timestamp = new Date().toISOString();
-            }
-        }
+        // Storage Bucket IDs
+        const AVATARS_BUCKET_ID = 'avatars_bucket';
+        const POST_IMAGES_BUCKET_ID = 'post_images_bucket';
+        const STORY_IMAGES_BUCKET_ID = 'story_images_bucket';
 
-        // Enhanced Logger
-        const logger = {
-            info: (message, data) => console.log(`[INFO] ${message}`, data),
-            error: (message, error) => console.error(`[ERROR] ${message}`, error),
-            warn: (message, data) => console.warn(`[WARN] ${message}`, data)
-        };
+        // Initialize Appwrite
+        const client = new Appwrite.Client()
+            .setEndpoint(APPWRITE_ENDPOINT)
+            .setProject(APPWRITE_PROJECT_ID);
 
-        // Enhanced Configuration Management
-        const Config = {
-            // Feature flags
-            features: {
-                voiceMessages: true,
-                videoCalls: true,
-                saPoints: true,
-                darkMode: true,
-                offlineMode: true
-            },
-            
-            // Performance settings
-            performance: {
-                lazyLoadImages: true,
-                debounceSearch: 300,
-                cacheTimeout: 5 * 60 * 1000, // 5 minutes
-                maxImageSize: 5 * 1024 * 1024 // 5MB
-            },
-            
-            // Security settings
-            security: {
-                maxPasswordLength: 128,
-                minPasswordLength: 8,
-                sessionTimeout: 24 * 60 * 60 * 1000 // 24 hours
-            }
-        };
+        const account = new Appwrite.Account(client);
+        const databases = new Appwrite.Databases(client);
+        const storage = new Appwrite.Storage(client);
+        const realtime = new Appwrite.Realtime(client);
 
-        // Enhanced State Management
-        class AppState {
-            constructor() {
-                this.state = {
-                    user: null,
-                    theme: localStorage.getItem('theme') || 'light',
-                    currentPage: 'homePage',
-                    online: navigator.onLine,
-                    loading: false,
-                    notifications: [],
-                    conversations: [],
-                    cache: new Map(),
-                    lastUpdate: Date.now()
-                };
-                
-                this.listeners = new Set();
-            }
-            
-            setState(newState) {
-                this.state = { ...this.state, ...newState };
-                this.notifyListeners();
-            }
-            
-            subscribe(listener) {
-                this.listeners.add(listener);
-                return () => this.listeners.delete(listener);
-            }
-            
-            notifyListeners() {
-                this.listeners.forEach(listener => listener(this.state));
-            }
-            
-            // Cache management
-            setCache(key, value, ttl = Config.performance.cacheTimeout) {
-                this.state.cache.set(key, {
-                    value,
-                    expiry: Date.now() + ttl
-                });
-            }
-            
-            getCache(key) {
-                const item = this.state.cache.get(key);
-                if (!item) return null;
-                
-                if (Date.now() > item.expiry) {
-                    this.state.cache.delete(key);
-                    return null;
-                }
-                
-                return item.value;
-            }
-        }
+        // State Management
+        let currentUser = null;
+        let currentTheme = localStorage.getItem('theme') || 'light';
+        let currentPage = 'homePage';
+        let currentPostId = null;
+        let currentChatUser = null;
+        let appwriteConnected = false;
+        let realtimeSubscriptions = [];
 
-        // Initialize enhanced app state
-        const appState = new AppState();
+        // DOM Elements
+        const pages = document.querySelectorAll('.page');
+        const navItems = document.querySelectorAll('.nav-item');
+        const themeToggle = document.getElementById('themeToggle');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const fabButton = document.getElementById('fabButton');
+        const imagePreview = document.getElementById('imagePreview');
+        const avatarPreview = document.getElementById('avatarPreview');
 
-        // Enhanced Image Optimization
-        class ImageOptimizer {
-            static async compressImage(file, maxSize = Config.performance.maxImageSize) {
-                return new Promise((resolve) => {
-                    if (file.size <= maxSize) {
-                        resolve(file);
-                        return;
-                    }
-                    
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const img = new Image();
-                    
-                    img.onload = () => {
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        // Calculate new dimensions
-                        const ratio = Math.sqrt(maxSize / file.size);
-                        width *= ratio;
-                        height *= ratio;
-                        
-                        canvas.width = width;
-                        canvas.height = height;
-                        
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        canvas.toBlob(resolve, 'image/jpeg', 0.8);
-                    };
-                    
-                    img.src = URL.createObjectURL(file);
-                });
-            }
-            
-            static createLazyLoader() {
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            const img = entry.target;
-                            img.src = img.dataset.src;
-                            img.classList.add('loaded');
-                            observer.unobserve(img);
-                        }
-                    });
-                });
-                
-                return observer;
-            }
-        }
-
-        // Enhanced Network Manager
-        class NetworkManager {
-            constructor() {
-                this.retryCount = 0;
-                this.maxRetries = 3;
-                this.retryDelay = 1000;
-            }
-            
-            async requestWithRetry(operation, ...args) {
-                for (let i = 0; i < this.maxRetries; i++) {
-                    try {
-                        return await operation(...args);
-                    } catch (error) {
-                        if (i === this.maxRetries - 1) throw error;
-                        
-                        await this.delay(this.retryDelay * Math.pow(2, i));
-                        logger.warn(`Retrying operation (attempt ${i + 1})`, error);
-                    }
-                }
-            }
-            
-            delay(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
-            
-            // Offline queue for actions
-            queueOfflineAction(action) {
-                const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-                queue.push({
-                    action,
-                    timestamp: Date.now(),
-                    id: Math.random().toString(36).substr(2, 9)
-                });
-                localStorage.setItem('offlineQueue', JSON.stringify(queue));
-            }
-            
-            async processOfflineQueue() {
-                if (!appState.state.online) return;
-                
-                const queue = JSON.parse(localStorage.getItem('offlineQueue') || '[]');
-                for (const item of queue) {
-                    try {
-                        await this.executeQueuedAction(item.action);
-                        // Remove successful action from queue
-                        const newQueue = queue.filter(q => q.id !== item.id);
-                        localStorage.setItem('offlineQueue', JSON.stringify(newQueue));
-                    } catch (error) {
-                        logger.error('Failed to process queued action', error);
-                    }
-                }
-            }
-            
-            async executeQueuedAction(action) {
-                // Implement based on action type
-                // This would handle posts, messages, etc. created offline
-            }
-        }
-
-        // Initialize enhanced components
-        const networkManager = new NetworkManager();
-        const imageLoader = ImageOptimizer.createLazyLoader();
-
-        // Enhanced initialization
-        async function initEnhancedApp() {
+        // Initialize the app
+        async function initApp() {
             try {
-                logger.info('Initializing enhanced app');
+                // Test Appwrite connection
+                await client.get();
+                appwriteConnected = true;
+                updateConnectionStatus('connected', 'Connected to Appwrite');
                 
-                // Set up offline/online detection
-                setupConnectivityMonitoring();
+                // Set the theme
+                setTheme(currentTheme);
                 
-                // Initialize Appwrite with retry logic
-                await networkManager.requestWithRetry(initializeAppwrite);
+                // Check if user is logged in
+                await checkAuthStatus();
                 
-                // Check authentication with enhanced error handling
-                await checkEnhancedAuthStatus();
+                // Set up event listeners
+                setupEventListeners();
                 
-                // Set up enhanced event listeners
-                setupEnhancedEventListeners();
+                // Load initial data if logged in
+                if (currentUser) {
+                    loadFeed();
+                    loadStories();
+                    updateUnreadCount();
+                }
+            } catch (error) {
+                console.error('Appwrite connection failed:', error);
+                appwriteConnected = false;
+                updateConnectionStatus('disconnected', 'Appwrite connection failed');
                 
-                // Initialize enhanced features
-                initializeEnhancedFeatures();
-                
-                // Process any offline actions
-                if (appState.state.online) {
-                    networkManager.processOfflineQueue();
+                // Fall back to localStorage if Appwrite is not available
+                if (!localStorage.getItem('mycrush_users')) {
+                    initializeLocalStorage();
                 }
                 
-                logger.info('Enhanced app initialized successfully');
-                
-            } catch (error) {
-                logger.error('Failed to initialize enhanced app', error);
-                showEnhancedError('App initialization failed', error);
+                setTheme(currentTheme);
+                checkAuthStatus();
+                setupEventListeners();
             }
         }
 
-        // Enhanced error handling
-        function showEnhancedError(message, error) {
-            const errorId = 'enhanced-error-' + Date.now();
-            const errorDiv = document.createElement('div');
-            errorDiv.id = errorId;
-            errorDiv.className = 'toast';
-            errorDiv.style.background = 'var(--error-color)';
-            errorDiv.style.color = 'white';
-            errorDiv.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <span>${message}</span>
-                    <button onclick="document.getElementById('${errorId}').remove()" 
-                            style="background: none; border: none; color: white; margin-left: 10px;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                ${error ? `<div style="font-size: 0.8rem; margin-top: 5px;">${error.message}</div>` : ''}
-            `;
+        // Update connection status UI
+        function updateConnectionStatus(status, message) {
+            connectionStatus.textContent = message;
+            connectionStatus.className = `connection-status ${status}`;
+            connectionStatus.style.display = 'block';
             
-            document.body.appendChild(errorDiv);
-            
+            // Hide after 3 seconds
             setTimeout(() => {
-                const element = document.getElementById(errorId);
-                if (element) element.remove();
-            }, 5000);
-        }
-
-        // Enhanced connectivity monitoring
-        function setupConnectivityMonitoring() {
-            window.addEventListener('online', () => {
-                appState.setState({ online: true });
-                document.getElementById('offlineStatus').style.display = 'none';
-                networkManager.processOfflineQueue();
-                showEnhancedToast('Connection restored', 'success');
-            });
-            
-            window.addEventListener('offline', () => {
-                appState.setState({ online: false });
-                document.getElementById('offlineStatus').style.display = 'block';
-                showEnhancedToast('You are offline', 'warning');
-            });
-        }
-
-        // Enhanced toast notifications
-        function showEnhancedToast(message, type = 'info') {
-            const toastId = 'toast-' + Date.now();
-            const toast = document.createElement('div');
-            toast.id = toastId;
-            toast.className = 'toast';
-            
-            const icons = {
-                success: 'fas fa-check-circle',
-                error: 'fas fa-exclamation-circle',
-                warning: 'fas fa-exclamation-triangle',
-                info: 'fas fa-info-circle'
-            };
-            
-            const colors = {
-                success: 'var(--success-color)',
-                error: 'var(--error-color)',
-                warning: 'var(--warning-color)',
-                info: 'var(--primary-color)'
-            };
-            
-            toast.style.background = colors[type];
-            toast.style.color = 'white';
-            
-            toast.innerHTML = `
-                <div style="display: flex; align-items: center;">
-                    <i class="${icons[type]}" style="margin-right: 10px;"></i>
-                    <span>${message}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                const element = document.getElementById(toastId);
-                if (element) {
-                    element.style.opacity = '0';
-                    element.style.transform = 'translateX(-50%) translateY(-20px)';
-                    setTimeout(() => element.remove(), 300);
-                }
+                connectionStatus.style.display = 'none';
             }, 3000);
         }
 
-        // Enhanced image gallery functionality
-        function setupImageGallery() {
-            document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('gallery-image')) {
-                    showImageModal(e.target.src);
+        // Initialize localStorage as fallback
+        function initializeLocalStorage() {
+            if (!localStorage.getItem('mycrush_users')) {
+                const demoUsers = [
+                    {
+                        $id: 'user1',
+                        name: 'Demo User',
+                        email: 'demo@example.com',
+                        password: 'password',
+                        bio: 'This is my bio',
+                        avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('mycrush_users', JSON.stringify(demoUsers));
+            }
+
+            // Initialize other collections if needed
+            if (!localStorage.getItem('mycrush_posts')) {
+                localStorage.setItem('mycrush_posts', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_comments')) {
+                localStorage.setItem('mycrush_comments', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_follows')) {
+                localStorage.setItem('mycrush_follows', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_messages')) {
+                localStorage.setItem('mycrush_messages', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_notifications')) {
+                localStorage.setItem('mycrush_notifications', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('mycrush_stories')) {
+                localStorage.setItem('mycrush_stories', JSON.stringify([]));
+            }
+        }
+
+        // Set theme function
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            themeToggle.innerHTML = theme === 'light' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        }
+
+        // Check authentication status
+        async function checkAuthStatus() {
+            if (appwriteConnected) {
+                try {
+                    const user = await account.get();
+                    currentUser = {
+                        $id: user.$id,
+                        name: user.name,
+                        email: user.email,
+                        // Additional user data will be fetched from the database
+                    };
+                    
+                    // Get user profile from database
+                    try {
+                        const userProfile = await databases.getDocument(
+                            DATABASE_ID,
+                            USERS_COLLECTION_ID,
+                            user.$id
+                        );
+                        
+                        currentUser = {
+                            ...currentUser,
+                            ...userProfile
+                        };
+                    } catch (error) {
+                        console.log('User profile not found in database, creating one...');
+                        // Create user profile in database
+                        await createUserProfile(user);
+                    }
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showPage('homePage');
+                    loadFeed();
+                    loadStories();
+                    updateUnreadCount();
+                    setupRealtimeSubscriptions();
+                } catch (error) {
+                    console.log('No active session:', error);
+                    showPage('authPage');
+                }
+            } else {
+                // Fallback to localStorage
+                const userData = localStorage.getItem('currentUser');
+                if (userData) {
+                    currentUser = JSON.parse(userData);
+                    showPage('homePage');
+                    loadFeed();
+                    loadStories();
+                    updateUnreadCount();
+                } else {
+                    showPage('authPage');
+                }
+            }
+        }
+
+        // Setup realtime subscriptions
+        function setupRealtimeSubscriptions() {
+            if (!appwriteConnected) return;
+            
+            // Subscribe to posts collection
+            const postsSubscription = realtime.subscribe(`databases.${DATABASE_ID}.collections.${POSTS_COLLECTION_ID}.documents`, response => {
+                if (response.events.includes('databases.*.collections.*.documents.*.create')) {
+                    // New post created
+                    if (currentPage === 'homePage') {
+                        loadFeed();
+                    }
                 }
             });
+            
+            realtimeSubscriptions.push(postsSubscription);
+            
+            // Subscribe to notifications collection
+            const notificationsSubscription = realtime.subscribe(`databases.${DATABASE_ID}.collections.${NOTIFICATIONS_COLLECTION_ID}.documents`, response => {
+                if (response.events.includes('databases.*.collections.*.documents.*.create')) {
+                    // New notification
+                    updateUnreadCount();
+                    if (currentPage === 'notificationsPage') {
+                        loadNotifications();
+                    }
+                }
+            });
+            
+            realtimeSubscriptions.push(notificationsSubscription);
+            
+            // Subscribe to messages collection
+            const messagesSubscription = realtime.subscribe(`databases.${DATABASE_ID}.collections.${MESSAGES_COLLECTION_ID}.documents`, response => {
+                if (response.events.includes('databases.*.collections.*.documents.*.create')) {
+                    // New message
+                    if (currentPage === 'messagesPage') {
+                        loadConversations();
+                    } else if (currentPage === 'chatPage' && currentChatUser) {
+                        loadChat(currentChatUser);
+                    }
+                    updateUnreadCount();
+                }
+            });
+            
+            realtimeSubscriptions.push(messagesSubscription);
         }
 
-        function showImageModal(src) {
-            const modal = document.createElement('div');
-            modal.className = 'image-modal';
-            modal.innerHTML = `
-                <span class="image-modal-close">&times;</span>
-                <img src="${src}" alt="Enlarged content">
+        // Unsubscribe from realtime updates
+        function unsubscribeRealtime() {
+            realtimeSubscriptions.forEach(subscription => {
+                realtime.unsubscribe(subscription);
+            });
+            realtimeSubscriptions = [];
+        }
+
+        // Create user profile in database
+        async function createUserProfile(user) {
+            if (!appwriteConnected) return;
+            
+            try {
+                const userProfile = {
+                    userId: user.$id,
+                    displayName: user.name,
+                    bio: '',
+                    avatarFileId: null,
+                    createdAt: new Date().toISOString()
+                };
+                
+                await databases.createDocument(
+                    DATABASE_ID,
+                    USERS_COLLECTION_ID,
+                    user.$id, // Using user ID as document ID
+                    userProfile
+                );
+                
+                currentUser = {
+                    ...currentUser,
+                    ...userProfile
+                };
+            } catch (error) {
+                console.error('Error creating user profile:', error);
+            }
+        }
+
+        // Show specific page
+        function showPage(pageId) {
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+            currentPage = pageId;
+            
+            // Update navigation
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageId) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Show/hide FAB button
+            if (pageId === 'homePage' && currentUser) {
+                fabButton.style.display = 'flex';
+            } else {
+                fabButton.style.display = 'none';
+            }
+            
+            // Load content for the page if needed
+            if (pageId === 'homePage') {
+                loadFeed();
+                loadStories();
+            }
+            if (pageId === 'profilePage' && currentUser) loadProfile();
+            if (pageId === 'notificationsPage' && currentUser) loadNotifications();
+            if (pageId === 'messagesPage' && currentUser) loadConversations();
+            if (pageId === 'searchPage' && currentUser) initSearch();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const pageId = item.getAttribute('data-page');
+                    showPage(pageId);
+                });
+            });
+            
+            // Theme toggle
+            themeToggle.addEventListener('click', () => {
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+                currentTheme = newTheme;
+            });
+            
+            // Auth tabs
+            const authTabs = document.querySelectorAll('.auth-tab');
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    authTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    if (tabName === 'login') {
+                        document.getElementById('loginForm').style.display = 'block';
+                        document.getElementById('registerForm').style.display = 'none';
+                    } else {
+                        document.getElementById('loginForm').style.display = 'none';
+                        document.getElementById('registerForm').style.display = 'block';
+                    }
+                });
+            });
+            
+            // Login form
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                await loginUser(email, password);
+            });
+            
+            // Register form
+            document.getElementById('registerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const name = document.getElementById('registerName').value;
+                const email = document.getElementById('registerEmail').value;
+                const password = document.getElementById('registerPassword').value;
+                const confirmPassword = document.getElementById('registerConfirmPassword').value;
+                
+                if (password !== confirmPassword) {
+                    showError('registerError', 'Passwords do not match');
+                    return;
+                }
+                
+                await registerUser(name, email, password);
+            });
+            
+            // Google login
+            document.getElementById('googleLogin').addEventListener('click', () => {
+                loginWithGoogle();
+            });
+            
+            // Continue as guest
+            document.getElementById('continueAsGuest').addEventListener('click', () => {
+                continueAsGuest();
+            });
+            
+            // New post form
+            document.getElementById('newPostForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const content = document.getElementById('postContent').value;
+                const imageFile = document.getElementById('postImage').files[0];
+                await createPost(content, imageFile);
+            });
+            
+            // Image preview for new post
+            document.getElementById('postImage').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        imagePreview.src = event.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Edit profile button
+            document.getElementById('editProfileBtn').addEventListener('click', () => {
+                showEditProfileModal();
+            });
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', async () => {
+                await logoutUser();
+            });
+            
+            // Close modal buttons
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('editProfileModal').style.display = 'none';
+                    document.getElementById('commentModal').style.display = 'none';
+                });
+            });
+            
+            // Edit profile form
+            document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const displayName = document.getElementById('editDisplayName').value;
+                const bio = document.getElementById('editBio').value;
+                const avatarFile = document.getElementById('editAvatar').files[0];
+                await updateProfile(displayName, bio, avatarFile);
+            });
+            
+            // Avatar preview for edit profile
+            document.getElementById('editAvatar').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        avatarPreview.src = event.target.result;
+                        avatarPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Back to messages button
+            document.getElementById('backToMessages').addEventListener('click', () => {
+                showPage('messagesPage');
+            });
+            
+            // Send message button
+            document.getElementById('sendMessageBtn').addEventListener('click', sendMessage);
+            
+            // Message input enter key
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Post comment button
+            document.getElementById('postCommentBtn').addEventListener('click', postComment);
+            
+            // Comment input enter key
+            document.getElementById('commentInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    postComment();
+                }
+            });
+            
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            
+            // Profile stats clicks
+            document.getElementById('postsStat').addEventListener('click', () => {
+                document.getElementById('userPostsContainer').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            document.getElementById('followingStat').addEventListener('click', () => {
+                alert('Following list would be shown here');
+            });
+            
+            document.getElementById('followersStat').addEventListener('click', () => {
+                alert('Followers list would be shown here');
+            });
+            
+            // FAB button
+            fabButton.addEventListener('click', () => {
+                showPage('newPostPage');
+            });
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            // Create success element if it doesn't exist
+            let successElement = document.getElementById('successMessage');
+            if (!successElement) {
+                successElement = document.createElement('div');
+                successElement.id = 'successMessage';
+                successElement.className = 'success-message';
+                document.body.appendChild(successElement);
+            }
+            
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 3000);
+        }
+
+        // Login user
+        async function loginUser(email, password) {
+            if (appwriteConnected) {
+                try {
+                    await account.createEmailSession(email, password);
+                    await checkAuthStatus();
+                    showSuccess('Login successful!');
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showError('loginError', 'Invalid email or password');
+                }
+            } else {
+                // Fallback to localStorage
+                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    currentUser = { ...user };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showPage('homePage');
+                    loadFeed();
+                    loadStories();
+                    updateUnreadCount();
+                    showSuccess('Login successful!');
+                } else {
+                    showError('loginError', 'Invalid email or password');
+                }
+            }
+        }
+
+        // Register user
+        async function registerUser(name, email, password) {
+            if (appwriteConnected) {
+                try {
+                    // Create account in Appwrite
+                    await account.create('unique()', email, password, name);
+                    
+                    // Login the user
+                    await account.createEmailSession(email, password);
+                    
+                    // Create user profile in database
+                    const user = await account.get();
+                    await createUserProfile(user);
+                    
+                    await checkAuthStatus();
+                    showSuccess('Registration successful!');
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showError('registerError', 'Registration failed. Please try again.');
+                }
+            } else {
+                // Fallback to localStorage
+                const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                
+                // Check if user already exists
+                const existingUser = users.find(u => u.email === email);
+                
+                if (existingUser) {
+                    showError('registerError', 'User with this email already exists');
+                    return;
+                }
+                
+                // Create new user
+                const newUser = {
+                    $id: 'user' + (users.length + 1),
+                    name,
+                    email,
+                    password,
+                    bio: '',
+                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80',
+                    createdAt: new Date().toISOString()
+                };
+                
+                users.push(newUser);
+                localStorage.setItem('mycrush_users', JSON.stringify(users));
+                
+                currentUser = { ...newUser };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                showPage('homePage');
+                loadFeed();
+                loadStories();
+                showSuccess('Registration successful!');
+            }
+        }
+
+        // Login with Google
+        async function loginWithGoogle() {
+            if (appwriteConnected) {
+                try {
+                    // Redirect to Google OAuth
+                    account.createOAuth2Session('google', `${window.location.origin}/success.html`, `${window.location.origin}/failure.html`);
+                } catch (error) {
+                    console.error('Google login error:', error);
+                    showError('loginError', 'Google login failed');
+                }
+            } else {
+                alert('Google login requires Appwrite backend connection');
+            }
+        }
+
+        // Continue as guest
+        function continueAsGuest() {
+            currentUser = null;
+            showPage('homePage');
+            loadFeed();
+            loadStories();
+        }
+
+        // Logout user
+        async function logoutUser() {
+            if (appwriteConnected) {
+                try {
+                    await account.deleteSession('current');
+                    unsubscribeRealtime();
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+            
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showPage('authPage');
+        }
+
+        // Load stories
+        async function loadStories() {
+            const storiesContainer = document.getElementById('storiesContainer');
+            
+            if (!currentUser) {
+                storiesContainer.innerHTML = '';
+                return;
+            }
+            
+            storiesContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let stories = [];
+                
+                if (appwriteConnected) {
+                    // Get stories from followed users
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    
+                    const followedUserIds = follows.documents.map(f => f.followingId);
+                    
+                    if (followedUserIds.length > 0) {
+                        // Get stories from followed users
+                        const result = await databases.listDocuments(
+                            DATABASE_ID,
+                            STORIES_COLLECTION_ID,
+                            [
+                                Appwrite.Query.equal('userId', followedUserIds),
+                                Appwrite.Query.greaterThan('expiresAt', new Date().toISOString())
+                            ]
+                        );
+                        stories = result.documents;
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const followedUserIds = follows
+                        .filter(f => f.followerId === currentUser.$id)
+                        .map(f => f.followingId);
+                    
+                    const allStories = JSON.parse(localStorage.getItem('mycrush_stories') || '[]');
+                    stories = allStories.filter(story => 
+                        followedUserIds.includes(story.userId) && 
+                        new Date(story.expiresAt) > new Date()
+                    );
+                }
+                
+                storiesContainer.innerHTML = '';
+                
+                if (stories.length === 0) {
+                    storiesContainer.innerHTML = '<p class="text-center">No stories available</p>';
+                    return;
+                }
+                
+                // Group stories by user
+                const storiesByUser = {};
+                stories.forEach(story => {
+                    if (!storiesByUser[story.userId]) {
+                        storiesByUser[story.userId] = [];
+                    }
+                    storiesByUser[story.userId].push(story);
+                });
+                
+                // Get user data for each story group
+                for (const userId in storiesByUser) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            continue;
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === userId);
+                        if (!user) continue;
+                    }
+                    
+                    const storyEl = document.createElement('div');
+                    storyEl.className = 'story';
+                    storyEl.innerHTML = `
+                        <div class="avatar-container">
+                            <img src="${user.avatar}" alt="${user.name}" class="story-avatar">
+                        </div>
+                        <div class="story-username">${user.name}</div>
+                    `;
+                    
+                    storiesContainer.appendChild(storyEl);
+                }
+            } catch (error) {
+                console.error('Error loading stories:', error);
+                storiesContainer.innerHTML = '';
+            }
+        }
+
+        // Load feed posts
+        async function loadFeed() {
+            const feedContainer = document.getElementById('feedContainer');
+            
+            if (!currentUser) {
+                feedContainer.innerHTML = `
+                    <div class="card login-prompt">
+                        <i class="fas fa-rss"></i>
+                        <h3>Login to see your feed</h3>
+                        <p>Sign in to view posts from users you follow</p>
+                        <button class="btn btn-primary mt-1" onclick="showPage('authPage')">Login</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Show skeleton loading
+            feedContainer.innerHTML = `
+                <div class="card post-card">
+                    <div class="user-info">
+                        <div class="skeleton skeleton-avatar"></div>
+                        <div style="flex: 1;">
+                            <div class="skeleton skeleton-text short"></div>
+                            <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                    </div>
+                    <div class="skeleton skeleton-image"></div>
+                </div>
+                <div class="card post-card">
+                    <div class="user-info">
+                        <div class="skeleton skeleton-avatar"></div>
+                        <div style="flex: 1;">
+                            <div class="skeleton skeleton-text short"></div>
+                            <div class="skeleton skeleton-text" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text"></div>
+                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    </div>
+                </div>
             `;
             
-            modal.querySelector('.image-modal-close').addEventListener('click', () => {
-                modal.remove();
-            });
-            
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.remove();
-            });
-            
-            document.body.appendChild(modal);
-        }
-
-        // Enhanced search with debouncing
-        function createDebouncedSearch() {
-            let timeoutId;
-            
-            return function(searchFunction, delay) {
-                return function(...args) {
-                    clearTimeout(timeoutId);
-                    timeoutId = setTimeout(() => searchFunction.apply(this, args), delay);
-                };
-            };
-        }
-
-        const debouncedSearch = createDebouncedSearch();
-
-        // Enhanced security functions
-        function validatePassword(password) {
-            if (password.length < Config.security.minPasswordLength) {
-                throw new AppError(
-                    'Password too short',
-                    'PASSWORD_TOO_SHORT',
-                    `Password must be at least ${Config.security.minPasswordLength} characters`
-                );
-            }
-            
-            if (password.length > Config.security.maxPasswordLength) {
-                throw new AppError(
-                    'Password too long',
-                    'PASSWORD_TOO_LONG',
-                    `Password must be less than ${Config.security.maxPasswordLength} characters`
-                );
-            }
-            
-            // Add more validation rules as needed
-            return true;
-        }
-
-        // Enhanced performance monitoring
-        function trackPerformance(metricName, duration) {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'timing_complete', {
-                    name: metricName,
-                    value: duration,
-                    event_category: 'Performance'
-                });
-            }
-            
-            logger.info(`Performance: ${metricName} took ${duration}ms`);
-        }
-
-        // Initialize enhanced app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            const startTime = performance.now();
-            
-            initEnhancedApp().then(() => {
-                const loadTime = performance.now() - startTime;
-                trackPerformance('app_initialization', loadTime);
-            });
-            
-            // Set up image gallery
-            setupImageGallery();
-            
-            // Set up lazy loading
-            document.querySelectorAll('.lazy-image').forEach(img => {
-                imageLoader.observe(img);
-            });
-        });
-
-        // Enhanced service worker registration for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(function(error) {
-                        console.log('ServiceWorker registration failed: ', error);
+            try {
+                let posts = [];
+                
+                if (appwriteConnected) {
+                    // Get posts from followed users
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    
+                    const followedUserIds = follows.documents.map(f => f.followingId);
+                    followedUserIds.push(currentUser.$id); // Include current user's posts
+                    
+                    // Get posts from followed users
+                    posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', followedUserIds)]
+                    );
+                    
+                    posts = posts.documents;
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const followedUserIds = follows
+                        .filter(f => f.followerId === currentUser.$id)
+                        .map(f => f.followingId);
+                    
+                    followedUserIds.push(currentUser.$id);
+                    
+                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    posts = allPosts.filter(post => followedUserIds.includes(post.userId));
+                }
+                
+                // Sort posts by date
+                posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                feedContainer.innerHTML = '';
+                
+                if (posts.length === 0) {
+                    feedContainer.innerHTML = `
+                        <div class="card text-center">
+                            <div style="padding: 40px 20px;">
+                                <i class="fas fa-rss" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                                <h3>Your feed is empty</h3>
+                                <p>Follow some users to see their posts here</p>
+                                <button class="btn btn-primary mt-1" onclick="showPage('searchPage')">Discover Users</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                for (const post of posts) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                post.userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                name: 'Unknown User',
+                                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === post.userId) || {
+                            name: 'Unknown User',
+                            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                        };
+                    }
+                    
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    
+                    const postEl = document.createElement('div');
+                    postEl.className = 'card post-card';
+                    postEl.innerHTML = `
+                        <div class="user-info">
+                            <img src="${user.avatar}" alt="${user.name}" class="avatar">
+                            <div>
+                                <div class="username">${user.name}</div>
+                                <div class="timestamp">${formatDate(post.createdAt)}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>${post.text}</p>
+                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add like functionality
+                    const likeBtn = postEl.querySelector('.action-btn:first-child');
+                    likeBtn.addEventListener('click', () => {
+                        toggleLike(post.$id);
                     });
-            });
-        }
-
-        // Enhanced error boundary for unhandled errors
-        window.addEventListener('error', function(e) {
-            logger.error('Unhandled error', e.error);
-            showEnhancedError('Something went wrong', e.error);
-        });
-
-        window.addEventListener('unhandledrejection', function(e) {
-            logger.error('Unhandled promise rejection', e.reason);
-            showEnhancedError('Async operation failed', e.reason);
-        });
-
-        // Enhanced analytics (optional)
-        function trackEvent(category, action, label) {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', action, {
-                    event_category: category,
-                    event_label: label
-                });
+                    
+                    // Add comment functionality
+                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
+                    commentBtn.addEventListener('click', () => {
+                        showComments(post.$id);
+                    });
+                    
+                    feedContainer.appendChild(postEl);
+                }
+            } catch (error) {
+                console.error('Error loading feed:', error);
+                feedContainer.innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading feed</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    </div>
+                `;
             }
         }
 
-        // Export functions for global access
-        window.App = {
-            showToast: showEnhancedToast,
-            showError: showEnhancedError,
-            trackEvent: trackEvent,
-            networkManager: networkManager,
-            config: Config
-        };
+        // Toggle like on a post
+        async function toggleLike(postId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            try {
+                if (appwriteConnected) {
+                    // Get the post
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        postId
+                    );
+                    
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    
+                    if (isLiked) {
+                        // Unlike the post
+                        const updatedLikedBy = post.likedBy.filter(id => id !== currentUser.$id);
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                likedBy: updatedLikedBy,
+                                likeCount: post.likeCount - 1
+                            }
+                        );
+                    } else {
+                        // Like the post
+                        const updatedLikedBy = [...(post.likedBy || []), currentUser.$id];
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            POSTS_COLLECTION_ID,
+                            postId,
+                            {
+                                likedBy: updatedLikedBy,
+                                likeCount: post.likeCount + 1
+                            }
+                        );
+                        
+                        // Create notification if not the post owner
+                        if (post.userId !== currentUser.$id) {
+                            await databases.createDocument(
+                                DATABASE_ID,
+                                NOTIFICATIONS_COLLECTION_ID,
+                                'unique()',
+                                {
+                                    userId: post.userId,
+                                    type: 'like',
+                                    sourceUserId: currentUser.$id,
+                                    postId: postId,
+                                    read: false,
+                                    createdAt: new Date().toISOString()
+                                }
+                            );
+                            
+                            updateUnreadCount();
+                        }
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === postId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        
+                        if (!post.likedBy) {
+                            post.likedBy = [];
+                        }
+                        
+                        const isLiked = post.likedBy.includes(currentUser.$id);
+                        
+                        if (isLiked) {
+                            post.likedBy = post.likedBy.filter(id => id !== currentUser.$id);
+                            post.likeCount--;
+                        } else {
+                            post.likedBy.push(currentUser.$id);
+                            post.likeCount++;
+                            
+                            // Create notification
+                            if (post.userId !== currentUser.$id) {
+                                const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                                notifications.push({
+                                    $id: 'notif' + (notifications.length + 1),
+                                    userId: post.userId,
+                                    type: 'like',
+                                    sourceUserId: currentUser.$id,
+                                    postId: postId,
+                                    read: false,
+                                    createdAt: new Date().toISOString()
+                                });
+                                localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                                updateUnreadCount();
+                            }
+                        }
+                        
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                    }
+                }
+                
+                // Update UI
+                if (currentPage === 'homePage') {
+                    loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+            } catch (error) {
+                console.error('Error toggling like:', error);
+            }
+        }
+
+        // Show comments for a post
+        async function showComments(postId) {
+            if (!currentUser) {
+                alert('Please login to view comments');
+                showPage('authPage');
+                return;
+            }
+            
+            currentPostId = postId;
+            document.getElementById('commentModal').style.display = 'flex';
+            await loadComments();
+        }
+
+        // Load comments for a post
+        async function loadComments() {
+            const commentsContainer = document.getElementById('commentsContainer');
+            commentsContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let comments = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        COMMENTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('postId', currentPostId)]
+                    );
+                    comments = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allComments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
+                    comments = allComments.filter(c => c.postId === currentPostId);
+                }
+                
+                // Sort comments by date
+                comments.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                
+                commentsContainer.innerHTML = '';
+                
+                if (comments.length === 0) {
+                    commentsContainer.innerHTML = '<p class="text-center">No comments yet</p>';
+                } else {
+                    for (const comment of comments) {
+                        let user;
+                        
+                        if (appwriteConnected) {
+                            try {
+                                user = await databases.getDocument(
+                                    DATABASE_ID,
+                                    USERS_COLLECTION_ID,
+                                    comment.userId
+                                );
+                            } catch (error) {
+                                console.error('Error fetching user:', error);
+                                user = {
+                                    name: 'Unknown User',
+                                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                                };
+                            }
+                        } else {
+                            // Fallback to localStorage
+                            const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                            user = users.find(u => u.$id === comment.userId) || {
+                                name: 'Unknown User',
+                                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                            };
+                        }
+                        
+                        const commentEl = document.createElement('div');
+                        commentEl.className = 'comment';
+                        commentEl.innerHTML = `
+                            <img src="${user.avatar}" alt="${user.name}" class="comment-avatar">
+                            <div class="comment-content">
+                                <div class="username">${user.name}</div>
+                                <p>${comment.text}</p>
+                                <div class="timestamp">${formatDate(comment.createdAt)}</div>
+                            </div>
+                        `;
+                        commentsContainer.appendChild(commentEl);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                commentsContainer.innerHTML = '<p class="text-center">Error loading comments</p>';
+            }
+        }
+
+        // Post a comment
+        async function postComment() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const commentInput = document.getElementById('commentInput');
+            const content = commentInput.value.trim();
+            
+            if (!content) return;
+            
+            try {
+                if (appwriteConnected) {
+                    // Create comment
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        COMMENTS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            postId: currentPostId,
+                            userId: currentUser.$id,
+                            text: content,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    // Update post comment count
+                    const post = await databases.getDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        currentPostId
+                    );
+                    
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        currentPostId,
+                        {
+                            commentCount: (post.commentCount || 0) + 1
+                        }
+                    );
+                    
+                    // Create notification if not the post owner
+                    if (post.userId !== currentUser.$id) {
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            NOTIFICATIONS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                userId: post.userId,
+                                type: 'comment',
+                                sourceUserId: currentUser.$id,
+                                postId: currentPostId,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        updateUnreadCount();
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const comments = JSON.parse(localStorage.getItem('mycrush_comments') || '[]');
+                    comments.push({
+                        $id: 'comment' + (comments.length + 1),
+                        postId: currentPostId,
+                        userId: currentUser.$id,
+                        text: content,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_comments', JSON.stringify(comments));
+                    
+                    // Update post comment count
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    const postIndex = posts.findIndex(p => p.$id === currentPostId);
+                    
+                    if (postIndex !== -1) {
+                        const post = posts[postIndex];
+                        post.commentCount = (post.commentCount || 0) + 1;
+                        posts[postIndex] = post;
+                        localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                        
+                        // Create notification
+                        if (post.userId !== currentUser.$id) {
+                            const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                            notifications.push({
+                                $id: 'notif' + (notifications.length + 1),
+                                userId: post.userId,
+                                type: 'comment',
+                                sourceUserId: currentUser.$id,
+                                postId: currentPostId,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            });
+                            localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                            updateUnreadCount();
+                        }
+                    }
+                }
+                
+                // Clear input and reload comments
+                commentInput.value = '';
+                await loadComments();
+                
+                // Update post in feed
+                if (currentPage === 'homePage') {
+                    await loadFeed();
+                } else if (currentPage === 'profilePage') {
+                    await loadProfile();
+                }
+            } catch (error) {
+                console.error('Error posting comment:', error);
+            }
+        }
+
+        // Create a new post
+        async function createPost(content, imageFile) {
+            if (!currentUser) {
+                alert('Please login to create a post');
+                showPage('authPage');
+                return;
+            }
+            
+            try {
+                let imageFileId = null;
+                
+                if (appwriteConnected) {
+                    // Upload image if provided
+                    if (imageFile) {
+                        const file = await storage.createFile(
+                            POST_IMAGES_BUCKET_ID,
+                            'unique()',
+                            imageFile
+                        );
+                        imageFileId = file.$id;
+                    }
+                    
+                    // Create post
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: currentUser.$id,
+                            text: content,
+                            imageFileId: imageFileId,
+                            likeCount: 0,
+                            commentCount: 0,
+                            likedBy: [],
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    posts.push({
+                        $id: 'post' + (posts.length + 1),
+                        userId: currentUser.$id,
+                        text: content,
+                        imageFileId: imageFile ? 'image' + posts.length : null,
+                        likeCount: 0,
+                        commentCount: 0,
+                        likedBy: [],
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_posts', JSON.stringify(posts));
+                }
+                
+                // Reset form and go back to feed
+                document.getElementById('newPostForm').reset();
+                imagePreview.style.display = 'none';
+                showPage('homePage');
+                await loadFeed();
+                
+                // Show success message
+                showSuccess('Post created successfully!');
+            } catch (error) {
+                console.error('Error creating post:', error);
+                showError('Error creating post. Please try again.');
+            }
+        }
+
+        // Load user profile
+        async function loadProfile() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            // Update profile info
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileBio').textContent = currentUser.bio || '';
+            document.getElementById('profileAvatar').src = currentUser.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80';
+            
+            try {
+                let postCount = 0;
+                let followingCount = 0;
+                let followersCount = 0;
+                
+                if (appwriteConnected) {
+                    // Get user's posts
+                    const posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    postCount = posts.total;
+                    
+                    // Get following count
+                    const following = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    followingCount = following.total;
+                    
+                    // Get followers count
+                    const followers = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followingId', currentUser.$id)]
+                    );
+                    followersCount = followers.total;
+                } else {
+                    // Fallback to localStorage
+                    const posts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    postCount = posts.filter(p => p.userId === currentUser.$id).length;
+                    
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    followingCount = follows.filter(f => f.followerId === currentUser.$id).length;
+                    followersCount = follows.filter(f => f.followingId === currentUser.$id).length;
+                }
+                
+                // Update stats
+                document.getElementById('postsCount').textContent = postCount;
+                document.getElementById('followingCount').textContent = followingCount;
+                document.getElementById('followersCount').textContent = followersCount;
+                
+                // Load user's posts
+                const postsContainer = document.getElementById('userPostsContainer');
+                postsContainer.innerHTML = '<div class="spinner"></div>';
+                
+                let userPosts = [];
+                
+                if (appwriteConnected) {
+                    const posts = await databases.listDocuments(
+                        DATABASE_ID,
+                        POSTS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    userPosts = posts.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allPosts = JSON.parse(localStorage.getItem('mycrush_posts') || '[]');
+                    userPosts = allPosts.filter(post => post.userId === currentUser.$id);
+                }
+                
+                // Sort posts by date
+                userPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                postsContainer.innerHTML = '';
+                
+                if (userPosts.length === 0) {
+                    postsContainer.innerHTML = `
+                        <div class="card text-center">
+                            <div style="padding: 40px 20px;">
+                                <i class="fas fa-camera" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                                <h3>No posts yet</h3>
+                                <p>Share your first post with the world</p>
+                                <button class="btn btn-primary mt-1" onclick="showPage('newPostPage')">Create Post</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                for (const post of userPosts) {
+                    const isLiked = post.likedBy && post.likedBy.includes(currentUser.$id);
+                    
+                    const postEl = document.createElement('div');
+                    postEl.className = 'card post-card';
+                    postEl.innerHTML = `
+                        <div class="user-info">
+                            <img src="${currentUser.avatar}" alt="${currentUser.name}" class="avatar">
+                            <div>
+                                <div class="username">${currentUser.name}</div>
+                                <div class="timestamp">${formatDate(post.createdAt)}</div>
+                            </div>
+                        </div>
+                        <div class="post-content">
+                            <p>${post.text}</p>
+                            ${post.imageFileId ? `<img src="${post.imageUrl || 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&q=80'}" alt="Post image" class="post-image">` : ''}
+                        </div>
+                        <div class="post-actions">
+                            <button class="action-btn ${isLiked ? 'liked' : ''}" data-post-id="${post.$id}">
+                                <i class="fas fa-heart"></i> <span>${post.likeCount || 0}</span>
+                            </button>
+                            <button class="action-btn" data-post-id="${post.$id}">
+                                <i class="fas fa-comment"></i> <span>${post.commentCount || 0}</span>
+                            </button>
+                            <button class="action-btn">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    // Add like functionality
+                    const likeBtn = postEl.querySelector('.action-btn:first-child');
+                    likeBtn.addEventListener('click', () => {
+                        toggleLike(post.$id);
+                    });
+                    
+                    // Add comment functionality
+                    const commentBtn = postEl.querySelectorAll('.action-btn')[1];
+                    commentBtn.addEventListener('click', () => {
+                        showComments(post.$id);
+                    });
+                    
+                    postsContainer.appendChild(postEl);
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                document.getElementById('userPostsContainer').innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading profile</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Show edit profile modal
+        function showEditProfileModal() {
+            document.getElementById('editDisplayName').value = currentUser.name;
+            document.getElementById('editBio').value = currentUser.bio || '';
+            document.getElementById('editProfileModal').style.display = 'flex';
+        }
+
+        // Update user profile
+        async function updateProfile(displayName, bio, avatarFile) {
+            try {
+                let avatarFileId = currentUser.avatarFileId;
+                
+                if (appwriteConnected) {
+                    // Upload new avatar if provided
+                    if (avatarFile) {
+                        const file = await storage.createFile(
+                            AVATARS_BUCKET_ID,
+                            'unique()',
+                            avatarFile
+                        );
+                        avatarFileId = file.$id;
+                    }
+                    
+                    // Update user profile in database
+                    await databases.updateDocument(
+                        DATABASE_ID,
+                        USERS_COLLECTION_ID,
+                        currentUser.$id,
+                        {
+                            displayName: displayName,
+                            bio: bio,
+                            avatarFileId: avatarFileId
+                        }
+                    );
+                    
+                    // Update account name
+                    await account.updateName(displayName);
+                } else {
+                    // Fallback to localStorage
+                    const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                    const userIndex = users.findIndex(u => u.$id === currentUser.$id);
+                    
+                    if (userIndex !== -1) {
+                        users[userIndex].name = displayName;
+                        users[userIndex].bio = bio;
+                        localStorage.setItem('mycrush_users', JSON.stringify(users));
+                    }
+                }
+                
+                // Update current user
+                currentUser.name = displayName;
+                currentUser.bio = bio;
+                
+                if (avatarFile) {
+                    // In a real app, this would be the URL from Appwrite Storage
+                    currentUser.avatar = URL.createObjectURL(avatarFile);
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Update UI
+                document.getElementById('profileName').textContent = displayName;
+                document.getElementById('profileBio').textContent = bio;
+                
+                if (avatarFile) {
+                    document.getElementById('profileAvatar').src = URL.createObjectURL(avatarFile);
+                }
+                
+                // Close modal
+                document.getElementById('editProfileModal').style.display = 'none';
+                
+                // Show success message
+                showSuccess('Profile updated successfully!');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showError('Error updating profile. Please try again.');
+            }
+        }
+
+        // Load notifications
+        async function loadNotifications() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const notificationsContainer = document.getElementById('notificationsContainer');
+            notificationsContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let notifications = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        [Appwrite.Query.equal('userId', currentUser.$id)]
+                    );
+                    notifications = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    notifications = notifications.filter(n => n.userId === currentUser.$id);
+                }
+                
+                // Sort notifications by date
+                notifications.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                notificationsContainer.innerHTML = '';
+                
+                if (notifications.length === 0) {
+                    notificationsContainer.innerHTML = '<p class="text-center">No notifications yet</p>';
+                    return;
+                }
+                
+                for (const notif of notifications) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                notif.sourceUserId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                name: 'Unknown User'
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === notif.sourceUserId) || {
+                            name: 'Unknown User'
+                        };
+                    }
+                    
+                    const notifEl = document.createElement('div');
+                    notifEl.className = `card notification-item ${notif.read ? '' : 'unread'}`;
+                    notifEl.innerHTML = `
+                        <div class="notification-icon">
+                            <i class="fas fa-${notif.type === 'like' ? 'heart' : notif.type === 'comment' ? 'comment' : 'user-plus'}"></i>
+                        </div>
+                        <div>
+                            <p><strong>${user.name}</strong> ${notif.type === 'like' ? 'liked' : notif.type === 'comment' ? 'commented on' : 'started following'} your ${notif.type === 'follow' ? '' : 'post'}</p>
+                            <div class="timestamp">${formatDate(notif.createdAt)}</div>
+                        </div>
+                    `;
+                    notificationsContainer.appendChild(notifEl);
+                    
+                    // Mark as read when clicked
+                    if (!notif.read) {
+                        notifEl.addEventListener('click', async () => {
+                            if (appwriteConnected) {
+                                await databases.updateDocument(
+                                    DATABASE_ID,
+                                    NOTIFICATIONS_COLLECTION_ID,
+                                    notif.$id,
+                                    { read: true }
+                                );
+                            } else {
+                                // Fallback to localStorage
+                                const allNotifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                                const notifIndex = allNotifications.findIndex(n => n.$id === notif.$id);
+                                
+                                if (notifIndex !== -1) {
+                                    allNotifications[notifIndex].read = true;
+                                    localStorage.setItem('mycrush_notifications', JSON.stringify(allNotifications));
+                                }
+                            }
+                            
+                            updateUnreadCount();
+                            loadNotifications();
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                notificationsContainer.innerHTML = '<p class="text-center">Error loading notifications</p>';
+            }
+        }
+
+        // Update unread notification count
+        async function updateUnreadCount() {
+            if (!currentUser) return;
+            
+            try {
+                let unreadCount = 0;
+                
+                if (appwriteConnected) {
+                    const notifications = await databases.listDocuments(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        [
+                            Appwrite.Query.equal('userId', currentUser.$id),
+                            Appwrite.Query.equal('read', false)
+                        ]
+                    );
+                    unreadCount = notifications.total;
+                } else {
+                    // Fallback to localStorage
+                    const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    unreadCount = notifications.filter(n => n.userId === currentUser.$id && !n.read).length;
+                }
+                
+                const badge = document.getElementById('notificationBadge');
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error updating unread count:', error);
+            }
+        }
+
+        // Load conversations
+        async function loadConversations() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const conversationsContainer = document.getElementById('conversationsContainer');
+            conversationsContainer.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let messages = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        [
+                            Appwrite.Query.or(
+                                Appwrite.Query.equal('senderId', currentUser.$id),
+                                Appwrite.Query.equal('receiverId', currentUser.$id)
+                            )
+                        ]
+                    );
+                    messages = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    messages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages = messages.filter(m => 
+                        m.senderId === currentUser.$id || m.receiverId === currentUser.$id
+                    );
+                }
+                
+                // Get unique conversation partners
+                const conversationPartners = new Set();
+                
+                messages.forEach(msg => {
+                    if (msg.senderId === currentUser.$id) {
+                        conversationPartners.add(msg.receiverId);
+                    } else if (msg.receiverId === currentUser.$id) {
+                        conversationPartners.add(msg.senderId);
+                    }
+                });
+                
+                conversationsContainer.innerHTML = '';
+                
+                if (conversationPartners.size === 0) {
+                    conversationsContainer.innerHTML = `
+                        <div class="card text-center">
+                            <div style="padding: 40px 20px;">
+                                <i class="fas fa-comments" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                                <h3>No messages yet</h3>
+                                <p>Start a conversation with someone</p>
+                                <button class="btn btn-primary mt-1" onclick="showPage('searchPage')">Find Users</button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                for (const userId of conversationPartners) {
+                    let user;
+                    
+                    if (appwriteConnected) {
+                        try {
+                            user = await databases.getDocument(
+                                DATABASE_ID,
+                                USERS_COLLECTION_ID,
+                                userId
+                            );
+                        } catch (error) {
+                            console.error('Error fetching user:', error);
+                            user = {
+                                name: 'Unknown User',
+                                avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                            };
+                        }
+                    } else {
+                        // Fallback to localStorage
+                        const users = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                        user = users.find(u => u.$id === userId) || {
+                            name: 'Unknown User',
+                            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80'
+                        };
+                    }
+                    
+                    // Get last message in conversation
+                    const lastMessage = messages
+                        .filter(m => 
+                            (m.senderId === currentUser.$id && m.receiverId === userId) ||
+                            (m.senderId === userId && m.receiverId === currentUser.$id)
+                        )
+                        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+                    
+                    const conversationEl = document.createElement('div');
+                    conversationEl.className = 'card';
+                    conversationEl.style.padding = '15px';
+                    conversationEl.style.marginBottom = '10px';
+                    conversationEl.innerHTML = `
+                        <div style="display: flex; align-items: center;">
+                            <img src="${user.avatar}" alt="${user.name}" class="avatar">
+                            <div style="flex: 1; margin-left: 10px; cursor: pointer;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <div class="username">${user.name}</div>
+                                    <div class="timestamp">${formatDate(lastMessage.createdAt)}</div>
+                                </div>
+                                <p>${lastMessage.text}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Add click event to open chat
+                    conversationEl.addEventListener('click', () => {
+                        currentChatUser = user;
+                        document.getElementById('chatUserName').textContent = user.name;
+                        showPage('chatPage');
+                        loadChat(user);
+                    });
+                    
+                    conversationsContainer.appendChild(conversationEl);
+                }
+            } catch (error) {
+                console.error('Error loading conversations:', error);
+                conversationsContainer.innerHTML = `
+                    <div class="card text-center">
+                        <div style="padding: 40px 20px;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ccc; margin-bottom: 15px;"></i>
+                            <h3>Error loading messages</h3>
+                            <p>Please try again later</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load chat with a user
+        async function loadChat(user) {
+            const messageThread = document.getElementById('messageThread');
+            messageThread.innerHTML = '<div class="spinner"></div>';
+            
+            try {
+                let messages = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        [
+                            Appwrite.Query.or(
+                                [
+                                    Appwrite.Query.equal('senderId', currentUser.$id),
+                                    Appwrite.Query.equal('receiverId', user.$id)
+                                ],
+                                [
+                                    Appwrite.Query.equal('senderId', user.$id),
+                                    Appwrite.Query.equal('receiverId', currentUser.$id)
+                                ]
+                            )
+                        ]
+                    );
+                    messages = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    const allMessages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages = allMessages.filter(m => 
+                        (m.senderId === currentUser.$id && m.receiverId === user.$id) ||
+                        (m.senderId === user.$id && m.receiverId === currentUser.$id)
+                    );
+                }
+                
+                // Sort messages by date
+                messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                
+                messageThread.innerHTML = '';
+                
+                messages.forEach(msg => {
+                    const messageEl = document.createElement('div');
+                    messageEl.className = `message ${msg.senderId === currentUser.$id ? 'sent' : 'received'}`;
+                    messageEl.innerHTML = `
+                        <div>${msg.text}</div>
+                        <div class="message-time">${formatTime(msg.createdAt)}</div>
+                    `;
+                    messageThread.appendChild(messageEl);
+                });
+                
+                // Scroll to bottom
+                messageThread.scrollTop = messageThread.scrollHeight;
+            } catch (error) {
+                console.error('Error loading chat:', error);
+                messageThread.innerHTML = '<p class="text-center'>Error loading messages</p>';
+            }
+        }
+
+        // Send a message
+        async function sendMessage() {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            const messageInput = document.getElementById('messageInput');
+            const content = messageInput.value.trim();
+            
+            if (!content || !currentChatUser) return;
+            
+            try {
+                if (appwriteConnected) {
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        MESSAGES_COLLECTION_ID,
+                        'unique()',
+                        {
+                            threadKey: `${currentUser.$id}_${currentChatUser.$id}`,
+                            senderId: currentUser.$id,
+                            receiverId: currentChatUser.$id,
+                            text: content,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                    
+                    // Create notification
+                    await databases.createDocument(
+                        DATABASE_ID,
+                        NOTIFICATIONS_COLLECTION_ID,
+                        'unique()',
+                        {
+                            userId: currentChatUser.$id,
+                            type: 'message',
+                            sourceUserId: currentUser.$id,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        }
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const messages = JSON.parse(localStorage.getItem('mycrush_messages') || '[]');
+                    messages.push({
+                        $id: 'msg' + (messages.length + 1),
+                        threadKey: `${currentUser.$id}_${currentChatUser.$id}`,
+                        senderId: currentUser.$id,
+                        receiverId: currentChatUser.$id,
+                        text: content,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_messages', JSON.stringify(messages));
+                    
+                    // Create notification
+                    const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                    notifications.push({
+                        $id: 'notif' + (notifications.length + 1),
+                        userId: currentChatUser.$id,
+                        type: 'message',
+                        sourceUserId: currentUser.$id,
+                        read: false,
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                }
+                
+                // Clear input and reload chat
+                messageInput.value = '';
+                await loadChat(currentChatUser);
+                updateUnreadCount();
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        }
+
+        // Initialize search
+        function initSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchResults').innerHTML = '<p class="text-center">Start typing to search for users</p>';
+        }
+
+        // Handle search input
+        async function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const searchResults = document.getElementById('searchResults');
+            
+            if (query.length < 2) {
+                searchResults.innerHTML = '<p class="text-center">Start typing to search for users</p>';
+                return;
+            }
+            
+            try {
+                let users = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        USERS_COLLECTION_ID
+                    );
+                    users = result.documents.filter(user => 
+                        user.displayName.toLowerCase().includes(query) && user.userId !== currentUser.$id
+                    );
+                } else {
+                    // Fallback to localStorage
+                    const allUsers = JSON.parse(localStorage.getItem('mycrush_users') || '[]');
+                    users = allUsers.filter(user => 
+                        user.name.toLowerCase().includes(query) && user.$id !== currentUser.$id
+                    );
+                }
+                
+                searchResults.innerHTML = '';
+                
+                if (users.length === 0) {
+                    searchResults.innerHTML = '<p class="text-center">No users found</p>';
+                    return;
+                }
+                
+                let follows = [];
+                
+                if (appwriteConnected) {
+                    const result = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [Appwrite.Query.equal('followerId', currentUser.$id)]
+                    );
+                    follows = result.documents;
+                } else {
+                    // Fallback to localStorage
+                    follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    follows = follows.filter(f => f.followerId === currentUser.$id);
+                }
+                
+                for (const user of users) {
+                    const userId = appwriteConnected ? user.userId : user.$id;
+                    const userName = appwriteConnected ? user.displayName : user.name;
+                    const userBio = appwriteConnected ? user.bio : user.bio;
+                    const userAvatar = appwriteConnected ? 
+                        (user.avatarFileId ? await getFilePreview(user.avatarFileId) : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80') 
+                        : user.avatar;
+                    
+                    const userEl = document.createElement('div');
+                    userEl.className = 'card user-item';
+                    userEl.innerHTML = `
+                        <img src="${userAvatar}" alt="${userName}" class="avatar">
+                        <div style="flex: 1;">
+                            <div class="username">${userName}</div>
+                            <div>${userBio || ''}</div>
+                        </div>
+                        <button class="btn btn-primary" data-user-id="${userId}">Follow</button>
+                    `;
+                    
+                    // Add follow functionality
+                    const followBtn = userEl.querySelector('button');
+                    const isFollowing = follows.some(f => f.followingId === userId);
+                    
+                    if (isFollowing) {
+                        followBtn.textContent = 'Unfollow';
+                        followBtn.classList.remove('btn-primary');
+                        followBtn.classList.add('btn-secondary');
+                    }
+                    
+                    followBtn.addEventListener('click', () => {
+                        toggleFollow(userId);
+                    });
+                    
+                    searchResults.appendChild(userEl);
+                }
+            } catch (error) {
+                console.error('Error searching users:', error);
+                searchResults.innerHTML = '<p class="text-center">Error searching users</p>';
+            }
+        }
+
+        // Get file preview URL
+        async function getFilePreview(fileId) {
+            try {
+                return await storage.getFilePreview(
+                    AVATARS_BUCKET_ID,
+                    fileId
+                );
+            } catch (error) {
+                console.error('Error getting file preview:', error);
+                return 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=200&q=80';
+            }
+        }
+
+        // Toggle follow
+        async function toggleFollow(userId) {
+            if (!currentUser) {
+                showPage('authPage');
+                return;
+            }
+            
+            try {
+                let isFollowing = false;
+                
+                if (appwriteConnected) {
+                    // Check if already following
+                    const follows = await databases.listDocuments(
+                        DATABASE_ID,
+                        FOLLOWS_COLLECTION_ID,
+                        [
+                            Appwrite.Query.equal('followerId', currentUser.$id),
+                            Appwrite.Query.equal('followingId', userId)
+                        ]
+                    );
+                    
+                    isFollowing = follows.total > 0;
+                    
+                    if (isFollowing) {
+                        // Unfollow
+                        await databases.deleteDocument(
+                            DATABASE_ID,
+                            FOLLOWS_COLLECTION_ID,
+                            follows.documents[0].$id
+                        );
+                    } else {
+                        // Follow
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            FOLLOWS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                followerId: currentUser.$id,
+                                followingId: userId,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        // Create notification
+                        await databases.createDocument(
+                            DATABASE_ID,
+                            NOTIFICATIONS_COLLECTION_ID,
+                            'unique()',
+                            {
+                                userId: userId,
+                                type: 'follow',
+                                sourceUserId: currentUser.$id,
+                                read: false,
+                                createdAt: new Date().toISOString()
+                            }
+                        );
+                        
+                        updateUnreadCount();
+                    }
+                } else {
+                    // Fallback to localStorage
+                    const follows = JSON.parse(localStorage.getItem('mycrush_follows') || '[]');
+                    const existingFollow = follows.find(f => 
+                        f.followerId === currentUser.$id && f.followingId === userId
+                    );
+                    
+                    isFollowing = !!existingFollow;
+                    
+                    if (isFollowing) {
+                        // Unfollow
+                        localStorage.setItem('mycrush_follows', JSON.stringify(
+                            follows.filter(f => f.$id !== existingFollow.$id)
+                        ));
+                    } else {
+                        // Follow
+                        follows.push({
+                            $id: 'follow' + (follows.length + 1),
+                            followerId: currentUser.$id,
+                            followingId: userId,
+                            createdAt: new Date().toISOString()
+                        });
+                        localStorage.setItem('mycrush_follows', JSON.stringify(follows));
+                        
+                        // Create notification
+                        const notifications = JSON.parse(localStorage.getItem('mycrush_notifications') || '[]');
+                        notifications.push({
+                            $id: 'notif' + (notifications.length + 1),
+                            userId: userId,
+                            type: 'follow',
+                            sourceUserId: currentUser.$id,
+                            read: false,
+                            createdAt: new Date().toISOString()
+                        });
+                        localStorage.setItem('mycrush_notifications', JSON.stringify(notifications));
+                        updateUnreadCount();
+                    }
+                }
+                
+                // Update UI
+                handleSearch();
+                
+                // Update profile stats if on profile page
+                if (currentPage === 'profilePage') {
+                    loadProfile();
+                }
+            } catch (error) {
+                console.error('Error toggling follow:', error);
+            }
+        }
+
+        // Format date
+        function formatDate(date) {
+            const now = new Date();
+            const diff = now - new Date(date);
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+            
+            return new Date(date).toLocaleDateString();
+        }
+
+        // Format time
+        function formatTime(date) {
+            return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Initialize the app when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
