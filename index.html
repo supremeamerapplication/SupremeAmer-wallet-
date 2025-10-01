@@ -3,407 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupremeAmer Wallet</title>
+    <title>Modern WalletConnect Wallet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js" type="application/javascript"></script>
     <style>
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #7209b7;
-            --dark: #212529;
-            --darker: #1a1d23;
-            --light: #f8f9fa;
-            --gray: #6c757d;
-            --success: #4cc9f0;
-            --warning: #f72585;
-            --border-radius: 12px;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: var(--light);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
             min-height: 100vh;
-            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        header {
-            background: rgba(33, 37, 41, 0.9);
+        .wallet-container {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
-            padding: 20px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .wallet-header {
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .header-content {
+        .wallet-logo {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 12px;
         }
 
-        .logo {
+        .wallet-logo i {
+            font-size: 28px;
+            color: #3498db;
+        }
+
+        .wallet-logo h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .network-indicator {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
+            gap: 8px;
+            background: rgba(52, 152, 219, 0.2);
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+        }
+
+        .wallet-body {
+            padding: 25px;
+        }
+
+        .balance-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .balance-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+
+        .balance-amount {
+            font-size: 40px;
             font-weight: 700;
-            color: var(--light);
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .logo i {
-            color: var(--success);
+        .balance-equivalent {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
         }
 
-        nav {
-            display: flex;
-            gap: 10px;
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
         }
 
-        .nav-btn {
+        .action-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
-            color: var(--light);
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-
-        .nav-btn:hover, .nav-btn.active {
-            background: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .wallet-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: var(--border-radius);
-        }
-
-        .wallet-address {
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-
-        .copy-btn {
-            background: none;
-            border: none;
-            color: var(--light);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .copy-btn:hover {
-            color: var(--success);
-        }
-
-        .connect-btn {
-            background: var(--success);
+            padding: 15px;
+            border-radius: 12px;
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
+            font-size: 16px;
             cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .connect-btn:hover {
-            background: #3ab3d6;
-            transform: translateY(-2px);
-        }
-
-        .disconnect-btn {
-            background: var(--warning);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-
-        .disconnect-btn:hover {
-            background: #e02178;
-            transform: translateY(-2px);
-        }
-
-        main {
-            padding: 40px 0;
-        }
-
-        .section {
-            background: rgba(33, 37, 41, 0.7);
-            border-radius: var(--border-radius);
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
-        }
-
-        .section.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-title {
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-title h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-
-        .assets-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .asset-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            padding: 20px;
-            transition: var(--transition);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .asset-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(67, 97, 238, 0.3);
-        }
-
-        .asset-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .asset-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .eth-icon {
-            background: #627eea;
-            color: #fff;
-        }
-
-        .dai-icon {
-            background: #f5ac37;
-            color: #000;
-        }
-
-        .usdc-icon {
-            background: #2775ca;
-            color: #fff;
-        }
-
-        .asset-name {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .asset-balance {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 10px 0;
-        }
-
-        .asset-value {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-
-        .asset-change {
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-
-        .positive {
-            color: var(--success);
-        }
-
-        .negative {
-            color: var(--warning);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--border-radius);
-            color: var(--light);
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
-        }
-
-        .form-select {
-            width: 100%;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--border-radius);
-            color: var(--light);
-            font-size: 1rem;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 16px;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn-block {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .btn-success {
-            background: var(--success);
-        }
-
-        .btn-success:hover {
-            background: #3ab3d6;
-        }
-
-        .btn-warning {
-            background: var(--warning);
-        }
-
-        .btn-warning:hover {
-            background: #e02178;
-        }
-
-        .btn:disabled {
-            background: var(--gray);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn:disabled:hover {
-            transform: none;
-        }
-
-        .qrcode-container {
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 30px 0;
+            gap: 8px;
         }
 
-        .qrcode {
-            width: 200px;
-            height: 200px;
-            background: white;
-            padding: 10px;
-            border-radius: var(--border-radius);
+        .action-btn:hover {
+            background: rgba(52, 152, 219, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .action-btn i {
+            font-size: 20px;
+        }
+
+        .wallet-connect-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
             margin-bottom: 20px;
         }
 
-        .swap-container {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 20px;
-            align-items: end;
-            margin-bottom: 20px;
+        .wallet-connect-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
         }
 
-        .swap-arrow {
+        .wallet-connect-title i {
+            color: #3498db;
+        }
+
+        .wallet-connect-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding-bottom: 12px;
+            gap: 10px;
         }
 
-        .swap-arrow i {
-            font-size: 1.5rem;
-            color: var(--primary);
-            cursor: pointer;
-            transition: var(--transition);
+        .wallet-connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
         }
 
-        .swap-arrow i:hover {
-            color: var(--primary-dark);
-            transform: rotate(180deg);
+        .wallet-connect-btn.connected {
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
+        }
+
+        .wallet-connect-btn.connected:hover {
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .recent-transactions {
+            margin-top: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #3498db;
         }
 
         .transaction-list {
@@ -414,928 +202,342 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--border-radius);
-            margin-bottom: 10px;
-            transition: var(--transition);
-        }
-
-        .transaction-item:hover {
-            background: rgba(255, 255, 255, 0.08);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .transaction-icon {
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            background: rgba(52, 152, 219, 0.2);
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            margin-right: 15px;
-        }
-
-        .transaction-send {
-            background: rgba(247, 37, 133, 0.2);
-            color: var(--warning);
-        }
-
-        .transaction-receive {
-            background: rgba(76, 201, 240, 0.2);
-            color: var(--success);
-        }
-
-        .transaction-swap {
-            background: rgba(67, 97, 238, 0.2);
-            color: var(--primary);
+            align-items: center;
         }
 
         .transaction-details {
-            flex-grow: 1;
+            flex: 1;
+            margin-left: 15px;
         }
 
-        .transaction-type {
+        .transaction-title {
             font-weight: 600;
             margin-bottom: 5px;
         }
 
         .transaction-date {
-            font-size: 0.8rem;
-            color: var(--gray);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
         }
 
         .transaction-amount {
-            font-weight: 700;
+            font-weight: 600;
         }
 
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background: var(--dark);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+        .transaction-amount.positive {
+            color: #2ecc71;
+        }
+
+        .transaction-amount.negative {
+            color: #e74c3c;
+        }
+
+        .wallet-footer {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wallet-address {
             display: flex;
             align-items: center;
             gap: 10px;
-            z-index: 1000;
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        .notification.show {
-            transform: translateX(0);
+        .wallet-address i {
+            color: #3498db;
         }
 
-        .notification-success {
-            border-left: 4px solid var(--success);
+        .wallet-actions {
+            display: flex;
+            gap: 15px;
         }
 
-        .notification-error {
-            border-left: 4px solid var(--warning);
+        .wallet-action-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.3s ease;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
+        .wallet-action-btn:hover {
+            color: #3498db;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            background: #e74c3c;
+            margin-left: 5px;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .status-indicator.connected {
+            background: #2ecc71;
         }
 
-        .modal {
+        .qr-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 2000;
-            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
             justify-content: center;
+            align-items: center;
         }
 
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--dark);
+        .qr-content {
+            background: #1a1a2e;
             padding: 30px;
-            border-radius: var(--border-radius);
-            width: 90%;
-            max-width: 500px;
-            box-shadow: var(--shadow);
-        }
-
-        .modal-title {
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        footer {
+            border-radius: 20px;
             text-align: center;
-            padding: 30px 0;
-            background: rgba(33, 37, 41, 0.9);
-            margin-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 300px;
+            width: 90%;
         }
 
-        footer p {
-            margin-bottom: 10px;
+        .qr-title {
+            margin-bottom: 20px;
+            font-size: 20px;
         }
 
-        footer small {
-            color: var(--gray);
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: #fff;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #333;
         }
 
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
+        .close-modal {
+            background: #3498db;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        @media (max-width: 480px) {
+            .wallet-container {
+                border-radius: 15px;
             }
             
-            nav {
-                flex-wrap: wrap;
-                justify-content: center;
+            .wallet-header, .wallet-body {
+                padding: 20px;
             }
             
-            .assets-grid {
+            .balance-amount {
+                font-size: 32px;
+            }
+            
+            .action-buttons {
                 grid-template-columns: 1fr;
-            }
-            
-            .swap-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: auto auto auto;
-            }
-            
-            .swap-arrow {
-                order: 3;
-                justify-content: center;
-                padding: 10px 0;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-wallet"></i>
-                    <span>SupremeAmer</span>
-                </div>
-                
-                <nav>
-                    <button class="nav-btn active" data-section="home">
-                        <i class="fas fa-home"></i> Home
-                    </button>
-                    <button class="nav-btn" data-section="send">
-                        <i class="fas fa-paper-plane"></i> Send
-                    </button>
-                    <button class="nav-btn" data-section="receive">
-                        <i class="fas fa-qrcode"></i> Receive
-                    </button>
-                    <button class="nav-btn" data-section="swap">
-                        <i class="fas fa-exchange-alt"></i> Swap
-                    </button>
-                    <button class="nav-btn" data-section="history">
-                        <i class="fas fa-history"></i> History
-                    </button>
-                </nav>
-                
-                <div id="walletInfo" class="wallet-info" style="display: none;">
-                    <span class="wallet-address" id="walletAddress">0x1a2b3c4d5e6f7g8h9i0j</span>
-                    <button class="copy-btn" id="copyAddressBtn">
-                        <i class="far fa-copy"></i>
-                    </button>
-                    <button class="disconnect-btn" id="disconnectBtn">
-                        <i class="fas fa-power-off"></i> Disconnect
-                    </button>
-                </div>
-                
-                <button class="connect-btn" id="connectBtn">
-                    <i class="fas fa-plug"></i> Connect Wallet
-                </button>
+    <div class="wallet-container">
+        <div class="wallet-header">
+            <div class="wallet-logo">
+                <i class="fas fa-wallet"></i>
+                <h1>CryptoWallet</h1>
+            </div>
+            <div class="network-indicator">
+                <i class="fab fa-ethereum"></i>
+                <span>Ethereum Mainnet</span>
             </div>
         </div>
-    </header>
-
-    <main class="container">
-        <!-- Home Section -->
-        <section id="home" class="section active">
-            <div class="section-title">
-                <h2>Your Assets</h2>
-                <button class="btn" id="refreshBtn">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
-            </div>
-            
-            <div id="loadingBalances" class="loading" style="display: none; margin: 20px auto;"></div>
-            
-            <div class="assets-grid" id="assetsContainer">
-                <!-- Assets will be loaded here dynamically -->
-            </div>
-        </section>
-
-        <!-- Send Section -->
-        <section id="send" class="section">
-            <div class="section-title">
-                <h2>Send Tokens</h2>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="sendToken">Token</label>
-                <select class="form-select" id="sendToken">
-                    <option value="eth">ETH</option>
-                    <option value="dai">DAI</option>
-                    <option value="usdc">USDC</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="recipientAddress">Recipient Address</label>
-                <input type="text" class="form-input" id="recipientAddress" placeholder="0x...">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label" for="sendAmount">Amount</label>
-                <input type="number" class="form-input" id="sendAmount" placeholder="0.00" step="0.01">
-            </div>
-            
-            <button class="btn btn-warning btn-block" id="sendTokens" disabled>
-                <i class="fas fa-paper-plane"></i> Send Tokens
-            </button>
-        </section>
-
-        <!-- Receive Section -->
-        <section id="receive" class="section">
-            <div class="section-title">
-                <h2>Receive Tokens</h2>
-            </div>
-            
-            <p>Share your wallet address to receive tokens</p>
-            
-            <div class="qrcode-container">
-                <div class="qrcode" id="qrcode">
-                    <!-- QR Code would be generated here in a real implementation -->
-                    <div style="width:100%;height:100%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#333;font-family:monospace;">
-                        QR Code
-                    </div>
-                </div>
-                <span class="wallet-address" id="yourAddress">Connect your wallet to see address</span>
-            </div>
-            
-            <button class="btn btn-success btn-block" id="copyReceiveBtn" disabled>
-                <i class="far fa-copy"></i> Copy Address
-            </button>
-        </section>
-
-        <!-- Swap Section -->
-        <section id="swap" class="section">
-            <div class="section-title">
-                <h2>Swap Tokens</h2>
-            </div>
-            
-            <div class="swap-container">
-                <div class="form-group">
-                    <label class="form-label" for="tokenFrom">From</label>
-                    <select class="form-select" id="tokenFrom">
-                        <option value="eth">ETH</option>
-                        <option value="dai">DAI</option>
-                        <option value="usdc">USDC</option>
-                    </select>
-                    <input type="number" class="form-input" id="swapAmount" placeholder="0.00" step="0.01">
-                </div>
-                
-                <div class="swap-arrow">
-                    <i class="fas fa-arrow-down" id="swapDirection"></i>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="tokenTo">To</label>
-                    <select class="form-select" id="tokenTo">
-                        <option value="dai">DAI</option>
-                        <option value="usdc">USDC</option>
-                        <option value="eth">ETH</option>
-                    </select>
-                    <input type="text" class="form-input" id="swapResult" placeholder="0.00" readonly>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">Exchange Rate</label>
-                <div id="exchangeRate">Connect wallet to see rates</div>
-            </div>
-            
-            <button class="btn btn-block" id="swapTokens" disabled>
-                <i class="fas fa-exchange-alt"></i> Swap Tokens
-            </button>
-        </section>
-
-        <!-- History Section -->
-        <section id="history" class="section">
-            <div class="section-title">
-                <h2>Transaction History</h2>
-            </div>
-            
-            <div id="loadingTransactions" class="loading" style="display: none; margin: 20px auto;"></div>
-            
-            <ul class="transaction-list" id="transactionList">
-                <li>Connect your wallet to view transaction history</li>
-            </ul>
-        </section>
-    </main>
-
-    <!-- Connection Modal -->
-    <div class="modal" id="connectionModal">
-        <div class="modal-content">
-            <h3 class="modal-title">Connect Wallet</h3>
-            <p>Select how you want to connect your wallet:</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-                <button class="btn" id="metamaskBtn">
-                    <i class="fab fa-ethereum"></i> MetaMask
-                </button>
-                <button class="btn" id="privateKeyBtn">
-                    <i class="fas fa-key"></i> Use Private Key
-                </button>
-            </div>
-            
-            <div style="margin-top: 20px; display: none;" id="privateKeyInput">
-                <div class="form-group">
-                    <label class="form-label">Private Key</label>
-                    <input type="password" class="form-input" id="privateKeyField" placeholder="Enter your private key">
-                    <small style="color: var(--gray); margin-top: 5px; display: block;">
-                        Your private key is stored locally and never sent to our servers.
-                    </small>
-                </div>
-                <button class="btn btn-block" id="connectWithPrivateKey">
-                    Connect
-                </button>
-            </div>
-            
-            <button class="btn btn-warning btn-block" style="margin-top: 20px;" id="closeModal">
-                Cancel
-            </button>
-        </div>
-    </div>
-
-    <!-- Notification -->
-    <div class="notification" id="notification">
-        <i class="fas fa-check-circle"></i>
-        <span id="notificationText">Operation completed successfully!</span>
-    </div>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2023 SupremeAmer Wallet. All rights reserved.</p>
-            <small>Connected to Ethereum Mainnet via Infura</small>
-        </div>
-    </footer>
-    
-    <script>
-        // Configuration - Replace with your Infura project ID
-        const INFURA_PROJECT_ID = 'YOUR_INFURA_PROJECT_ID'; // Get this from https://infura.io/
-        const NETWORK = 'homestead'; // 'homestead' for mainnet, 'goerli' for testnet
         
-        // Token contract addresses (Ethereum Mainnet)
-        const TOKENS = {
-            eth: {
-                name: 'Ethereum',
-                symbol: 'ETH',
-                decimals: 18,
-                address: null, // ETH is native token
-                icon: 'fab fa-ethereum'
-            },
-            dai: {
-                name: 'Dai Stablecoin',
-                symbol: 'DAI',
-                decimals: 18,
-                address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-                icon: 'fas fa-coins'
-            },
-            usdc: {
-                name: 'USD Coin',
-                symbol: 'USDC',
-                decimals: 6,
-                address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-                icon: 'fas fa-dollar-sign'
-            }
-        };
-
-        // Global variables
-        let provider;
-        let signer;
-        let walletAddress = '';
-        let walletConnected = false;
-        let tokenContracts = {};
-
-        // DOM Elements
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const sections = document.querySelectorAll('.section');
-        const connectBtn = document.getElementById('connectBtn');
-        const disconnectBtn = document.getElementById('disconnectBtn');
-        const walletInfo = document.getElementById('walletInfo');
-        const walletAddressEl = document.getElementById('walletAddress');
-        const yourAddressEl = document.getElementById('yourAddress');
-        const copyAddressBtn = document.getElementById('copyAddressBtn');
-        const copyReceiveBtn = document.getElementById('copyReceiveBtn');
-        const refreshBtn = document.getElementById('refreshBtn');
-        const sendTokensBtn = document.getElementById('sendTokens');
-        const swapTokensBtn = document.getElementById('swapTokens');
-        const swapDirection = document.getElementById('swapDirection');
-        const notification = document.getElementById('notification');
-        const notificationText = document.getElementById('notificationText');
-        const connectionModal = document.getElementById('connectionModal');
-        const metamaskBtn = document.getElementById('metamaskBtn');
-        const privateKeyBtn = document.getElementById('privateKeyBtn');
-        const privateKeyInput = document.getElementById('privateKeyInput');
-        const privateKeyField = document.getElementById('privateKeyField');
-        const connectWithPrivateKeyBtn = document.getElementById('connectWithPrivateKey');
-        const closeModalBtn = document.getElementById('closeModal');
-        const assetsContainer = document.getElementById('assetsContainer');
-        const loadingBalances = document.getElementById('loadingBalances');
-        const loadingTransactions = document.getElementById('loadingTransactions');
-
-        // Initialize the app
-        function init() {
-            // Initialize provider (read-only connection to blockchain)
-            provider = new ethers.providers.InfuraProvider(NETWORK, INFURA_PROJECT_ID);
+        <div class="wallet-body">
+            <div class="balance-section">
+                <div class="balance-label">Total Balance</div>
+                <div class="balance-amount">$4,283.75</div>
+                <div class="balance-equivalent">2.15 ETH</div>
+            </div>
             
-            // Check if user was previously connected
-            const savedWallet = localStorage.getItem('supremeamer_wallet');
-            if (savedWallet) {
-                try {
-                    connectWithPrivateKey(savedWallet);
-                } catch (error) {
-                    console.error('Error connecting with saved wallet:', error);
-                    localStorage.removeItem('supremeamer_wallet');
-                }
-            }
+            <div class="action-buttons">
+                <button class="action-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Send</span>
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Receive</span>
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Swap</span>
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Stake</span>
+                </button>
+            </div>
             
-            setupEventListeners();
-            updateUI();
-        }
-
-        // Set up event listeners
-        function setupEventListeners() {
-            // Navigation
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const sectionId = button.getAttribute('data-section');
-                    switchSection(sectionId);
-                    
-                    // Update active button
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                });
-            });
-
-            // Wallet connection
-            connectBtn.addEventListener('click', () => connectionModal.classList.add('active'));
-            disconnectBtn.addEventListener('click', disconnectWallet);
-            closeModalBtn.addEventListener('click', () => connectionModal.classList.remove('active'));
+            <div class="wallet-connect-section">
+                <div class="wallet-connect-title">
+                    <i class="fas fa-plug"></i>
+                    <span>WalletConnect</span>
+                </div>
+                <button id="connectBtn" class="wallet-connect-btn">
+                    <i class="fas fa-link"></i>
+                    <span>Connect Wallet</span>
+                </button>
+            </div>
             
-            metamaskBtn.addEventListener('click', connectWithMetaMask);
-            privateKeyBtn.addEventListener('click', () => privateKeyInput.style.display = 'block');
-            connectWithPrivateKeyBtn.addEventListener('click', () => {
-                const privateKey = privateKeyField.value.trim();
-                if (privateKey) {
-                    connectWithPrivateKey(privateKey);
-                    connectionModal.classList.remove('active');
-                    privateKeyField.value = '';
-                    privateKeyInput.style.display = 'none';
-                } else {
-                    showNotification('Please enter a private key', 'error');
-                }
-            });
-
-            // Copy address buttons
-            copyAddressBtn.addEventListener('click', () => copyAddress(walletAddress));
-            copyReceiveBtn.addEventListener('click', () => copyAddress(walletAddress));
-
-            // Refresh balances
-            refreshBtn.addEventListener('click', refreshBalances);
-
-            // Send tokens
-            sendTokensBtn.addEventListener('click', sendTokens);
-
-            // Swap tokens
-            swapTokensBtn.addEventListener('click', swapTokens);
-            swapDirection.addEventListener('click', toggleSwapDirection);
-
-            // Real-time calculation for swap
-            document.getElementById('swapAmount').addEventListener('input', calculateSwap);
-            document.getElementById('tokenFrom').addEventListener('change', calculateSwap);
-            document.getElementById('tokenTo').addEventListener('change', calculateSwap);
-            
-            // Enable/disable send button based on input
-            document.getElementById('sendAmount').addEventListener('input', validateSendForm);
-            document.getElementById('recipientAddress').addEventListener('input', validateSendForm);
-        }
-
-        // Connect with MetaMask
-        async function connectWithMetaMask() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    // Request account access
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    
-                    // Create a Web3Provider from the injected provider
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    signer = provider.getSigner();
-                    walletAddress = await signer.getAddress();
-                    
-                    walletConnected = true;
-                    connectionModal.classList.remove('active');
-                    updateUI();
-                    loadWalletData();
-                    showNotification('Wallet connected successfully!', 'success');
-                } catch (error) {
-                    console.error('Error connecting with MetaMask:', error);
-                    showNotification('Failed to connect with MetaMask', 'error');
-                }
-            } else {
-                showNotification('MetaMask not detected. Please install MetaMask.', 'error');
-            }
-        }
-
-        // Connect with private key
-        async function connectWithPrivateKey(privateKey) {
-            try {
-                // Create a wallet from the private key
-                const wallet = new ethers.Wallet(privateKey);
-                
-                // Connect the wallet to the provider
-                signer = wallet.connect(provider);
-                walletAddress = await signer.getAddress();
-                
-                // Save the private key locally (for demo purposes only - in production, use more secure methods)
-                localStorage.setItem('supremeamer_wallet', privateKey);
-                
-                walletConnected = true;
-                updateUI();
-                loadWalletData();
-                showNotification('Wallet connected successfully!', 'success');
-            } catch (error) {
-                console.error('Error connecting with private key:', error);
-                showNotification('Invalid private key', 'error');
-            }
-        }
-
-        // Disconnect wallet
-        function disconnectWallet() {
-            walletConnected = false;
-            walletAddress = '';
-            signer = null;
-            localStorage.removeItem('supremeamer_wallet');
-            updateUI();
-            showNotification('Wallet disconnected', 'success');
-        }
-
-        // Update UI based on connection state
-        function updateUI() {
-            if (walletConnected) {
-                connectBtn.style.display = 'none';
-                walletInfo.style.display = 'flex';
-                walletAddressEl.textContent = `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`;
-                yourAddressEl.textContent = `${walletAddress.substring(0, 10)}...${walletAddress.substring(walletAddress.length - 8)}`;
-                copyReceiveBtn.disabled = false;
-                
-                // Enable buttons that require wallet connection
-                sendTokensBtn.disabled = false;
-                swapTokensBtn.disabled = false;
-            } else {
-                connectBtn.style.display = 'block';
-                walletInfo.style.display = 'none';
-                yourAddressEl.textContent = 'Connect your wallet to see address';
-                copyReceiveBtn.disabled = true;
-                
-                // Disable buttons that require wallet connection
-                sendTokensBtn.disabled = true;
-                swapTokensBtn.disabled = true;
-                
-                // Clear assets
-                assetsContainer.innerHTML = '<div class="asset-card"><p>Connect your wallet to view assets</p></div>';
-                
-                // Clear transaction history
-                document.getElementById('transactionList').innerHTML = '<li>Connect your wallet to view transaction history</li>';
-            }
-        }
-
-        // Load wallet data (balances, transactions)
-        async function loadWalletData() {
-            if (!walletConnected) return;
-            
-            await loadBalances();
-            await loadTransactionHistory();
-            await updateExchangeRates();
-        }
-
-        // Load token balances
-        async function loadBalances() {
-            if (!walletConnected) return;
-            
-            loadingBalances.style.display = 'block';
-            assetsContainer.innerHTML = '';
-            
-            try {
-                // Load ETH balance
-                const ethBalance = await provider.getBalance(walletAddress);
-                const ethBalanceFormatted = ethers.utils.formatEther(ethBalance);
-                
-                // Load token balances
-                const tokenBalances = {};
-                for (const [key, token] of Object.entries(TOKENS)) {
-                    if (token.address) {
-                        // Create contract instance for ERC20 token
-                        const contract = new ethers.Contract(
-                            token.address,
-                            ['function balanceOf(address) view returns (uint256)'],
-                            provider
-                        );
-                        
-                        const balance = await contract.balanceOf(walletAddress);
-                        tokenBalances[key] = ethers.utils.formatUnits(balance, token.decimals);
-                    }
-                }
-                
-                // Update UI with balances
-                updateBalancesUI({
-                    eth: ethBalanceFormatted,
-                    ...tokenBalances
-                });
-                
-            } catch (error) {
-                console.error('Error loading balances:', error);
-                showNotification('Failed to load balances', 'error');
-            } finally {
-                loadingBalances.style.display = 'none';
-            }
-        }
-
-        // Update balances in the UI
-        function updateBalancesUI(balances) {
-            assetsContainer.innerHTML = '';
-            
-            for (const [key, token] of Object.entries(TOKENS)) {
-                const balance = parseFloat(balances[key] || 0).toFixed(6);
-                const value = (balance * (token.price || 0)).toFixed(2);
-                
-                const assetCard = document.createElement('div');
-                assetCard.className = 'asset-card';
-                assetCard.innerHTML = `
-                    <div class="asset-header">
-                        <div class="asset-icon ${key}-icon">
-                            <i class="${token.icon}"></i>
-                        </div>
-                        <span class="asset-name">${token.name}</span>
-                    </div>
-                    <div class="asset-balance">${balance} ${token.symbol}</div>
-                    <div class="asset-value">$${value}</div>
-                    <div class="asset-change positive">+0.0% (24h)</div>
-                `;
-                
-                assetsContainer.appendChild(assetCard);
-            }
-        }
-
-        // Load transaction history
-        async function loadTransactionHistory() {
-            if (!walletConnected) return;
-            
-            loadingTransactions.style.display = 'block';
-            const transactionList = document.getElementById('transactionList');
-            transactionList.innerHTML = '';
-            
-            try {
-                // Get recent transactions (last 10)
-                const history = await provider.getHistory(walletAddress);
-                const recentTransactions = history.slice(-10).reverse();
-                
-                if (recentTransactions.length === 0) {
-                    transactionList.innerHTML = '<li>No transactions found</li>';
-                    return;
-                }
-                
-                recentTransactions.forEach(tx => {
-                    const transactionItem = document.createElement('li');
-                    transactionItem.className = 'transaction-item';
-                    
-                    const isSend = tx.from.toLowerCase() === walletAddress.toLowerCase();
-                    const value = ethers.utils.formatEther(tx.value);
-                    const date = new Date(tx.timestamp * 1000).toLocaleDateString();
-                    
-                    transactionItem.innerHTML = `
-                        <div class="transaction-icon ${isSend ? 'transaction-send' : 'transaction-receive'}">
-                            <i class="fas fa-${isSend ? 'paper-plane' : 'qrcode'}"></i>
+            <div class="recent-transactions">
+                <div class="section-title">
+                    <i class="fas fa-history"></i>
+                    <span>Recent Transactions</span>
+                </div>
+                <ul class="transaction-list">
+                    <li class="transaction-item">
+                        <div class="transaction-icon">
+                            <i class="fas fa-shopping-cart"></i>
                         </div>
                         <div class="transaction-details">
-                            <div class="transaction-type">${isSend ? 'Sent ETH' : 'Received ETH'}</div>
-                            <div class="transaction-date">${date}</div>
+                            <div class="transaction-title">NFT Purchase</div>
+                            <div class="transaction-date">Today, 14:32</div>
                         </div>
-                        <div class="transaction-amount">${isSend ? '-' : '+'}${value} ETH</div>
-                    `;
+                        <div class="transaction-amount negative">-0.25 ETH</div>
+                    </li>
+                    <li class="transaction-item">
+                        <div class="transaction-icon">
+                            <i class="fas fa-download"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">Deposit</div>
+                            <div class="transaction-date">Yesterday, 09:15</div>
+                        </div>
+                        <div class="transaction-amount positive">+1.5 ETH</div>
+                    </li>
+                    <li class="transaction-item">
+                        <div class="transaction-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">Token Swap</div>
+                            <div class="transaction-date">May 12, 2023</div>
+                        </div>
+                        <div class="transaction-amount negative">-0.1 ETH</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="wallet-footer">
+            <div class="wallet-address">
+                <i class="fas fa-user-circle"></i>
+                <span id="walletAddress">Not connected</span>
+                <div id="statusIndicator" class="status-indicator"></div>
+            </div>
+            <div class="wallet-actions">
+                <button class="wallet-action-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="wallet-action-btn">
+                    <i class="fas fa-qrcode" id="showQrBtn"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="qrModal" class="qr-modal">
+        <div class="qr-content">
+            <h2 class="qr-title">Scan QR Code</h2>
+            <div class="qr-code">
+                <!-- In a real implementation, this would be a QR code -->
+                <div>WalletConnect QR Code</div>
+            </div>
+            <button class="close-modal">Close</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const connectBtn = document.getElementById('connectBtn');
+            const walletAddress = document.getElementById('walletAddress');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const qrModal = document.getElementById('qrModal');
+            const showQrBtn = document.getElementById('showQrBtn');
+            const closeModal = document.querySelector('.close-modal');
+            
+            let isConnected = false;
+            
+            // Simulate WalletConnect connection
+            connectBtn.addEventListener('click', function() {
+                if (!isConnected) {
+                    // Show QR modal for connection
+                    qrModal.style.display = 'flex';
                     
-                    transactionList.appendChild(transactionItem);
-                });
-                
-            } catch (error) {
-                console.error('Error loading transaction history:', error);
-                transactionList.innerHTML = '<li>Error loading transactions</li>';
-            } finally {
-                loadingTransactions.style.display = 'none';
-            }
-        }
-
-        // Update exchange rates (mock for now - in production, use an API)
-        async function updateExchangeRates() {
-            // Mock prices - in production, use an API like CoinGecko
-            TOKENS.eth.price = 1800; // Example ETH price
-            TOKENS.dai.price = 1;    // DAI is stablecoin
-            TOKENS.usdc.price = 1;   // USDC is stablecoin
-            
-            // Update exchange rate display
-            document.getElementById('exchangeRate').textContent = 
-                `1 ETH = ${TOKENS.eth.price} DAI / ${TOKENS.eth.price} USDC`;
-        }
-
-        // Switch between sections
-        function switchSection(sectionId) {
-            sections.forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById(sectionId).classList.add('active');
-        }
-
-        // Copy address to clipboard
-        function copyAddress(address) {
-            navigator.clipboard.writeText(address).then(() => {
-                showNotification('Address copied to clipboard!', 'success');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showNotification('Failed to copy address', 'error');
-            });
-        }
-
-        // Refresh balances
-        function refreshBalances() {
-            if (!walletConnected) {
-                showNotification('Please connect your wallet first', 'error');
-                return;
-            }
-            
-            showNotification('Refreshing balances...', 'success');
-            loadWalletData();
-        }
-
-        // Validate send form
-        function validateSendForm() {
-            const amount = document.getElementById('sendAmount').value;
-            const recipient = document.getElementById('recipientAddress').value;
-            
-            sendTokensBtn.disabled = !amount || !recipient || parseFloat(amount) <= 0;
-        }
-
-        // Send tokens
-        async function sendTokens() {
-            if (!walletConnected || !signer) {
-                showNotification('Please connect your wallet first', 'error');
-                return;
-            }
-            
-            const tokenKey = document.getElementById('sendToken').value;
-            const amount = document.getElementById('sendAmount').value;
-            const recipient = document.getElementById('recipientAddress').value;
-            
-            if (!recipient || !ethers.utils.isAddress(recipient)) {
-                showNotification('Please enter a valid recipient address', 'error');
-                return;
-            }
-            
-            if (!amount || parseFloat(amount) <= 0) {
-                showNotification('Please enter a valid amount', 'error');
-                return;
-            }
-            
-            try {
-                sendTokensBtn.innerHTML = '<div class="loading"></div> Sending...';
-                sendTokensBtn.disabled = true;
-                
-                let tx;
-                const token = TOKENS[tokenKey];
-                
-                if (tokenKey === 'eth') {
-                    // Send ETH
-                    tx = await signer.sendTransaction({
-                        to: recipient,
-                        value: ethers.utils.parseEther(amount)
-                    });
+                    // Simulate connection after 3 seconds
+                    setTimeout(function() {
+                        isConnected = true;
+                        connectBtn.innerHTML = '<i class="fas fa-check"></i><span>Connected</span>';
+                        connectBtn.classList.add('connected');
+                        walletAddress.textContent = '0x1a2b...3c4d';
+                        statusIndicator.classList.add('connected');
+                        qrModal.style.display = 'none';
+                    }, 3000);
                 } else {
-                    // Send ERC20 token
-                    const contract = new ethers.Contract(
-                        token.address,
-                        ['function transfer(address to, uint256 amount) returns (bool)'],
-                        signer
-                    );
-                    
-                    const amountInWei = ethers.utils.parseUnits(amount, token.decimals);
-                    tx = await contract.transfer(recipient, amountInWei);
+                    // Disconnect
+                    isConnected = false;
+                    connectBtn.innerHTML = '<i class="fas fa-link"></i><span>Connect Wallet</span>';
+                    connectBtn.classList.remove('connected');
+                    walletAddress.textContent = 'Not connected';
+                    statusIndicator.classList.remove('connected');
                 }
-                
-                showNotification(`Transaction sent! Hash: ${tx.hash}`, 'success');
-                
-                // Wait for transaction to be mined
-                await tx.wait();
-                showNotification('Transaction confirmed!', 'success');
-                
-                // Refresh balances
-                loadWalletData();
-                
-            } catch (error) {
-                console.error('Error sending tokens:', error);
-                showNotification('Transaction failed: ' + error.message, 'error');
-            } finally {
-                sendTokensBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Tokens';
-                sendTokensBtn.disabled = false;
-                validateSendForm();
-            }
-        }
-
-        // Calculate swap result in real-time
-        function calculateSwap() {
-            if (!walletConnected) return;
+            });
             
-            const tokenFrom = document.getElementById('tokenFrom').value;
-            const tokenTo = document.getElementById('tokenTo').value;
-            const amount = parseFloat(document.getElementById('swapAmount').value) || 0;
+            // Show QR modal
+            showQrBtn.addEventListener('click', function() {
+                if (isConnected) {
+                    qrModal.style.display = 'flex';
+                } else {
+                    alert('Please connect your wallet first');
+                }
+            });
             
-            if (amount <= 0) {
-                document.getElementById('swapResult').value = '';
-                return;
-            }
+            // Close QR modal
+            closeModal.addEventListener('click', function() {
+                qrModal.style.display = 'none';
+            });
             
-            // Simple conversion based on token prices
-            const fromPrice = TOKENS[tokenFrom].price || 1;
-            const toPrice = TOKENS[tokenTo].price || 1;
-            const result = amount * (fromPrice / toPrice);
-            
-            document.getElementById('swapResult').value = result.toFixed(6);
-        }
-
-        // Toggle swap direction
-        function toggleSwapDirection() {
-            const tokenFrom = document.getElementById('tokenFrom');
-            const tokenTo = document.getElementById('tokenTo');
-            
-            // Swap values
-            const temp = tokenFrom.value;
-            tokenFrom.value = tokenTo.value;
-            tokenTo.value = temp;
-            
-            // Recalculate
-            calculateSwap();
-        }
-
-        // Swap tokens (mock implementation - real implementation would use a DEX)
-        async function swapTokens() {
-            if (!walletConnected) {
-                showNotification('Please connect your wallet first', 'error');
-                return;
-            }
-            
-            showNotification('Swap functionality would integrate with a DEX like Uniswap in a real implementation', 'success');
-            
-            // In a real implementation, this would:
-            // 1. Check approval for token spending
-            // 2. Get quote from DEX API
-            // 3. Execute swap transaction
-        }
-
-        // Show notification
-        function showNotification(message, type) {
-            notificationText.textContent = message;
-            notification.className = 'notification';
-            notification.classList.add(type === 'success' ? 'notification-success' : 'notification-error');
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
-        }
-
-        // Initialize the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === qrModal) {
+                    qrModal.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>
