@@ -3,9 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern WalletConnect Wallet</title>
+    <title>Modern WalletConnect v2 Wallet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.10.1/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
     <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #1a1a2e;
+            --darker: #16213e;
+            --light: rgba(255, 255, 255, 0.9);
+            --gray: rgba(255, 255, 255, 0.6);
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,8 +30,8 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
+            color: var(--light);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -25,13 +41,18 @@
 
         .wallet-container {
             width: 100%;
-            max-width: 450px;
-            background: rgba(255, 255, 255, 0.05);
+            max-width: 480px;
+            background: var(--glass);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
+            transition: transform 0.3s ease;
+        }
+
+        .wallet-container:hover {
+            transform: translateY(-5px);
         }
 
         .wallet-header {
@@ -40,7 +61,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .wallet-logo {
@@ -51,12 +72,15 @@
 
         .wallet-logo i {
             font-size: 28px;
-            color: #3498db;
+            color: var(--primary);
         }
 
         .wallet-logo h1 {
             font-size: 22px;
             font-weight: 600;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .network-indicator {
@@ -76,31 +100,43 @@
         .balance-section {
             text-align: center;
             margin-bottom: 30px;
+            position: relative;
         }
 
         .balance-label {
             font-size: 16px;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--gray);
             margin-bottom: 10px;
         }
 
         .balance-amount {
-            font-size: 40px;
+            font-size: 42px;
             font-weight: 700;
             margin-bottom: 5px;
-            background: linear-gradient(90deg, #3498db, #2ecc71);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .balance-equivalent {
             font-size: 16px;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--gray);
+        }
+
+        .balance-change {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: var(--secondary);
         }
 
         .action-buttons {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -108,10 +144,10 @@
         .action-btn {
             background: rgba(255, 255, 255, 0.1);
             border: none;
-            padding: 15px;
+            padding: 15px 10px;
             border-radius: 12px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -122,7 +158,7 @@
 
         .action-btn:hover {
             background: rgba(52, 152, 219, 0.3);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
 
         .action-btn i {
@@ -145,13 +181,13 @@
         }
 
         .wallet-connect-title i {
-            color: #3498db;
+            color: var(--primary);
         }
 
         .wallet-connect-btn {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(90deg, #3498db, #2ecc71);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             border: none;
             border-radius: 12px;
             color: white;
@@ -171,7 +207,7 @@
         }
 
         .wallet-connect-btn.connected {
-            background: linear-gradient(90deg, #2ecc71, #27ae60);
+            background: linear-gradient(90deg, var(--secondary), #27ae60);
         }
 
         .wallet-connect-btn.connected:hover {
@@ -191,7 +227,7 @@
         }
 
         .section-title i {
-            color: #3498db;
+            color: var(--primary);
         }
 
         .transaction-list {
@@ -203,7 +239,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .transaction-icon {
@@ -228,7 +264,7 @@
 
         .transaction-date {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--gray);
         }
 
         .transaction-amount {
@@ -236,17 +272,17 @@
         }
 
         .transaction-amount.positive {
-            color: #2ecc71;
+            color: var(--secondary);
         }
 
         .transaction-amount.negative {
-            color: #e74c3c;
+            color: var(--danger);
         }
 
         .wallet-footer {
             padding: 20px;
             background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--glass-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -257,11 +293,11 @@
             align-items: center;
             gap: 10px;
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--gray);
         }
 
         .wallet-address i {
-            color: #3498db;
+            color: var(--primary);
         }
 
         .wallet-actions {
@@ -272,29 +308,29 @@
         .wallet-action-btn {
             background: none;
             border: none;
-            color: rgba(255, 255, 255, 0.7);
+            color: var(--gray);
             font-size: 18px;
             cursor: pointer;
             transition: color 0.3s ease;
         }
 
         .wallet-action-btn:hover {
-            color: #3498db;
+            color: var(--primary);
         }
 
         .status-indicator {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #e74c3c;
+            background: var(--danger);
             margin-left: 5px;
         }
 
         .status-indicator.connected {
-            background: #2ecc71;
+            background: var(--secondary);
         }
 
-        .qr-modal {
+        .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -307,41 +343,106 @@
             align-items: center;
         }
 
-        .qr-content {
-            background: #1a1a2e;
+        .modal-content {
+            background: var(--dark);
             padding: 30px;
             border-radius: 20px;
             text-align: center;
-            max-width: 300px;
+            max-width: 400px;
             width: 90%;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--glass-border);
         }
 
-        .qr-title {
+        .modal-title {
             margin-bottom: 20px;
             font-size: 20px;
         }
 
-        .qr-code {
-            width: 200px;
-            height: 200px;
-            background: #fff;
-            margin: 0 auto 20px;
+        .modal-message {
+            margin-bottom: 20px;
+            color: var(--gray);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .network-selector {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            color: white;
+            width: 100%;
+        }
+
+        .token-list {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .token-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .token-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.2);
             display: flex;
             justify-content: center;
             align-items: center;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #333;
+            margin: 0 auto 10px;
         }
 
-        .close-modal {
-            background: #3498db;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
+        .token-name {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .token-balance {
             font-weight: 600;
+            font-size: 16px;
+        }
+
+        .token-value {
+            font-size: 12px;
+            color: var(--gray);
         }
 
         @media (max-width: 480px) {
@@ -358,8 +459,51 @@
             }
             
             .action-buttons {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: var(--dark);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--secondary);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -368,11 +512,11 @@
         <div class="wallet-header">
             <div class="wallet-logo">
                 <i class="fas fa-wallet"></i>
-                <h1>CryptoWallet</h1>
+                <h1>Web3Wallet</h1>
             </div>
             <div class="network-indicator">
                 <i class="fab fa-ethereum"></i>
-                <span>Ethereum Mainnet</span>
+                <span id="networkName">Ethereum Mainnet</span>
             </div>
         </div>
         
@@ -381,22 +525,53 @@
                 <div class="balance-label">Total Balance</div>
                 <div class="balance-amount">$4,283.75</div>
                 <div class="balance-equivalent">2.15 ETH</div>
+                <div class="balance-change">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>2.5%</span>
+                </div>
+            </div>
+            
+            <div class="token-list">
+                <div class="token-item">
+                    <div class="token-icon">
+                        <i class="fab fa-ethereum"></i>
+                    </div>
+                    <div class="token-name">ETH</div>
+                    <div class="token-balance">2.15</div>
+                    <div class="token-value">$4,283.75</div>
+                </div>
+                <div class="token-item">
+                    <div class="token-icon">
+                        <i class="fab fa-bitcoin"></i>
+                    </div>
+                    <div class="token-name">WBTC</div>
+                    <div class="token-balance">0.12</div>
+                    <div class="token-value">$3,240.00</div>
+                </div>
+                <div class="token-item">
+                    <div class="token-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="token-name">USDC</div>
+                    <div class="token-balance">1,250</div>
+                    <div class="token-value">$1,250.00</div>
+                </div>
             </div>
             
             <div class="action-buttons">
-                <button class="action-btn">
+                <button class="action-btn" id="sendBtn">
                     <i class="fas fa-paper-plane"></i>
                     <span>Send</span>
                 </button>
-                <button class="action-btn">
+                <button class="action-btn" id="receiveBtn">
                     <i class="fas fa-download"></i>
                     <span>Receive</span>
                 </button>
-                <button class="action-btn">
+                <button class="action-btn" id="swapBtn">
                     <i class="fas fa-exchange-alt"></i>
                     <span>Swap</span>
                 </button>
-                <button class="action-btn">
+                <button class="action-btn" id="stakeBtn">
                     <i class="fas fa-chart-line"></i>
                     <span>Stake</span>
                 </button>
@@ -407,6 +582,12 @@
                     <i class="fas fa-plug"></i>
                     <span>WalletConnect</span>
                 </div>
+                <select class="network-selector" id="networkSelector">
+                    <option value="1">Ethereum Mainnet</option>
+                    <option value="5">Goerli Testnet</option>
+                    <option value="137">Polygon Mainnet</option>
+                    <option value="80001">Mumbai Testnet</option>
+                </select>
                 <button id="connectBtn" class="wallet-connect-btn">
                     <i class="fas fa-link"></i>
                     <span>Connect Wallet</span>
@@ -418,37 +599,8 @@
                     <i class="fas fa-history"></i>
                     <span>Recent Transactions</span>
                 </div>
-                <ul class="transaction-list">
-                    <li class="transaction-item">
-                        <div class="transaction-icon">
-                            <i class="fas fa-shopping-cart"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <div class="transaction-title">NFT Purchase</div>
-                            <div class="transaction-date">Today, 14:32</div>
-                        </div>
-                        <div class="transaction-amount negative">-0.25 ETH</div>
-                    </li>
-                    <li class="transaction-item">
-                        <div class="transaction-icon">
-                            <i class="fas fa-download"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <div class="transaction-title">Deposit</div>
-                            <div class="transaction-date">Yesterday, 09:15</div>
-                        </div>
-                        <div class="transaction-amount positive">+1.5 ETH</div>
-                    </li>
-                    <li class="transaction-item">
-                        <div class="transaction-icon">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <div class="transaction-title">Token Swap</div>
-                            <div class="transaction-date">May 12, 2023</div>
-                        </div>
-                        <div class="transaction-amount negative">-0.1 ETH</div>
-                    </li>
+                <ul class="transaction-list" id="transactionList">
+                    <!-- Transactions will be populated by JavaScript -->
                 </ul>
             </div>
         </div>
@@ -460,83 +612,407 @@
                 <div id="statusIndicator" class="status-indicator"></div>
             </div>
             <div class="wallet-actions">
-                <button class="wallet-action-btn">
+                <button class="wallet-action-btn" id="settingsBtn">
                     <i class="fas fa-cog"></i>
                 </button>
-                <button class="wallet-action-btn">
-                    <i class="fas fa-qrcode" id="showQrBtn"></i>
+                <button class="wallet-action-btn" id="disconnectBtn">
+                    <i class="fas fa-power-off"></i>
                 </button>
             </div>
         </div>
     </div>
     
-    <div id="qrModal" class="qr-modal">
-        <div class="qr-content">
-            <h2 class="qr-title">Scan QR Code</h2>
-            <div class="qr-code">
-                <!-- In a real implementation, this would be a QR code -->
-                <div>WalletConnect QR Code</div>
+    <div id="sendModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Send Assets</h2>
+            <div class="modal-message">
+                <p>Enter recipient address and amount</p>
+                <input type="text" placeholder="Recipient Address" class="network-selector" id="recipientAddress">
+                <input type="text" placeholder="Amount" class="network-selector" id="sendAmount">
+                <select class="network-selector" id="sendToken">
+                    <option value="ETH">ETH</option>
+                    <option value="WBTC">WBTC</option>
+                    <option value="USDC">USDC</option>
+                </select>
             </div>
-            <button class="close-modal">Close</button>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelSend">Cancel</button>
+                <button class="modal-btn primary" id="confirmSend">Send</button>
+            </div>
         </div>
+    </div>
+    
+    <div id="receiveModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Receive Assets</h2>
+            <div class="modal-message">
+                <p>Share your wallet address to receive funds</p>
+                <div class="wallet-address" style="justify-content: center; margin: 20px 0;">
+                    <i class="fas fa-wallet"></i>
+                    <span id="receiveAddress">0x0000...0000</span>
+                </div>
+                <div class="qr-code-placeholder" style="width: 200px; height: 200px; background: #f5f5f5; margin: 0 auto; display: flex; justify-content: center; align-items: center; border-radius: 10px;">
+                    <span style="color: #333;">QR Code</span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn primary" id="copyAddress">Copy Address</button>
+                <button class="modal-btn secondary" id="closeReceive">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notificationText">This is a notification</span>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
             const connectBtn = document.getElementById('connectBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
             const walletAddress = document.getElementById('walletAddress');
             const statusIndicator = document.getElementById('statusIndicator');
-            const qrModal = document.getElementById('qrModal');
-            const showQrBtn = document.getElementById('showQrBtn');
-            const closeModal = document.querySelector('.close-modal');
-            
+            const networkSelector = document.getElementById('networkSelector');
+            const networkName = document.getElementById('networkName');
+            const sendBtn = document.getElementById('sendBtn');
+            const receiveBtn = document.getElementById('receiveBtn');
+            const swapBtn = document.getElementById('swapBtn');
+            const stakeBtn = document.getElementById('stakeBtn');
+            const sendModal = document.getElementById('sendModal');
+            const receiveModal = document.getElementById('receiveModal');
+            const cancelSend = document.getElementById('cancelSend');
+            const confirmSend = document.getElementById('confirmSend');
+            const closeReceive = document.getElementById('closeReceive');
+            const copyAddress = document.getElementById('copyAddress');
+            const receiveAddress = document.getElementById('receiveAddress');
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            const transactionList = document.getElementById('transactionList');
+
+            // WalletConnect provider instance
+            let walletConnectProvider = null;
             let isConnected = false;
-            
-            // Simulate WalletConnect connection
-            connectBtn.addEventListener('click', function() {
-                if (!isConnected) {
-                    // Show QR modal for connection
-                    qrModal.style.display = 'flex';
+            let currentAccount = null;
+
+            // Initialize WalletConnect
+            async function initWalletConnect() {
+                try {
+                    // Create WalletConnect Provider
+                    walletConnectProvider = await EthereumProvider.init({
+                        projectId: 'YOUR_WALLETCONNECT_PROJECT_ID', // Replace with your actual project ID
+                        chains: [1], // Ethereum Mainnet
+                        optionalChains: [5, 137, 80001], // Optional chains
+                        showQrModal: true,
+                        qrModalOptions: {
+                            themeMode: 'dark'
+                        },
+                        methods: [
+                            'eth_sendTransaction',
+                            'eth_signTransaction',
+                            'eth_sign',
+                            'personal_sign',
+                            'eth_signTypedData',
+                        ],
+                        events: ['chainChanged', 'accountsChanged'],
+                    });
+
+                    // Subscribe to events
+                    walletConnectProvider.on('accountsChanged', handleAccountsChanged);
+                    walletConnectProvider.on('chainChanged', handleChainChanged);
+                    walletConnectProvider.on('disconnect', handleDisconnect);
                     
-                    // Simulate connection after 3 seconds
-                    setTimeout(function() {
-                        isConnected = true;
-                        connectBtn.innerHTML = '<i class="fas fa-check"></i><span>Connected</span>';
-                        connectBtn.classList.add('connected');
-                        walletAddress.textContent = '0x1a2b...3c4d';
-                        statusIndicator.classList.add('connected');
-                        qrModal.style.display = 'none';
-                    }, 3000);
+                    // Check if already connected
+                    if (walletConnectProvider.accounts.length > 0) {
+                        handleAccountsChanged(walletConnectProvider.accounts);
+                    }
+                } catch (error) {
+                    console.error('Error initializing WalletConnect:', error);
+                    showNotification('Failed to initialize WalletConnect', 'error');
+                }
+            }
+
+            // Handle account changes
+            function handleAccountsChanged(accounts) {
+                if (accounts.length === 0) {
+                    // User disconnected
+                    handleDisconnect();
                 } else {
-                    // Disconnect
-                    isConnected = false;
+                    // User connected or switched accounts
+                    currentAccount = accounts[0];
+                    updateUI();
+                    showNotification('Wallet connected successfully', 'success');
+                }
+            }
+
+            // Handle chain changes
+            function handleChainChanged(chainId) {
+                const chainIdNum = parseInt(chainId, 16);
+                updateNetworkInfo(chainIdNum);
+                showNotification(`Network changed to ${getNetworkName(chainIdNum)}`, 'info');
+            }
+
+            // Handle disconnect
+            function handleDisconnect() {
+                isConnected = false;
+                currentAccount = null;
+                updateUI();
+                showNotification('Wallet disconnected', 'info');
+            }
+
+            // Update UI based on connection state
+            function updateUI() {
+                if (isConnected && currentAccount) {
+                    connectBtn.innerHTML = '<i class="fas fa-check"></i><span>Connected</span>';
+                    connectBtn.classList.add('connected');
+                    walletAddress.textContent = `${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
+                    statusIndicator.classList.add('connected');
+                    receiveAddress.textContent = currentAccount;
+                } else {
                     connectBtn.innerHTML = '<i class="fas fa-link"></i><span>Connect Wallet</span>';
                     connectBtn.classList.remove('connected');
                     walletAddress.textContent = 'Not connected';
                     statusIndicator.classList.remove('connected');
+                    receiveAddress.textContent = '0x0000...0000';
                 }
+            }
+
+            // Update network information
+            function updateNetworkInfo(chainId) {
+                const network = getNetworkName(chainId);
+                networkName.textContent = network;
+                
+                // Update network selector
+                for (let option of networkSelector.options) {
+                    if (parseInt(option.value) === chainId) {
+                        option.selected = true;
+                        break;
+                    }
+                }
+            }
+
+            // Get network name from chain ID
+            function getNetworkName(chainId) {
+                switch (chainId) {
+                    case 1: return 'Ethereum Mainnet';
+                    case 5: return 'Goerli Testnet';
+                    case 137: return 'Polygon Mainnet';
+                    case 80001: return 'Mumbai Testnet';
+                    default: return `Chain ${chainId}`;
+                }
+            }
+
+            // Get chain ID from network name
+            function getChainId(networkName) {
+                switch (networkName) {
+                    case 'Ethereum Mainnet': return 1;
+                    case 'Goerli Testnet': return 5;
+                    case 'Polygon Mainnet': return 137;
+                    case 'Mumbai Testnet': return 80001;
+                    default: return 1;
+                }
+            }
+
+            // Show notification
+            function showNotification(message, type = 'info') {
+                notificationText.textContent = message;
+                notification.className = 'notification';
+                notification.classList.add(type);
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+
+            // Connect wallet
+            async function connectWallet() {
+                try {
+                    if (!walletConnectProvider) {
+                        await initWalletConnect();
+                    }
+                    
+                    if (!isConnected) {
+                        connectBtn.innerHTML = '<div class="loader"></div><span>Connecting...</span>';
+                        await walletConnectProvider.connect();
+                        isConnected = true;
+                    }
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    showNotification('Failed to connect wallet', 'error');
+                    updateUI();
+                }
+            }
+
+            // Disconnect wallet
+            async function disconnectWallet() {
+                try {
+                    if (walletConnectProvider && isConnected) {
+                        await walletConnectProvider.disconnect();
+                        isConnected = false;
+                        currentAccount = null;
+                        updateUI();
+                    }
+                } catch (error) {
+                    console.error('Error disconnecting wallet:', error);
+                    showNotification('Failed to disconnect wallet', 'error');
+                }
+            }
+
+            // Switch network
+            async function switchNetwork(chainId) {
+                try {
+                    if (walletConnectProvider && isConnected) {
+                        await walletConnectProvider.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: `0x${chainId.toString(16)}` }],
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error switching network:', error);
+                    showNotification('Failed to switch network', 'error');
+                }
+            }
+
+            // Send transaction
+            async function sendTransaction(to, value) {
+                try {
+                    if (walletConnectProvider && isConnected) {
+                        const txHash = await walletConnectProvider.request({
+                            method: 'eth_sendTransaction',
+                            params: [
+                                {
+                                    from: currentAccount,
+                                    to: to,
+                                    value: value,
+                                    gasLimit: '0x5028',
+                                    gasPrice: '0x2540be400',
+                                },
+                            ],
+                        });
+                        showNotification('Transaction sent successfully', 'success');
+                        addTransaction(to, value, 'Sent');
+                        return txHash;
+                    }
+                } catch (error) {
+                    console.error('Error sending transaction:', error);
+                    showNotification('Failed to send transaction', 'error');
+                }
+            }
+
+            // Add transaction to the list
+            function addTransaction(to, value, type) {
+                const transactionItem = document.createElement('li');
+                transactionItem.className = 'transaction-item';
+                
+                const now = new Date();
+                const dateStr = `${now.toLocaleDateString()}, ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                
+                transactionItem.innerHTML = `
+                    <div class="transaction-icon">
+                        <i class="fas fa-${type === 'Sent' ? 'arrow-up' : 'arrow-down'}"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">${type} ETH</div>
+                        <div class="transaction-date">${dateStr}</div>
+                    </div>
+                    <div class="transaction-amount ${type === 'Sent' ? 'negative' : 'positive'}">${type === 'Sent' ? '-' : '+'}${value} ETH</div>
+                `;
+                
+                transactionList.insertBefore(transactionItem, transactionList.firstChild);
+            }
+
+            // Event listeners
+            connectBtn.addEventListener('click', connectWallet);
+            disconnectBtn.addEventListener('click', disconnectWallet);
+            
+            networkSelector.addEventListener('change', function() {
+                const chainId = parseInt(this.value);
+                switchNetwork(chainId);
             });
             
-            // Show QR modal
-            showQrBtn.addEventListener('click', function() {
+            sendBtn.addEventListener('click', function() {
                 if (isConnected) {
-                    qrModal.style.display = 'flex';
+                    sendModal.style.display = 'flex';
                 } else {
-                    alert('Please connect your wallet first');
+                    showNotification('Please connect your wallet first', 'error');
                 }
             });
             
-            // Close QR modal
-            closeModal.addEventListener('click', function() {
-                qrModal.style.display = 'none';
+            receiveBtn.addEventListener('click', function() {
+                if (isConnected) {
+                    receiveModal.style.display = 'flex';
+                } else {
+                    showNotification('Please connect your wallet first', 'error');
+                }
             });
             
-            // Close modal when clicking outside
+            swapBtn.addEventListener('click', function() {
+                if (isConnected) {
+                    showNotification('Swap functionality coming soon', 'info');
+                } else {
+                    showNotification('Please connect your wallet first', 'error');
+                }
+            });
+            
+            stakeBtn.addEventListener('click', function() {
+                if (isConnected) {
+                    showNotification('Staking functionality coming soon', 'info');
+                } else {
+                    showNotification('Please connect your wallet first', 'error');
+                }
+            });
+            
+            cancelSend.addEventListener('click', function() {
+                sendModal.style.display = 'none';
+            });
+            
+            confirmSend.addEventListener('click', function() {
+                const recipient = document.getElementById('recipientAddress').value;
+                const amount = document.getElementById('sendAmount').value;
+                
+                if (recipient && amount) {
+                    // In a real app, you would convert to wei and handle different tokens
+                    sendTransaction(recipient, amount);
+                    sendModal.style.display = 'none';
+                    
+                    // Clear inputs
+                    document.getElementById('recipientAddress').value = '';
+                    document.getElementById('sendAmount').value = '';
+                } else {
+                    showNotification('Please fill all fields', 'error');
+                }
+            });
+            
+            closeReceive.addEventListener('click', function() {
+                receiveModal.style.display = 'none';
+            });
+            
+            copyAddress.addEventListener('click', function() {
+                if (isConnected) {
+                    navigator.clipboard.writeText(currentAccount);
+                    showNotification('Address copied to clipboard', 'success');
+                }
+            });
+            
+            // Close modals when clicking outside
             window.addEventListener('click', function(event) {
-                if (event.target === qrModal) {
-                    qrModal.style.display = 'none';
+                if (event.target === sendModal) {
+                    sendModal.style.display = 'none';
+                }
+                if (event.target === receiveModal) {
+                    receiveModal.style.display = 'none';
                 }
             });
+
+            // Initialize with some sample transactions
+            addTransaction('0x742...d35', '0.25', 'Sent');
+            addTransaction('0x1a2...b3c', '1.5', 'Received');
+            addTransaction('0x9f8...a7b', '0.1', 'Sent');
+
+            // Initialize the app
+            initWalletConnect();
         });
     </script>
 </body>
