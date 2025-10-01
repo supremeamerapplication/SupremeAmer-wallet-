@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern WalletConnect v2 Wallet</title>
+    <title>SupremeAmer - Web3 Wallet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.10.1/dist/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.min.js"></script>
@@ -12,14 +12,39 @@
         :root {
             --primary: #3498db;
             --secondary: #2ecc71;
+            --accent: #9b59b6;
             --danger: #e74c3c;
+            --warning: #f39c12;
             --dark: #1a1a2e;
             --darker: #16213e;
             --light: rgba(255, 255, 255, 0.9);
             --gray: rgba(255, 255, 255, 0.6);
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
             --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+        }
+
+        [data-theme="light"] {
+            --primary: #2980b9;
+            --secondary: #27ae60;
+            --accent: #8e44ad;
+            --danger: #c0392b;
+            --warning: #e67e22;
+            --dark: #f5f7fa;
+            --darker: #e4e7ec;
+            --light: rgba(0, 0, 0, 0.9);
+            --gray: rgba(0, 0, 0, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --card-border: rgba(0, 0, 0, 0.1);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --text-primary: #2c3e50;
+            --text-secondary: rgba(44, 62, 80, 0.7);
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #e4e7ec;
         }
 
         * {
@@ -27,11 +52,12 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
-            background: linear-gradient(135deg, var(--dark) 0%, var(--darker) 100%);
-            color: var(--light);
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -41,13 +67,13 @@
 
         .wallet-container {
             width: 100%;
-            max-width: 480px;
-            background: var(--glass);
+            max-width: 500px;
+            background: var(--card-bg);
             backdrop-filter: blur(10px);
             border-radius: 24px;
             overflow: hidden;
             box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--card-border);
             transition: transform 0.3s ease;
         }
 
@@ -57,11 +83,11 @@
 
         .wallet-header {
             padding: 25px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--card-border);
         }
 
         .wallet-logo {
@@ -81,6 +107,62 @@
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .theme-toggle, .balance-toggle {
+            background: rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            width: 50px;
+            height: 26px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .theme-toggle::after, .balance-toggle::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            transition: transform 0.3s;
+        }
+
+        .theme-toggle.active::after, .balance-toggle.active::after {
+            transform: translateX(24px);
+        }
+
+        .theme-toggle i, .balance-toggle i {
+            font-size: 12px;
+            z-index: 1;
+        }
+
+        .theme-toggle .fa-sun {
+            color: var(--warning);
+        }
+
+        .theme-toggle .fa-moon {
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        .balance-toggle .fa-eye {
+            color: var(--text-secondary);
+        }
+
+        .balance-toggle .fa-eye-slash {
+            color: var(--text-secondary);
+            margin-left: auto;
         }
 
         .network-indicator {
@@ -105,7 +187,7 @@
 
         .balance-label {
             font-size: 16px;
-            color: var(--gray);
+            color: var(--text-secondary);
             margin-bottom: 10px;
         }
 
@@ -120,7 +202,7 @@
 
         .balance-equivalent {
             font-size: 16px;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .balance-change {
@@ -146,7 +228,7 @@
             border: none;
             padding: 15px 10px;
             border-radius: 12px;
-            color: white;
+            color: var(--text-primary);
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -166,7 +248,7 @@
         }
 
         .wallet-connect-section {
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.1);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 20px;
@@ -214,6 +296,122 @@
             box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
         }
 
+        .network-selector {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            width: 100%;
+        }
+
+        .token-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .token-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .token-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .token-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .token-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .token-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .token-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .token-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .token-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .token-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .token-symbol {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .token-balance {
+            text-align: right;
+        }
+
+        .token-amount {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .token-value {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .add-token-btn {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px dashed var(--card-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-token-btn:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
         .recent-transactions {
             margin-top: 20px;
         }
@@ -232,6 +430,23 @@
 
         .transaction-list {
             list-style: none;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .transaction-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .transaction-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .transaction-list::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
         }
 
         .transaction-item {
@@ -239,7 +454,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--card-border);
         }
 
         .transaction-icon {
@@ -264,7 +479,7 @@
 
         .transaction-date {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .transaction-amount {
@@ -281,8 +496,8 @@
 
         .wallet-footer {
             padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.1);
+            border-top: 1px solid var(--card-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -293,7 +508,7 @@
             align-items: center;
             gap: 10px;
             font-size: 14px;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .wallet-address i {
@@ -308,7 +523,7 @@
         .wallet-action-btn {
             background: none;
             border: none;
-            color: var(--gray);
+            color: var(--text-secondary);
             font-size: 18px;
             cursor: pointer;
             transition: color 0.3s ease;
@@ -344,24 +559,26 @@
         }
 
         .modal-content {
-            background: var(--dark);
+            background: var(--card-bg);
             padding: 30px;
             border-radius: 20px;
             text-align: center;
             max-width: 400px;
             width: 90%;
             box-shadow: var(--shadow);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
         }
 
         .modal-title {
             margin-bottom: 20px;
             font-size: 20px;
+            color: var(--text-primary);
         }
 
         .modal-message {
             margin-bottom: 20px;
-            color: var(--gray);
+            color: var(--text-secondary);
         }
 
         .modal-actions {
@@ -386,63 +603,86 @@
 
         .modal-btn.secondary {
             background: rgba(255, 255, 255, 0.1);
-            color: white;
+            color: var(--text-primary);
         }
 
         .modal-btn:hover {
             transform: translateY(-2px);
         }
 
-        .network-selector {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            border: 1px solid var(--glass-border);
-            color: white;
-            width: 100%;
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
         }
 
-        .token-list {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-
-        .token-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 15px;
-            min-width: 120px;
-            text-align: center;
-        }
-
-        .token-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(52, 152, 219, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 10px;
-        }
-
-        .token-name {
-            font-size: 14px;
+        .form-label {
+            display: block;
             margin-bottom: 5px;
+            color: var(--text-secondary);
+            font-size: 14px;
         }
 
-        .token-balance {
-            font-weight: 600;
-            font-size: 16px;
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
         }
 
-        .token-value {
-            font-size: 12px;
-            color: var(--gray);
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            border-left-color: var(--secondary);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
+        .loader {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden-balance {
+            filter: blur(8px);
+            user-select: none;
         }
 
         @media (max-width: 480px) {
@@ -462,99 +702,35 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            background: var(--dark);
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            border-left-color: var(--secondary);
-        }
-
-        .notification.error {
-            border-left-color: var(--danger);
-        }
-
-        .loader {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
     <div class="wallet-container">
         <div class="wallet-header">
             <div class="wallet-logo">
-                <i class="fas fa-wallet"></i>
-                <h1>Web3Wallet</h1>
+                <i class="fas fa-crown"></i>
+                <h1>SupremeAmer</h1>
             </div>
-            <div class="network-indicator">
-                <i class="fab fa-ethereum"></i>
-                <span id="networkName">Ethereum Mainnet</span>
+            <div class="header-controls">
+                <div class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="balance-toggle" id="balanceToggle">
+                    <i class="fas fa-eye"></i>
+                    <i class="fas fa-eye-slash"></i>
+                </div>
             </div>
         </div>
         
         <div class="wallet-body">
             <div class="balance-section">
                 <div class="balance-label">Total Balance</div>
-                <div class="balance-amount">$4,283.75</div>
-                <div class="balance-equivalent">2.15 ETH</div>
+                <div class="balance-amount" id="totalBalance">$4,283.75</div>
+                <div class="balance-equivalent" id="cryptoBalance">2.15 ETH</div>
                 <div class="balance-change">
                     <i class="fas fa-arrow-up"></i>
-                    <span>2.5%</span>
-                </div>
-            </div>
-            
-            <div class="token-list">
-                <div class="token-item">
-                    <div class="token-icon">
-                        <i class="fab fa-ethereum"></i>
-                    </div>
-                    <div class="token-name">ETH</div>
-                    <div class="token-balance">2.15</div>
-                    <div class="token-value">$4,283.75</div>
-                </div>
-                <div class="token-item">
-                    <div class="token-icon">
-                        <i class="fab fa-bitcoin"></i>
-                    </div>
-                    <div class="token-name">WBTC</div>
-                    <div class="token-balance">0.12</div>
-                    <div class="token-value">$3,240.00</div>
-                </div>
-                <div class="token-item">
-                    <div class="token-icon">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="token-name">USDC</div>
-                    <div class="token-balance">1,250</div>
-                    <div class="token-value">$1,250.00</div>
+                    <span id="balanceChange">2.5%</span>
                 </div>
             </div>
             
@@ -585,6 +761,8 @@
                 <select class="network-selector" id="networkSelector">
                     <option value="1">Ethereum Mainnet</option>
                     <option value="5">Goerli Testnet</option>
+                    <option value="56">BNB Chain</option>
+                    <option value="97">BNB Testnet</option>
                     <option value="137">Polygon Mainnet</option>
                     <option value="80001">Mumbai Testnet</option>
                 </select>
@@ -593,6 +771,18 @@
                     <span>Connect Wallet</span>
                 </button>
             </div>
+            
+            <div class="section-title">
+                <i class="fas fa-coins"></i>
+                <span>Tokens</span>
+            </div>
+            <div class="token-list" id="tokenList">
+                <!-- Tokens will be populated by JavaScript -->
+            </div>
+            <button class="add-token-btn" id="addTokenBtn">
+                <i class="fas fa-plus"></i>
+                <span>Add Token</span>
+            </button>
             
             <div class="recent-transactions">
                 <div class="section-title">
@@ -622,18 +812,27 @@
         </div>
     </div>
     
+    <!-- Send Modal -->
     <div id="sendModal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Send Assets</h2>
             <div class="modal-message">
-                <p>Enter recipient address and amount</p>
-                <input type="text" placeholder="Recipient Address" class="network-selector" id="recipientAddress">
-                <input type="text" placeholder="Amount" class="network-selector" id="sendAmount">
-                <select class="network-selector" id="sendToken">
-                    <option value="ETH">ETH</option>
-                    <option value="WBTC">WBTC</option>
-                    <option value="USDC">USDC</option>
-                </select>
+                <div class="form-group">
+                    <label class="form-label" for="sendTokenSelect">Token</label>
+                    <select class="form-input" id="sendTokenSelect">
+                        <option value="ETH">ETH</option>
+                        <option value="BNB">BNB</option>
+                        <option value="USDC">USDC</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="recipientAddress">Recipient Address</label>
+                    <input type="text" class="form-input" id="recipientAddress" placeholder="0x...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="sendAmount">Amount</label>
+                    <input type="text" class="form-input" id="sendAmount" placeholder="0.0">
+                </div>
             </div>
             <div class="modal-actions">
                 <button class="modal-btn secondary" id="cancelSend">Cancel</button>
@@ -642,6 +841,7 @@
         </div>
     </div>
     
+    <!-- Receive Modal -->
     <div id="receiveModal" class="modal">
         <div class="modal-content">
             <h2 class="modal-title">Receive Assets</h2>
@@ -662,6 +862,70 @@
         </div>
     </div>
     
+    <!-- Add Token Modal -->
+    <div id="addTokenModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Add Token</h2>
+            <div class="modal-message">
+                <div class="form-group">
+                    <label class="form-label" for="tokenContract">Token Contract Address</label>
+                    <input type="text" class="form-input" id="tokenContract" placeholder="0x...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tokenSymbol">Token Symbol</label>
+                    <input type="text" class="form-input" id="tokenSymbol" placeholder="e.g., UNI">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tokenDecimals">Token Decimals</label>
+                    <input type="number" class="form-input" id="tokenDecimals" placeholder="18" value="18">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelAddToken">Cancel</button>
+                <button class="modal-btn primary" id="confirmAddToken">Add Token</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Settings</h2>
+            <div class="modal-message">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span>Dark/Light Mode</span>
+                    <div class="theme-toggle active" id="settingsThemeToggle">
+                        <i class="fas fa-sun"></i>
+                        <i class="fas fa-moon"></i>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span>Hide Balance</span>
+                    <div class="balance-toggle" id="settingsBalanceToggle">
+                        <i class="fas fa-eye"></i>
+                        <i class="fas fa-eye-slash"></i>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="exportPrivateKey">
+                        <i class="fas fa-key"></i>
+                        <span>Export Private Key</span>
+                    </button>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <button class="action-btn" style="width: 100%; margin-top: 10px; background: rgba(231, 76, 60, 0.2);" id="clearData">
+                        <i class="fas fa-trash"></i>
+                        <span>Clear All Data</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="closeSettings">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification -->
     <div id="notification" class="notification">
         <i class="fas fa-info-circle"></i>
         <span id="notificationText">This is a notification</span>
@@ -675,26 +939,58 @@
             const walletAddress = document.getElementById('walletAddress');
             const statusIndicator = document.getElementById('statusIndicator');
             const networkSelector = document.getElementById('networkSelector');
-            const networkName = document.getElementById('networkName');
             const sendBtn = document.getElementById('sendBtn');
             const receiveBtn = document.getElementById('receiveBtn');
             const swapBtn = document.getElementById('swapBtn');
             const stakeBtn = document.getElementById('stakeBtn');
+            const addTokenBtn = document.getElementById('addTokenBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
             const sendModal = document.getElementById('sendModal');
             const receiveModal = document.getElementById('receiveModal');
+            const addTokenModal = document.getElementById('addTokenModal');
+            const settingsModal = document.getElementById('settingsModal');
             const cancelSend = document.getElementById('cancelSend');
             const confirmSend = document.getElementById('confirmSend');
             const closeReceive = document.getElementById('closeReceive');
             const copyAddress = document.getElementById('copyAddress');
             const receiveAddress = document.getElementById('receiveAddress');
+            const cancelAddToken = document.getElementById('cancelAddToken');
+            const confirmAddToken = document.getElementById('confirmAddToken');
+            const closeSettings = document.getElementById('closeSettings');
+            const exportPrivateKey = document.getElementById('exportPrivateKey');
+            const clearData = document.getElementById('clearData');
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
+            const tokenList = document.getElementById('tokenList');
             const transactionList = document.getElementById('transactionList');
+            const totalBalance = document.getElementById('totalBalance');
+            const cryptoBalance = document.getElementById('cryptoBalance');
+            const balanceChange = document.getElementById('balanceChange');
+            const themeToggle = document.getElementById('themeToggle');
+            const balanceToggle = document.getElementById('balanceToggle');
+            const settingsThemeToggle = document.getElementById('settingsThemeToggle');
+            const settingsBalanceToggle = document.getElementById('settingsBalanceToggle');
 
             // WalletConnect provider instance
             let walletConnectProvider = null;
             let isConnected = false;
             let currentAccount = null;
+            let currentChainId = 1;
+            let tokenPrices = {};
+            let userTokens = [];
+            let isBalanceHidden = false;
+
+            // Initialize the app
+            async function initApp() {
+                await initWalletConnect();
+                loadUserTokens();
+                fetchTokenPrices();
+                loadThemePreference();
+                loadBalanceVisibilityPreference();
+                
+                // Set up interval to periodically update token prices
+                setInterval(fetchTokenPrices, 60000); // Update every minute
+            }
 
             // Initialize WalletConnect
             async function initWalletConnect() {
@@ -702,8 +998,8 @@
                     // Create WalletConnect Provider
                     walletConnectProvider = await EthereumProvider.init({
                         projectId: 'YOUR_WALLETCONNECT_PROJECT_ID', // Replace with your actual project ID
-                        chains: [1], // Ethereum Mainnet
-                        optionalChains: [5, 137, 80001], // Optional chains
+                        chains: [1, 56], // Ethereum and BNB Chain
+                        optionalChains: [5, 97, 137, 80001], // Optional chains
                         showQrModal: true,
                         qrModalOptions: {
                             themeMode: 'dark'
@@ -741,6 +1037,7 @@
                 } else {
                     // User connected or switched accounts
                     currentAccount = accounts[0];
+                    isConnected = true;
                     updateUI();
                     showNotification('Wallet connected successfully', 'success');
                 }
@@ -749,6 +1046,7 @@
             // Handle chain changes
             function handleChainChanged(chainId) {
                 const chainIdNum = parseInt(chainId, 16);
+                currentChainId = chainIdNum;
                 updateNetworkInfo(chainIdNum);
                 showNotification(`Network changed to ${getNetworkName(chainIdNum)}`, 'info');
             }
@@ -776,12 +1074,14 @@
                     statusIndicator.classList.remove('connected');
                     receiveAddress.textContent = '0x0000...0000';
                 }
+                
+                updateTokenList();
+                updateBalance();
             }
 
             // Update network information
             function updateNetworkInfo(chainId) {
                 const network = getNetworkName(chainId);
-                networkName.textContent = network;
                 
                 // Update network selector
                 for (let option of networkSelector.options) {
@@ -797,21 +1097,190 @@
                 switch (chainId) {
                     case 1: return 'Ethereum Mainnet';
                     case 5: return 'Goerli Testnet';
+                    case 56: return 'BNB Chain';
+                    case 97: return 'BNB Testnet';
                     case 137: return 'Polygon Mainnet';
                     case 80001: return 'Mumbai Testnet';
                     default: return `Chain ${chainId}`;
                 }
             }
 
-            // Get chain ID from network name
-            function getChainId(networkName) {
-                switch (networkName) {
-                    case 'Ethereum Mainnet': return 1;
-                    case 'Goerli Testnet': return 5;
-                    case 'Polygon Mainnet': return 137;
-                    case 'Mumbai Testnet': return 80001;
-                    default: return 1;
+            // Fetch token prices from CoinGecko
+            async function fetchTokenPrices() {
+                try {
+                    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,usd-coin,matic-network,dai,aave,uniswap&vs_currencies=usd&include_24hr_change=true');
+                    const data = await response.json();
+                    
+                    tokenPrices = {
+                        'ETH': { price: data.ethereum.usd, change: data.ethereum.usd_24h_change },
+                        'BNB': { price: data.binancecoin.usd, change: data.binancecoin.usd_24h_change },
+                        'USDC': { price: data['usd-coin'].usd, change: data['usd-coin'].usd_24h_change },
+                        'MATIC': { price: data['matic-network'].usd, change: data['matic-network'].usd_24h_change },
+                        'DAI': { price: data.dai.usd, change: data.dai.usd_24h_change },
+                        'AAVE': { price: data.aave.usd, change: data.aave.usd_24h_change },
+                        'UNI': { price: data.uniswap.usd, change: data.uniswap.usd_24h_change }
+                    };
+                    
+                    updateTokenList();
+                    updateBalance();
+                } catch (error) {
+                    console.error('Error fetching token prices:', error);
+                    // Use fallback prices if API fails
+                    tokenPrices = {
+                        'ETH': { price: 2200, change: 2.5 },
+                        'BNB': { price: 300, change: 1.2 },
+                        'USDC': { price: 1, change: 0 },
+                        'MATIC': { price: 0.8, change: -0.5 },
+                        'DAI': { price: 1, change: 0 },
+                        'AAVE': { price: 80, change: 3.1 },
+                        'UNI': { price: 6, change: 1.8 }
+                    };
                 }
+            }
+
+            // Update token list display
+            function updateTokenList() {
+                // Default tokens based on network
+                let defaultTokens = [];
+                
+                if (currentChainId === 56 || currentChainId === 97) {
+                    // BNB Chain tokens
+                    defaultTokens = [
+                        { symbol: 'BNB', name: 'BNB', balance: 5.2, value: 0, change: 0 },
+                        { symbol: 'USDC', name: 'USD Coin', balance: 1250, value: 0, change: 0 },
+                        { symbol: 'CAKE', name: 'PancakeSwap', balance: 50, value: 0, change: 0 }
+                    ];
+                } else {
+                    // Ethereum and other chains
+                    defaultTokens = [
+                        { symbol: 'ETH', name: 'Ethereum', balance: 2.15, value: 0, change: 0 },
+                        { symbol: 'USDC', name: 'USD Coin', balance: 1250, value: 0, change: 0 },
+                        { symbol: 'UNI', name: 'Uniswap', balance: 15, value: 0, change: 0 }
+                    ];
+                }
+                
+                // Combine default tokens with user-added tokens
+                const allTokens = [...defaultTokens, ...userTokens];
+                
+                // Update token values based on current prices
+                allTokens.forEach(token => {
+                    if (tokenPrices[token.symbol]) {
+                        token.value = token.balance * tokenPrices[token.symbol].price;
+                        token.change = tokenPrices[token.symbol].change;
+                    }
+                });
+                
+                // Clear token list
+                tokenList.innerHTML = '';
+                
+                // Add tokens to the list
+                allTokens.forEach(token => {
+                    const tokenItem = document.createElement('div');
+                    tokenItem.className = 'token-item';
+                    
+                    const changeIcon = token.change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                    const changeClass = token.change >= 0 ? 'positive' : 'negative';
+                    
+                    tokenItem.innerHTML = `
+                        <div class="token-info">
+                            <div class="token-icon">
+                                <i class="fab fa-${token.symbol === 'ETH' ? 'ethereum' : token.symbol === 'BNB' ? 'google-wallet' : 'coin'}"></i>
+                            </div>
+                            <div class="token-details">
+                                <div class="token-name">${token.name}</div>
+                                <div class="token-symbol">${token.symbol}</div>
+                            </div>
+                        </div>
+                        <div class="token-balance">
+                            <div class="token-amount ${isBalanceHidden ? 'hidden-balance' : ''}">${token.balance} ${token.symbol}</div>
+                            <div class="token-value ${isBalanceHidden ? 'hidden-balance' : ''}">$${token.value.toFixed(2)} <span class="${changeClass}"><i class="fas ${changeIcon}"></i> ${Math.abs(token.change).toFixed(2)}%</span></div>
+                        </div>
+                    `;
+                    
+                    tokenList.appendChild(tokenItem);
+                });
+            }
+
+            // Update total balance
+            function updateBalance() {
+                let total = 0;
+                let primaryToken = '';
+                let primaryBalance = 0;
+                
+                // Default tokens based on network
+                let defaultTokens = [];
+                
+                if (currentChainId === 56 || currentChainId === 97) {
+                    // BNB Chain
+                    defaultTokens = [
+                        { symbol: 'BNB', balance: 5.2 },
+                        { symbol: 'USDC', balance: 1250 },
+                        { symbol: 'CAKE', balance: 50 }
+                    ];
+                    primaryToken = 'BNB';
+                } else {
+                    // Ethereum and other chains
+                    defaultTokens = [
+                        { symbol: 'ETH', balance: 2.15 },
+                        { symbol: 'USDC', balance: 1250 },
+                        { symbol: 'UNI', balance: 15 }
+                    ];
+                    primaryToken = 'ETH';
+                }
+                
+                // Combine default tokens with user-added tokens
+                const allTokens = [...defaultTokens, ...userTokens];
+                
+                // Calculate total value
+                allTokens.forEach(token => {
+                    if (tokenPrices[token.symbol]) {
+                        total += token.balance * tokenPrices[token.symbol].price;
+                        
+                        if (token.symbol === primaryToken) {
+                            primaryBalance = token.balance;
+                        }
+                    }
+                });
+                
+                // Update balance display
+                if (isBalanceHidden) {
+                    totalBalance.textContent = '******';
+                    cryptoBalance.textContent = '******';
+                    balanceChange.innerHTML = '<i class="fas fa-arrow-up"></i> **.*%';
+                } else {
+                    totalBalance.textContent = `$${total.toFixed(2)}`;
+                    cryptoBalance.textContent = `${primaryBalance} ${primaryToken}`;
+                    
+                    // Calculate average change
+                    let totalChange = 0;
+                    let count = 0;
+                    
+                    allTokens.forEach(token => {
+                        if (tokenPrices[token.symbol]) {
+                            totalChange += tokenPrices[token.symbol].change;
+                            count++;
+                        }
+                    });
+                    
+                    const avgChange = count > 0 ? totalChange / count : 0;
+                    const changeIcon = avgChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+                    const changeClass = avgChange >= 0 ? 'positive' : 'negative';
+                    
+                    balanceChange.innerHTML = `<i class="fas ${changeIcon}"></i> ${Math.abs(avgChange).toFixed(2)}%`;
+                }
+            }
+
+            // Load user tokens from localStorage
+            function loadUserTokens() {
+                const storedTokens = localStorage.getItem('supremeamer-tokens');
+                if (storedTokens) {
+                    userTokens = JSON.parse(storedTokens);
+                }
+            }
+
+            // Save user tokens to localStorage
+            function saveUserTokens() {
+                localStorage.setItem('supremeamer-tokens', JSON.stringify(userTokens));
             }
 
             // Show notification
@@ -875,52 +1344,82 @@
                 }
             }
 
-            // Send transaction
-            async function sendTransaction(to, value) {
-                try {
-                    if (walletConnectProvider && isConnected) {
-                        const txHash = await walletConnectProvider.request({
-                            method: 'eth_sendTransaction',
-                            params: [
-                                {
-                                    from: currentAccount,
-                                    to: to,
-                                    value: value,
-                                    gasLimit: '0x5028',
-                                    gasPrice: '0x2540be400',
-                                },
-                            ],
-                        });
-                        showNotification('Transaction sent successfully', 'success');
-                        addTransaction(to, value, 'Sent');
-                        return txHash;
-                    }
-                } catch (error) {
-                    console.error('Error sending transaction:', error);
-                    showNotification('Failed to send transaction', 'error');
+            // Add a new token
+            function addToken(contract, symbol, decimals) {
+                // Check if token already exists
+                if (userTokens.some(token => token.symbol === symbol)) {
+                    showNotification('Token already added', 'warning');
+                    return;
+                }
+                
+                // Add new token
+                userTokens.push({
+                    symbol: symbol.toUpperCase(),
+                    name: symbol.toUpperCase(),
+                    balance: 0,
+                    value: 0,
+                    change: 0,
+                    contract: contract,
+                    decimals: decimals
+                });
+                
+                saveUserTokens();
+                updateTokenList();
+                updateBalance();
+                showNotification('Token added successfully', 'success');
+            }
+
+            // Toggle theme
+            function toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'light') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('supremeamer-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    localStorage.setItem('supremeamer-theme', 'light');
+                }
+                
+                // Update toggle state
+                themeToggle.classList.toggle('active');
+                settingsThemeToggle.classList.toggle('active');
+            }
+
+            // Load theme preference
+            function loadThemePreference() {
+                const savedTheme = localStorage.getItem('supremeamer-theme') || 'dark';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                
+                // Set toggle state
+                if (savedTheme === 'light') {
+                    themeToggle.classList.add('active');
+                    settingsThemeToggle.classList.add('active');
                 }
             }
 
-            // Add transaction to the list
-            function addTransaction(to, value, type) {
-                const transactionItem = document.createElement('li');
-                transactionItem.className = 'transaction-item';
+            // Toggle balance visibility
+            function toggleBalanceVisibility() {
+                isBalanceHidden = !isBalanceHidden;
+                localStorage.setItem('supremeamer-balance-hidden', isBalanceHidden);
                 
-                const now = new Date();
-                const dateStr = `${now.toLocaleDateString()}, ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                // Update toggle state
+                balanceToggle.classList.toggle('active');
+                settingsBalanceToggle.classList.toggle('active');
                 
-                transactionItem.innerHTML = `
-                    <div class="transaction-icon">
-                        <i class="fas fa-${type === 'Sent' ? 'arrow-up' : 'arrow-down'}"></i>
-                    </div>
-                    <div class="transaction-details">
-                        <div class="transaction-title">${type} ETH</div>
-                        <div class="transaction-date">${dateStr}</div>
-                    </div>
-                    <div class="transaction-amount ${type === 'Sent' ? 'negative' : 'positive'}">${type === 'Sent' ? '-' : '+'}${value} ETH</div>
-                `;
+                updateTokenList();
+                updateBalance();
+            }
+
+            // Load balance visibility preference
+            function loadBalanceVisibilityPreference() {
+                const savedPreference = localStorage.getItem('supremeamer-balance-hidden');
+                isBalanceHidden = savedPreference === 'true';
                 
-                transactionList.insertBefore(transactionItem, transactionList.firstChild);
+                // Set toggle state
+                if (isBalanceHidden) {
+                    balanceToggle.classList.add('active');
+                    settingsBalanceToggle.classList.add('active');
+                }
             }
 
             // Event listeners
@@ -964,6 +1463,14 @@
                 }
             });
             
+            addTokenBtn.addEventListener('click', function() {
+                addTokenModal.style.display = 'flex';
+            });
+            
+            settingsBtn.addEventListener('click', function() {
+                settingsModal.style.display = 'flex';
+            });
+            
             cancelSend.addEventListener('click', function() {
                 sendModal.style.display = 'none';
             });
@@ -971,10 +1478,11 @@
             confirmSend.addEventListener('click', function() {
                 const recipient = document.getElementById('recipientAddress').value;
                 const amount = document.getElementById('sendAmount').value;
+                const token = document.getElementById('sendTokenSelect').value;
                 
                 if (recipient && amount) {
-                    // In a real app, you would convert to wei and handle different tokens
-                    sendTransaction(recipient, amount);
+                    // In a real app, you would send the transaction
+                    showNotification(`Sent ${amount} ${token} to ${recipient.substring(0, 6)}...`, 'success');
                     sendModal.style.display = 'none';
                     
                     // Clear inputs
@@ -996,6 +1504,52 @@
                 }
             });
             
+            cancelAddToken.addEventListener('click', function() {
+                addTokenModal.style.display = 'none';
+            });
+            
+            confirmAddToken.addEventListener('click', function() {
+                const contract = document.getElementById('tokenContract').value;
+                const symbol = document.getElementById('tokenSymbol').value;
+                const decimals = document.getElementById('tokenDecimals').value;
+                
+                if (contract && symbol) {
+                    addToken(contract, symbol, decimals);
+                    addTokenModal.style.display = 'none';
+                    
+                    // Clear inputs
+                    document.getElementById('tokenContract').value = '';
+                    document.getElementById('tokenSymbol').value = '';
+                    document.getElementById('tokenDecimals').value = '18';
+                } else {
+                    showNotification('Please fill all fields', 'error');
+                }
+            });
+            
+            closeSettings.addEventListener('click', function() {
+                settingsModal.style.display = 'none';
+            });
+            
+            exportPrivateKey.addEventListener('click', function() {
+                showNotification('Private key export is disabled for security', 'warning');
+            });
+            
+            clearData.addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                    localStorage.removeItem('supremeamer-tokens');
+                    userTokens = [];
+                    updateTokenList();
+                    updateBalance();
+                    showNotification('All data cleared', 'success');
+                }
+            });
+            
+            themeToggle.addEventListener('click', toggleTheme);
+            settingsThemeToggle.addEventListener('click', toggleTheme);
+            
+            balanceToggle.addEventListener('click', toggleBalanceVisibility);
+            settingsBalanceToggle.addEventListener('click', toggleBalanceVisibility);
+            
             // Close modals when clicking outside
             window.addEventListener('click', function(event) {
                 if (event.target === sendModal) {
@@ -1004,15 +1558,47 @@
                 if (event.target === receiveModal) {
                     receiveModal.style.display = 'none';
                 }
+                if (event.target === addTokenModal) {
+                    addTokenModal.style.display = 'none';
+                }
+                if (event.target === settingsModal) {
+                    settingsModal.style.display = 'none';
+                }
             });
 
             // Initialize with some sample transactions
-            addTransaction('0x742...d35', '0.25', 'Sent');
-            addTransaction('0x1a2...b3c', '1.5', 'Received');
-            addTransaction('0x9f8...a7b', '0.1', 'Sent');
+            function initSampleTransactions() {
+                const transactions = [
+                    { title: 'NFT Purchase', date: 'Today, 14:32', amount: -0.25, token: 'ETH' },
+                    { title: 'Deposit', date: 'Yesterday, 09:15', amount: 1.5, token: 'ETH' },
+                    { title: 'Token Swap', date: 'May 12, 2023', amount: -0.1, token: 'ETH' },
+                    { title: 'Received Payment', date: 'May 10, 2023', amount: 0.5, token: 'BNB' }
+                ];
+                
+                transactionList.innerHTML = '';
+                
+                transactions.forEach(tx => {
+                    const transactionItem = document.createElement('li');
+                    transactionItem.className = 'transaction-item';
+                    
+                    transactionItem.innerHTML = `
+                        <div class="transaction-icon">
+                            <i class="fas fa-${tx.amount > 0 ? 'arrow-down' : 'arrow-up'}"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">${tx.title}</div>
+                            <div class="transaction-date">${tx.date}</div>
+                        </div>
+                        <div class="transaction-amount ${tx.amount > 0 ? 'positive' : 'negative'}">${tx.amount > 0 ? '+' : ''}${tx.amount} ${tx.token}</div>
+                    `;
+                    
+                    transactionList.appendChild(transactionItem);
+                });
+            }
 
             // Initialize the app
-            initWalletConnect();
+            initApp();
+            initSampleTransactions();
         });
     </script>
 </body>
