@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupremeAmer - Web3 Wallet</title>
+    <title>SupremeAmer - Secure Web3 Wallet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.10.1/dist/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.min.js"></script>
@@ -65,6 +65,147 @@
             padding: 20px;
         }
 
+        .auth-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--card-border);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .auth-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .auth-logo i {
+            font-size: 32px;
+            color: var(--primary);
+        }
+
+        .auth-logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-title {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .auth-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .auth-btn {
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .auth-btn.primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .auth-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .pin-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .pin-btn {
+            padding: 20px;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pin-btn:hover {
+            background: rgba(52, 152, 219, 0.3);
+        }
+
+        .pin-display {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .pin-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid var(--card-border);
+        }
+
+        .pin-dot.filled {
+            background: var(--primary);
+        }
+
+        .biometric-option {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .biometric-option:hover {
+            background: rgba(52, 152, 219, 0.2);
+        }
+
         .wallet-container {
             width: 100%;
             max-width: 500px;
@@ -75,6 +216,7 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--card-border);
             transition: transform 0.3s ease;
+            display: none;
         }
 
         .wallet-container:hover {
@@ -685,8 +827,20 @@
             user-select: none;
         }
 
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--secondary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
         @media (max-width: 480px) {
-            .wallet-container {
+            .wallet-container, .auth-container {
                 border-radius: 15px;
             }
             
@@ -705,7 +859,51 @@
     </style>
 </head>
 <body>
-    <div class="wallet-container">
+    <!-- Authentication Screen -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-logo">
+            <i class="fas fa-crown"></i>
+            <h1>SupremeAmer</h1>
+        </div>
+        
+        <div id="setupScreen">
+            <h2 class="auth-title">Secure Your Wallet</h2>
+            <p class="auth-subtitle">Set up authentication to protect your assets</p>
+            
+            <div class="auth-options">
+                <button class="auth-btn primary" id="setupPassword">
+                    <i class="fas fa-lock"></i>
+                    <span>Set Password</span>
+                </button>
+                <button class="auth-btn secondary" id="setupBiometric">
+                    <i class="fas fa-fingerprint"></i>
+                    <span>Enable Biometric</span>
+                </button>
+            </div>
+        </div>
+        
+        <div id="loginScreen" style="display: none;">
+            <h2 class="auth-title">Welcome Back</h2>
+            <p class="auth-subtitle">Unlock your wallet to continue</p>
+            
+            <div class="auth-options">
+                <div class="form-group">
+                    <input type="password" class="form-input" id="passwordInput" placeholder="Enter your password">
+                </div>
+                <button class="auth-btn primary" id="loginPassword">
+                    <i class="fas fa-unlock"></i>
+                    <span>Unlock with Password</span>
+                </button>
+                <div class="biometric-option" id="loginBiometric">
+                    <i class="fas fa-fingerprint"></i>
+                    <span>Unlock with Biometric</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wallet Interface -->
+    <div class="wallet-container" id="walletContainer">
         <div class="wallet-header">
             <div class="wallet-logo">
                 <i class="fas fa-crown"></i>
@@ -731,6 +929,10 @@
                 <div class="balance-change">
                     <i class="fas fa-arrow-up"></i>
                     <span id="balanceChange">2.5%</span>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Wallet Secured</span>
                 </div>
             </div>
             
@@ -808,6 +1010,66 @@
                 <button class="wallet-action-btn" id="disconnectBtn">
                     <i class="fas fa-power-off"></i>
                 </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Password Setup Modal -->
+    <div id="passwordSetupModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Set Wallet Password</h2>
+            <div class="modal-message">
+                <div class="form-group">
+                    <label class="form-label" for="newPassword">New Password</label>
+                    <input type="password" class="form-input" id="newPassword" placeholder="Minimum 8 characters">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Confirm Password</label>
+                    <input type="password" class="form-input" id="confirmPassword" placeholder="Re-enter your password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="transactionPin">Transaction PIN (6 digits)</label>
+                    <input type="password" class="form-input" id="transactionPin" placeholder="Enter 6-digit PIN" maxlength="6">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelPasswordSetup">Cancel</button>
+                <button class="modal-btn primary" id="confirmPasswordSetup">Set Password</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Transaction PIN Modal -->
+    <div id="pinModal" class="modal">
+        <div class="modal-content">
+            <h2 class="modal-title">Confirm Transaction</h2>
+            <div class="modal-message">
+                <p>Enter your 6-digit PIN to authorize this transaction</p>
+                <div class="pin-display" id="pinDisplay">
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                </div>
+                <div class="pin-container">
+                    <button class="pin-btn" data-value="1">1</button>
+                    <button class="pin-btn" data-value="2">2</button>
+                    <button class="pin-btn" data-value="3">3</button>
+                    <button class="pin-btn" data-value="4">4</button>
+                    <button class="pin-btn" data-value="5">5</button>
+                    <button class="pin-btn" data-value="6">6</button>
+                    <button class="pin-btn" data-value="7">7</button>
+                    <button class="pin-btn" data-value="8">8</button>
+                    <button class="pin-btn" data-value="9">9</button>
+                    <button class="pin-btn" id="pinBackspace"><i class="fas fa-backspace"></i></button>
+                    <button class="pin-btn" data-value="0">0</button>
+                    <button class="pin-btn" id="pinClear">C</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="cancelPin">Cancel</button>
             </div>
         </div>
     </div>
@@ -890,7 +1152,7 @@
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal">
         <div class="modal-content">
-            <h2 class="modal-title">Settings</h2>
+            <h2 class="modal-title">Security Settings</h2>
             <div class="modal-message">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <span>Dark/Light Mode</span>
@@ -907,9 +1169,21 @@
                     </div>
                 </div>
                 <div style="margin-bottom: 15px;">
-                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="exportPrivateKey">
+                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="changePassword">
                         <i class="fas fa-key"></i>
-                        <span>Export Private Key</span>
+                        <span>Change Password</span>
+                    </button>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="changePin">
+                        <i class="fas fa-lock"></i>
+                        <span>Change Transaction PIN</span>
+                    </button>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="toggleBiometric">
+                        <i class="fas fa-fingerprint"></i>
+                        <span>Toggle Biometric Auth</span>
                     </button>
                 </div>
                 <div style="margin-bottom: 15px;">
@@ -934,6 +1208,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // DOM Elements
+            const authContainer = document.getElementById('authContainer');
+            const walletContainer = document.getElementById('walletContainer');
+            const setupScreen = document.getElementById('setupScreen');
+            const loginScreen = document.getElementById('loginScreen');
+            const setupPasswordBtn = document.getElementById('setupPassword');
+            const setupBiometricBtn = document.getElementById('setupBiometric');
+            const passwordInput = document.getElementById('passwordInput');
+            const loginPasswordBtn = document.getElementById('loginPassword');
+            const loginBiometricBtn = document.getElementById('loginBiometric');
+            const passwordSetupModal = document.getElementById('passwordSetupModal');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const transactionPinInput = document.getElementById('transactionPin');
+            const cancelPasswordSetup = document.getElementById('cancelPasswordSetup');
+            const confirmPasswordSetup = document.getElementById('confirmPasswordSetup');
+            const pinModal = document.getElementById('pinModal');
+            const pinDisplay = document.getElementById('pinDisplay');
+            const pinBackspace = document.getElementById('pinBackspace');
+            const pinClear = document.getElementById('pinClear');
+            const cancelPin = document.getElementById('cancelPin');
             const connectBtn = document.getElementById('connectBtn');
             const disconnectBtn = document.getElementById('disconnectBtn');
             const walletAddress = document.getElementById('walletAddress');
@@ -957,7 +1251,9 @@
             const cancelAddToken = document.getElementById('cancelAddToken');
             const confirmAddToken = document.getElementById('confirmAddToken');
             const closeSettings = document.getElementById('closeSettings');
-            const exportPrivateKey = document.getElementById('exportPrivateKey');
+            const changePassword = document.getElementById('changePassword');
+            const changePin = document.getElementById('changePin');
+            const toggleBiometric = document.getElementById('toggleBiometric');
             const clearData = document.getElementById('clearData');
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
@@ -971,6 +1267,14 @@
             const settingsThemeToggle = document.getElementById('settingsThemeToggle');
             const settingsBalanceToggle = document.getElementById('settingsBalanceToggle');
 
+            // Security state
+            let isAuthenticated = false;
+            let walletPassword = null;
+            let transactionPin = null;
+            let isBiometricEnabled = false;
+            let currentPinInput = '';
+            let pendingTransaction = null;
+
             // WalletConnect provider instance
             let walletConnectProvider = null;
             let isConnected = false;
@@ -981,15 +1285,187 @@
             let isBalanceHidden = false;
 
             // Initialize the app
-            async function initApp() {
-                await initWalletConnect();
-                loadUserTokens();
-                fetchTokenPrices();
+            function initApp() {
+                checkAuthStatus();
                 loadThemePreference();
                 loadBalanceVisibilityPreference();
                 
                 // Set up interval to periodically update token prices
                 setInterval(fetchTokenPrices, 60000); // Update every minute
+            }
+
+            // Check authentication status
+            function checkAuthStatus() {
+                const savedPassword = localStorage.getItem('supremeamer-password');
+                const savedPin = localStorage.getItem('supremeamer-pin');
+                const savedBiometric = localStorage.getItem('supremeamer-biometric');
+                
+                if (savedPassword && savedPin) {
+                    walletPassword = savedPassword;
+                    transactionPin = savedPin;
+                    isBiometricEnabled = savedBiometric === 'true';
+                    
+                    // Show login screen
+                    setupScreen.style.display = 'none';
+                    loginScreen.style.display = 'block';
+                } else {
+                    // Show setup screen
+                    setupScreen.style.display = 'block';
+                    loginScreen.style.display = 'none';
+                }
+            }
+
+            // Setup password authentication
+            function setupPassword() {
+                passwordSetupModal.style.display = 'flex';
+            }
+
+            // Confirm password setup
+            function confirmPasswordSetupHandler() {
+                const newPassword = newPasswordInput.value;
+                const confirmPassword = confirmPasswordInput.value;
+                const pin = transactionPinInput.value;
+                
+                if (newPassword.length < 8) {
+                    showNotification('Password must be at least 8 characters', 'error');
+                    return;
+                }
+                
+                if (newPassword !== confirmPassword) {
+                    showNotification('Passwords do not match', 'error');
+                    return;
+                }
+                
+                if (pin.length !== 6 || !/^\d+$/.test(pin)) {
+                    showNotification('PIN must be 6 digits', 'error');
+                    return;
+                }
+                
+                // Save password and PIN (in a real app, these would be hashed)
+                walletPassword = newPassword;
+                transactionPin = pin;
+                localStorage.setItem('supremeamer-password', walletPassword);
+                localStorage.setItem('supremeamer-pin', transactionPin);
+                
+                // Close modal and show wallet
+                passwordSetupModal.style.display = 'none';
+                showWallet();
+                
+                showNotification('Security setup completed successfully', 'success');
+                
+                // Clear inputs
+                newPasswordInput.value = '';
+                confirmPasswordInput.value = '';
+                transactionPinInput.value = '';
+            }
+
+            // Setup biometric authentication
+            function setupBiometric() {
+                // In a real app, this would integrate with WebAuthn or device biometrics
+                // For this demo, we'll simulate biometric setup
+                isBiometricEnabled = true;
+                localStorage.setItem('supremeamer-biometric', 'true');
+                showNotification('Biometric authentication enabled', 'success');
+                showWallet();
+            }
+
+            // Login with password
+            function loginWithPassword() {
+                const password = passwordInput.value;
+                
+                if (password === walletPassword) {
+                    showWallet();
+                    showNotification('Wallet unlocked successfully', 'success');
+                } else {
+                    showNotification('Incorrect password', 'error');
+                }
+            }
+
+            // Login with biometric
+            function loginWithBiometric() {
+                // In a real app, this would trigger device biometric authentication
+                // For this demo, we'll simulate successful biometric auth
+                showWallet();
+                showNotification('Biometric authentication successful', 'success');
+            }
+
+            // Show wallet interface
+            function showWallet() {
+                authContainer.style.display = 'none';
+                walletContainer.style.display = 'block';
+                isAuthenticated = true;
+                
+                // Initialize wallet functionality
+                initWalletConnect();
+                loadUserTokens();
+                fetchTokenPrices();
+                initSampleTransactions();
+            }
+
+            // Show PIN modal for transaction authorization
+            function showPinModal(transaction) {
+                pendingTransaction = transaction;
+                currentPinInput = '';
+                updatePinDisplay();
+                pinModal.style.display = 'flex';
+            }
+
+            // Update PIN display dots
+            function updatePinDisplay() {
+                const dots = pinDisplay.querySelectorAll('.pin-dot');
+                dots.forEach((dot, index) => {
+                    if (index < currentPinInput.length) {
+                        dot.classList.add('filled');
+                    } else {
+                        dot.classList.remove('filled');
+                    }
+                });
+            }
+
+            // Handle PIN input
+            function handlePinInput(value) {
+                if (currentPinInput.length < 6) {
+                    currentPinInput += value;
+                    updatePinDisplay();
+                    
+                    // Check if PIN is complete
+                    if (currentPinInput.length === 6) {
+                        verifyPin();
+                    }
+                }
+            }
+
+            // Verify PIN
+            function verifyPin() {
+                if (currentPinInput === transactionPin) {
+                    pinModal.style.display = 'none';
+                    
+                    // Execute pending transaction
+                    if (pendingTransaction) {
+                        executeTransaction(pendingTransaction);
+                        pendingTransaction = null;
+                    }
+                    
+                    showNotification('Transaction authorized', 'success');
+                } else {
+                    showNotification('Incorrect PIN', 'error');
+                    currentPinInput = '';
+                    updatePinDisplay();
+                }
+            }
+
+            // Execute transaction (simulated)
+            function executeTransaction(transaction) {
+                // In a real app, this would send the actual transaction
+                showNotification(`Sent ${transaction.amount} ${transaction.token} to ${transaction.recipient.substring(0, 6)}...`, 'success');
+                sendModal.style.display = 'none';
+                
+                // Clear inputs
+                document.getElementById('recipientAddress').value = '';
+                document.getElementById('sendAmount').value = '';
+                
+                // Add to transaction history
+                addTransaction(transaction.recipient, transaction.amount, 'Sent', transaction.token);
             }
 
             // Initialize WalletConnect
@@ -1422,7 +1898,92 @@
                 }
             }
 
+            // Add transaction to the list
+            function addTransaction(to, value, type, token) {
+                const transactionItem = document.createElement('li');
+                transactionItem.className = 'transaction-item';
+                
+                const now = new Date();
+                const dateStr = `${now.toLocaleDateString()}, ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                
+                transactionItem.innerHTML = `
+                    <div class="transaction-icon">
+                        <i class="fas fa-${type === 'Sent' ? 'arrow-up' : 'arrow-down'}"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="transaction-title">${type} ${token}</div>
+                        <div class="transaction-date">${dateStr}</div>
+                    </div>
+                    <div class="transaction-amount ${type === 'Sent' ? 'negative' : 'positive'}">${type === 'Sent' ? '-' : '+'}${value} ${token}</div>
+                `;
+                
+                transactionList.insertBefore(transactionItem, transactionList.firstChild);
+            }
+
+            // Initialize sample transactions
+            function initSampleTransactions() {
+                const transactions = [
+                    { title: 'NFT Purchase', date: 'Today, 14:32', amount: -0.25, token: 'ETH' },
+                    { title: 'Deposit', date: 'Yesterday, 09:15', amount: 1.5, token: 'ETH' },
+                    { title: 'Token Swap', date: 'May 12, 2023', amount: -0.1, token: 'ETH' },
+                    { title: 'Received Payment', date: 'May 10, 2023', amount: 0.5, token: 'BNB' }
+                ];
+                
+                transactionList.innerHTML = '';
+                
+                transactions.forEach(tx => {
+                    const transactionItem = document.createElement('li');
+                    transactionItem.className = 'transaction-item';
+                    
+                    transactionItem.innerHTML = `
+                        <div class="transaction-icon">
+                            <i class="fas fa-${tx.amount > 0 ? 'arrow-down' : 'arrow-up'}"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <div class="transaction-title">${tx.title}</div>
+                            <div class="transaction-date">${tx.date}</div>
+                        </div>
+                        <div class="transaction-amount ${tx.amount > 0 ? 'positive' : 'negative'}">${tx.amount > 0 ? '+' : ''}${tx.amount} ${tx.token}</div>
+                    `;
+                    
+                    transactionList.appendChild(transactionItem);
+                });
+            }
+
             // Event listeners
+            setupPasswordBtn.addEventListener('click', setupPassword);
+            setupBiometricBtn.addEventListener('click', setupBiometric);
+            loginPasswordBtn.addEventListener('click', loginWithPassword);
+            loginBiometricBtn.addEventListener('click', loginWithBiometric);
+            confirmPasswordSetup.addEventListener('click', confirmPasswordSetupHandler);
+            cancelPasswordSetup.addEventListener('click', function() {
+                passwordSetupModal.style.display = 'none';
+            });
+            
+            // PIN input handling
+            document.querySelectorAll('.pin-btn[data-value]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    handlePinInput(this.getAttribute('data-value'));
+                });
+            });
+            
+            pinBackspace.addEventListener('click', function() {
+                if (currentPinInput.length > 0) {
+                    currentPinInput = currentPinInput.slice(0, -1);
+                    updatePinDisplay();
+                }
+            });
+            
+            pinClear.addEventListener('click', function() {
+                currentPinInput = '';
+                updatePinDisplay();
+            });
+            
+            cancelPin.addEventListener('click', function() {
+                pinModal.style.display = 'none';
+                pendingTransaction = null;
+            });
+            
             connectBtn.addEventListener('click', connectWallet);
             disconnectBtn.addEventListener('click', disconnectWallet);
             
@@ -1481,13 +2042,12 @@
                 const token = document.getElementById('sendTokenSelect').value;
                 
                 if (recipient && amount) {
-                    // In a real app, you would send the transaction
-                    showNotification(`Sent ${amount} ${token} to ${recipient.substring(0, 6)}...`, 'success');
-                    sendModal.style.display = 'none';
-                    
-                    // Clear inputs
-                    document.getElementById('recipientAddress').value = '';
-                    document.getElementById('sendAmount').value = '';
+                    // Show PIN modal for authorization
+                    showPinModal({
+                        recipient: recipient,
+                        amount: amount,
+                        token: token
+                    });
                 } else {
                     showNotification('Please fill all fields', 'error');
                 }
@@ -1530,17 +2090,33 @@
                 settingsModal.style.display = 'none';
             });
             
-            exportPrivateKey.addEventListener('click', function() {
-                showNotification('Private key export is disabled for security', 'warning');
+            changePassword.addEventListener('click', function() {
+                showNotification('Password change functionality would be implemented here', 'info');
+            });
+            
+            changePin.addEventListener('click', function() {
+                showNotification('PIN change functionality would be implemented here', 'info');
+            });
+            
+            toggleBiometric.addEventListener('click', function() {
+                isBiometricEnabled = !isBiometricEnabled;
+                localStorage.setItem('supremeamer-biometric', isBiometricEnabled);
+                showNotification(`Biometric authentication ${isBiometricEnabled ? 'enabled' : 'disabled'}`, 'success');
             });
             
             clearData.addEventListener('click', function() {
                 if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
                     localStorage.removeItem('supremeamer-tokens');
+                    localStorage.removeItem('supremeamer-password');
+                    localStorage.removeItem('supremeamer-pin');
+                    localStorage.removeItem('supremeamer-biometric');
                     userTokens = [];
                     updateTokenList();
                     updateBalance();
                     showNotification('All data cleared', 'success');
+                    
+                    // Reload page to show setup screen
+                    location.reload();
                 }
             });
             
@@ -1564,41 +2140,17 @@
                 if (event.target === settingsModal) {
                     settingsModal.style.display = 'none';
                 }
+                if (event.target === passwordSetupModal) {
+                    passwordSetupModal.style.display = 'none';
+                }
+                if (event.target === pinModal) {
+                    pinModal.style.display = 'none';
+                    pendingTransaction = null;
+                }
             });
-
-            // Initialize with some sample transactions
-            function initSampleTransactions() {
-                const transactions = [
-                    { title: 'NFT Purchase', date: 'Today, 14:32', amount: -0.25, token: 'ETH' },
-                    { title: 'Deposit', date: 'Yesterday, 09:15', amount: 1.5, token: 'ETH' },
-                    { title: 'Token Swap', date: 'May 12, 2023', amount: -0.1, token: 'ETH' },
-                    { title: 'Received Payment', date: 'May 10, 2023', amount: 0.5, token: 'BNB' }
-                ];
-                
-                transactionList.innerHTML = '';
-                
-                transactions.forEach(tx => {
-                    const transactionItem = document.createElement('li');
-                    transactionItem.className = 'transaction-item';
-                    
-                    transactionItem.innerHTML = `
-                        <div class="transaction-icon">
-                            <i class="fas fa-${tx.amount > 0 ? 'arrow-down' : 'arrow-up'}"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <div class="transaction-title">${tx.title}</div>
-                            <div class="transaction-date">${tx.date}</div>
-                        </div>
-                        <div class="transaction-amount ${tx.amount > 0 ? 'positive' : 'negative'}">${tx.amount > 0 ? '+' : ''}${tx.amount} ${tx.token}</div>
-                    `;
-                    
-                    transactionList.appendChild(transactionItem);
-                });
-            }
 
             // Initialize the app
             initApp();
-            initSampleTransactions();
         });
     </script>
 </body>
