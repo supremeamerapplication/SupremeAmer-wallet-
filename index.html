@@ -3,2155 +3,658 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupremeAmer - Secure Web3 Wallet</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.10.1/dist/umd/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-    <style>
-        :root {
-            --primary: #3498db;
-            --secondary: #2ecc71;
-            --accent: #9b59b6;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-            --dark: #1a1a2e;
-            --darker: #16213e;
-            --light: rgba(255, 255, 255, 0.9);
-            --gray: rgba(255, 255, 255, 0.6);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-        }
-
-        [data-theme="light"] {
-            --primary: #2980b9;
-            --secondary: #27ae60;
-            --accent: #8e44ad;
-            --danger: #c0392b;
-            --warning: #e67e22;
-            --dark: #f5f7fa;
-            --darker: #e4e7ec;
-            --light: rgba(0, 0, 0, 0.9);
-            --gray: rgba(0, 0, 0, 0.6);
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --card-border: rgba(0, 0, 0, 0.1);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            --text-primary: #2c3e50;
-            --text-secondary: rgba(44, 62, 80, 0.7);
-            --bg-primary: #f5f7fa;
-            --bg-secondary: #e4e7ec;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
+    <title>SupremeAmer Coin Airdrop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
+    <style id="theme-style">
         body {
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-            color: var(--text-primary);
+            font-family: 'Montserrat', Arial, sans-serif;
             min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #111 70%, #ff9800 100%);
+            color: #fff;
+            transition: background 0.3s, color 0.3s;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
         }
-
-        .auth-container {
+        body.light {
+            background: linear-gradient(135deg, #fffde4 60%, #f7b733 100%);
+            color: #333;
+        }
+        .header {
             width: 100%;
-            max-width: 400px;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--card-border);
-            padding: 30px;
+            padding: 25px 0 10px 0;
             text-align: center;
+            background: rgba(0,0,0,0.7);
+            font-size: 2.4em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            box-shadow: 0 2px 16px #ffeb3b33;
+            position: relative;
+            transition: background 0.3s;
         }
-
-        .auth-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 20px;
+        body.light .header {
+            background: rgba(255,255,255,0.75);
         }
-
-        .auth-logo i {
-            font-size: 32px;
-            color: var(--primary);
-        }
-
-        .auth-logo h1 {
-            font-size: 24px;
-            font-weight: 600;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .auth-title {
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-
-        .auth-subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
-        .auth-options {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .auth-btn {
-            padding: 15px;
-            border-radius: 12px;
+        .emoji-avatar {
+            font-size: 2.1em;
+            vertical-align: middle;
+            background: transparent;
             border: none;
-            font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            outline: none;
         }
-
-        .auth-btn.primary {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            color: white;
+        .profile-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 5vw;
+            top: 60px;
+            background: #222;
+            min-width: 210px;
+            border-radius: 10px;
+            box-shadow: 0 2px 16px #000a;
+            z-index: 1001;
+            color: #fff;
+            font-size: 1em;
+            margin-top: 6px;
+            animation: fadeIn 0.22s;
+            text-align: left;
         }
-
-        .auth-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            border: 1px solid var(--card-border);
+        body.light .profile-dropdown-content {
+            background: #fff3;
+            color: #222;
         }
-
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
-        }
-
-        .pin-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .pin-btn {
-            padding: 20px;
-            border-radius: 12px;
+        @keyframes fadeIn { from { opacity: 0;} to { opacity: 1; } }
+        .profile-dropdown-content hr {
             border: none;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            font-size: 20px;
+            border-top: 1px solid #333;
+            margin: 6px 0;
+        }
+        .profile-dropdown-content a {
+            color: #ff3333;
+            text-decoration: none;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            display: block;
+            transition: background 0.1s;
+            border-radius: 5px;
+            padding: 8px 18px;
         }
-
-        .pin-btn:hover {
-            background: rgba(52, 152, 219, 0.3);
+        .profile-dropdown-content a:hover {
+            background: #333;
         }
-
-        .pin-display {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-
-        .pin-dot {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid var(--card-border);
-        }
-
-        .pin-dot.filled {
-            background: var(--primary);
-        }
-
-        .biometric-option {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .biometric-option:hover {
-            background: rgba(52, 152, 219, 0.2);
-        }
-
-        .wallet-container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
+        .marquee {
+            background: linear-gradient(90deg, #ff9800, #fdc500, #ff9800);
+            color: #222;
+            font-size: 1.2em;
+            padding: 8px 0;
+            margin-bottom: 18px;
+            border-radius: 0 0 16px 16px;
+            white-space: nowrap;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--card-border);
-            transition: transform 0.3s ease;
-            display: none;
-        }
-
-        .wallet-container:hover {
-            transform: translateY(-5px);
-        }
-
-        .wallet-header {
-            padding: 25px;
-            background: rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .wallet-logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .wallet-logo i {
-            font-size: 28px;
-            color: var(--primary);
-        }
-
-        .wallet-logo h1 {
-            font-size: 22px;
-            font-weight: 600;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .theme-toggle, .balance-toggle {
-            background: rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--card-border);
-            border-radius: 50px;
-            width: 50px;
-            height: 26px;
             position: relative;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            padding: 0 5px;
+            height: 1.5em;
         }
-
-        .theme-toggle::after, .balance-toggle::after {
-            content: '';
+        .marquee-text {
+            display: inline-block;
             position: absolute;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--primary);
-            transition: transform 0.3s;
-        }
-
-        .theme-toggle.active::after, .balance-toggle.active::after {
-            transform: translateX(24px);
-        }
-
-        .theme-toggle i, .balance-toggle i {
-            font-size: 12px;
-            z-index: 1;
-        }
-
-        .theme-toggle .fa-sun {
-            color: var(--warning);
-        }
-
-        .theme-toggle .fa-moon {
-            color: var(--text-secondary);
-            margin-left: auto;
-        }
-
-        .balance-toggle .fa-eye {
-            color: var(--text-secondary);
-        }
-
-        .balance-toggle .fa-eye-slash {
-            color: var(--text-secondary);
-            margin-left: auto;
-        }
-
-        .network-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(52, 152, 219, 0.2);
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-size: 14px;
-        }
-
-        .wallet-body {
-            padding: 25px;
-        }
-
-        .balance-section {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .balance-label {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
-        }
-
-        .balance-amount {
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .balance-equivalent {
-            font-size: 16px;
-            color: var(--text-secondary);
-        }
-
-        .balance-change {
-            position: absolute;
-            top: 0;
-            right: 0;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            color: var(--secondary);
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .action-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            padding: 15px 10px;
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .action-btn:hover {
-            background: rgba(52, 152, 219, 0.3);
-            transform: translateY(-3px);
-        }
-
-        .action-btn i {
-            font-size: 20px;
-        }
-
-        .wallet-connect-section {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .wallet-connect-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .wallet-connect-title i {
-            color: var(--primary);
-        }
-
-        .wallet-connect-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .wallet-connect-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
-        }
-
-        .wallet-connect-btn.connected {
-            background: linear-gradient(90deg, var(--secondary), #27ae60);
-        }
-
-        .wallet-connect-btn.connected:hover {
-            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
-        }
-
-        .network-selector {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            border: 1px solid var(--card-border);
-            color: var(--text-primary);
-            width: 100%;
-        }
-
-        .token-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .token-list::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .token-list::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .token-list::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .token-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .token-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
-        }
-
-        .token-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .token-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(52, 152, 219, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-        }
-
-        .token-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .token-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .token-symbol {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .token-balance {
-            text-align: right;
-        }
-
-        .token-amount {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .token-value {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .add-token-btn {
-            margin-top: 15px;
-            width: 100%;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px dashed var(--card-border);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .add-token-btn:hover {
-            background: rgba(52, 152, 219, 0.2);
-        }
-
-        .recent-transactions {
-            margin-top: 20px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title i {
-            color: var(--primary);
-        }
-
-        .transaction-list {
-            list-style: none;
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .transaction-list::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .transaction-list::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-
-        .transaction-list::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 10px;
-        }
-
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .transaction-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(52, 152, 219, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .transaction-details {
-            flex: 1;
-            margin-left: 15px;
-        }
-
-        .transaction-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .transaction-date {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-
-        .transaction-amount {
-            font-weight: 600;
-        }
-
-        .transaction-amount.positive {
-            color: var(--secondary);
-        }
-
-        .transaction-amount.negative {
-            color: var(--danger);
-        }
-
-        .wallet-footer {
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.1);
-            border-top: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .wallet-address {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .wallet-address i {
-            color: var(--primary);
-        }
-
-        .wallet-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .wallet-action-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 18px;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .wallet-action-btn:hover {
-            color: var(--primary);
-        }
-
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--danger);
-            margin-left: 5px;
-        }
-
-        .status-indicator.connected {
-            background: var(--secondary);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            padding: 30px;
+            left: 100%;
+            animation: marquee 15s linear infinite;
+            white-space: nowrap;
+            will-change: transform;
+        }
+        @keyframes marquee {
+            0%   { transform: translateX(0%);}
+            100% { transform: translateX(-100vw);}
+        }
+        .container {
+            background: rgba(30, 30, 40, 0.95);
+            padding: 36px 32px 28px 32px;
             border-radius: 20px;
+            box-shadow: 0 8px 32px #0006;
             text-align: center;
             max-width: 400px;
             width: 90%;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(10px);
+            transition: background 0.3s;
         }
-
-        .modal-title {
-            margin-bottom: 20px;
-            font-size: 20px;
-            color: var(--text-primary);
+        body.light .container {
+            background: rgba(255,255,255,0.90);
+            color: #222;
         }
-
-        .modal-message {
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-        }
-
-        .modal-actions {
+        #logoContainer {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px auto;
+            position: relative;
             display: flex;
-            gap: 10px;
+            align-items: center;
             justify-content: center;
         }
-
-        .modal-btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
+        #coinLogo {
+            width: 80px !important;
+            height: 80px !important;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px #ff980066;
+            z-index: 2;
+            position: relative;
+        }
+        .mined-coins {
+            font-size: 2.3em;
+            margin: 14px 0;
+            color: #ffb900;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .timer {
+            font-size: 1.5em;
+            color: #ff3333;
+            margin-bottom: 18px;
             font-weight: 600;
-            transition: all 0.3s ease;
         }
-
-        .modal-btn.primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .modal-btn.secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-
-        .modal-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 10px;
+        .mine-btn, .withdraw-btn {
+            padding: 15px 38px;
+            background: linear-gradient(90deg, #fdc500 40%, #ff9800 100%);
+            color: #111;
+            border: none;
             border-radius: 8px;
-            border: 1px solid var(--card-border);
-            background: rgba(0, 0, 0, 0.1);
-            color: var(--text-primary);
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: box-shadow 0.2s, background 0.2s;
+            box-shadow: 0 4px 16px #ff980066;
+            margin-bottom: 10px;
         }
-
-        .notification {
+        .mine-btn:hover, .withdraw-btn:hover {
+            background: linear-gradient(90deg, #ff9800 40%, #fdc500 100%);
+            box-shadow: 0 8px 24px #ff980099;
+        }
+        .withdraw-btn[disabled] {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+        .upgrade-btn {
+            padding: 13px 32px;
+            background: linear-gradient(90deg, #ece9e6 0%, #ff9800 100%);
+            color: #222;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.08em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px #ffb90044;
+        }
+        .upgrade-btn:hover {
+            background: linear-gradient(90deg, #ffe259, #ffa751);
+        }
+        /* Upgrade Modal */
+        #upgradeModal {
+            display: none;
             position: fixed;
-            top: 20px;
+            z-index: 2002;
+            left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+        #upgradeModalContent {
+            background: #fff;
+            color: #222;
+            border-radius: 17px;
+            padding: 24px 20px 18px 20px;
+            max-width: 340px;
+            width: 90vw;
+            text-align: center;
+            box-shadow: 0 8px 32px #0005;
+            position: relative;
+        }
+        #upgradeModalContent .close-btn {
+            position: absolute;
             right: 20px;
-            padding: 15px 20px;
-            background: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary);
+            top: 15px;
+            font-size: 1.5em;
+            background: none;
+            border: none;
+            color: #ff9800;
+            cursor: pointer;
+        }
+        .upgrade-plan {
+            margin: 18px 0 10px 0;
+            padding: 16px 10px;
+            border-radius: 11px;
+            background: #fffbe6;
+            color: #333;
+            box-shadow: 0 2px 8px #ffd70044;
+        }
+        .upgrade-plan .plan-title {
+            font-weight: bold;
+            font-size: 1.07em;
+            margin-bottom: 7px;
+            color: #ff9800;
+        }
+        .upgrade-plan .plan-desc {
+            font-size: 0.98em;
+        }
+        .upgrade-plan .plan-action {
+            margin-top: 9px;
+        }
+        .footer {
+            width: 100%;
+            display: flex;
+            justify-content: space-evenly;
+            gap: 0;
+            padding: 18px 0;
+            background: rgba(255, 184, 0, 0.09);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -4px 24px #ff980022;
+            z-index: 999;
+        }
+        .footer button {
+            background: #fff;
+            color: #ff9800;
+            border: none;
+            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            font-size: 2em;
             display: flex;
             align-items: center;
-            gap: 10px;
-            transform: translateX(150%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--card-border);
+            justify-content: center;
+            box-shadow: 0 2px 8px #2222;
+            transition: background 0.2s, color 0.2s;
         }
-
-        .notification.show {
-            transform: translateX(0);
+        .footer button:hover {
+            background: #ff9800;
+            color: #fff;
         }
-
-        .notification.success {
-            border-left-color: var(--secondary);
+        .claim-status, .withdraw-status {
+            margin: 7px 0 0 0;
+            color: #ffd700;
+            font-size: 0.97em;
+            min-height: 18px;
         }
-
-        .notification.error {
-            border-left-color: var(--danger);
+        .light-toggle {
+            position: absolute;
+            left: 28px;
+            top: 24px;
+            font-size: 1.7em;
+            background: none;
+            border: none;
+            color: #ffd700;
+            cursor: pointer;
+            z-index: 101;
         }
-
-        .notification.warning {
-            border-left-color: var(--warning);
+        body.light .light-toggle {
+            color: #ff9800;
         }
-
-        .loader {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .hidden-balance {
-            filter: blur(8px);
-            user-select: none;
-        }
-
-        .security-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(46, 204, 113, 0.2);
-            color: var(--secondary);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-top: 10px;
-        }
-
-        @media (max-width: 480px) {
-            .wallet-container, .auth-container {
-                border-radius: 15px;
-            }
-            
-            .wallet-header, .wallet-body {
-                padding: 20px;
-            }
-            
-            .balance-amount {
-                font-size: 32px;
-            }
-            
-            .action-buttons {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        @media (max-width:600px) {
+            .profile-dropdown-content { min-width: 140px; font-size:0.95em;}
+            #logoContainer { width: 60px; height: 60px; }
+            #coinLogo { width: 60px !important; height: 60px !important; }
+            .container { padding: 18px 4vw 18px 4vw;}
+            .mined-coins { font-size:1.3em;}
         }
     </style>
 </head>
 <body>
-    <!-- Authentication Screen -->
-    <div class="auth-container" id="authContainer">
-        <div class="auth-logo">
-            <i class="fas fa-crown"></i>
-            <h1>SupremeAmer</h1>
+    <div class="header">
+        <button class="light-toggle" id="lightToggleBtn" aria-label="Toggle light/dark mode">🌙</button>
+        SUPREMEAMER COIN AIRDROP 🚀💰
+        <button id="profileDropdownBtn" class="emoji-avatar" style="position:absolute; top:18px; right:28px;">👤</button>
+        <div id="profileDropdownMenu" class="profile-dropdown-content">
+            <div id="dropdownUsername" style="padding:8px 18px; font-weight:bold;"><span class="emoji-avatar">🧑</span> </div>
+            <div id="dropdownEmail" style="padding:0 18px 8px 18px; color:#ffd700; font-size:0.96em;"><span class="emoji-avatar">✉️</span></div>
+            <hr style="margin:8px 0; border:0; border-top:1px solid #333;">
+            <a href="#" id="logoutBtn" style="display:block; color:#ff3333; text-decoration:none; font-weight:500;">Logout</a>
         </div>
-        
-        <div id="setupScreen">
-            <h2 class="auth-title">Secure Your Wallet</h2>
-            <p class="auth-subtitle">Set up authentication to protect your assets</p>
-            
-            <div class="auth-options">
-                <button class="auth-btn primary" id="setupPassword">
-                    <i class="fas fa-lock"></i>
-                    <span>Set Password</span>
-                </button>
-                <button class="auth-btn secondary" id="setupBiometric">
-                    <i class="fas fa-fingerprint"></i>
-                    <span>Enable Biometric</span>
-                </button>
+    </div>
+    <div class="marquee">
+        <span class="marquee-text">Welcome to $SA - Mine SupremeAmer coins and join the revolution! 🚀💰🎉</span>
+    </div>
+    <div class="container">
+        <div style="font-size:1.5em; color:#fdc500; margin-bottom:6px;">Mining Dashboard</div>
+        <div id="logoContainer">
+            <img id="coinLogo" src="supremeamer_coin.png" alt="SupremeAmer Coin">
+        </div>
+        <div class="mined-coins" id="minedCoins">Mined Coins: 0 SA</div>
+        <div class="timer" id="timer">07:00:00</div>
+        <button class="mine-btn" id="mineBtn">Start Mining</button>
+        <button class="upgrade-btn" id="showUpgradeBtn" style="margin-bottom: 16px;">Upgrade</button>
+        <button class="withdraw-btn" id="withdrawBtn">Withdraw (Min: 50,000 SA)</button>
+        <div class="claim-status" id="claimStatus"></div>
+        <div class="withdraw-status" id="withdrawStatus"></div>
+    </div>
+    <div class="footer">
+        <button onclick="window.location.href='index.html'" title="Home">🏠</button>
+        <button onclick="window.location.href='Task.html'" title="Tasks">📜</button>
+        <button onclick="window.location.href='wallet.html'" title="Wallet">💸</button>
+        <button onclick="window.location.href='dapp.html'" title="DApp">🎮</button>
+    </div>
+    <!-- Upgrade Modal -->
+    <div id="upgradeModal">
+        <div id="upgradeModalContent">
+            <button class="close-btn" onclick="hideUpgradeModal()">&times;</button>
+            <h3 style="color:#ff9800;margin-top:0;">Upgrade Mining Speed</h3>
+            <div class="upgrade-plan">
+                <div class="plan-title">🚀 0.05 SA/sec</div>
+                <div class="plan-desc">Duration: <b>360 days</b> <br> Fee: <b>0.002 BNB</b> <br> Claim every 30 days</div>
+                <div class="plan-action">
+                    <button class="upgrade-btn" style="padding:8px 18px;" onclick="upgradeMining('0.05')">Upgrade</button>
+                </div>
             </div>
-        </div>
-        
-        <div id="loginScreen" style="display: none;">
-            <h2 class="auth-title">Welcome Back</h2>
-            <p class="auth-subtitle">Unlock your wallet to continue</p>
-            
-            <div class="auth-options">
-                <div class="form-group">
-                    <input type="password" class="form-input" id="passwordInput" placeholder="Enter your password">
+            <div class="upgrade-plan">
+                <div class="plan-title">🔥 0.1 SA/sec</div>
+                <div class="plan-desc">Duration: <b>360 days</b> <br> Fee: <b>0.009 BNB</b> <br> Claim every 30 days</div>
+                <div class="plan-action">
+                    <button class="upgrade-btn" style="padding:8px 18px;" onclick="upgradeMining('0.1')">Upgrade</button>
                 </div>
-                <button class="auth-btn primary" id="loginPassword">
-                    <i class="fas fa-unlock"></i>
-                    <span>Unlock with Password</span>
-                </button>
-                <div class="biometric-option" id="loginBiometric">
-                    <i class="fas fa-fingerprint"></i>
-                    <span>Unlock with Biometric</span>
-                </div>
+            </div>
+            <div style="font-size:0.98em;color:#666;margin-top:12px;">
+               After upgrade, mining speed increases for 360 days. You can claim mined rewards every 30 days. Mining continues even if you delay claim, but only for 360 days. After that, mining returns to 0.0002 SA/sec.
             </div>
         </div>
     </div>
-
-    <!-- Wallet Interface -->
-    <div class="wallet-container" id="walletContainer">
-        <div class="wallet-header">
-            <div class="wallet-logo">
-                <i class="fas fa-crown"></i>
-                <h1>SupremeAmer</h1>
-            </div>
-            <div class="header-controls">
-                <div class="theme-toggle" id="themeToggle">
-                    <i class="fas fa-sun"></i>
-                    <i class="fas fa-moon"></i>
-                </div>
-                <div class="balance-toggle" id="balanceToggle">
-                    <i class="fas fa-eye"></i>
-                    <i class="fas fa-eye-slash"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="wallet-body">
-            <div class="balance-section">
-                <div class="balance-label">Total Balance</div>
-                <div class="balance-amount" id="totalBalance">$4,283.75</div>
-                <div class="balance-equivalent" id="cryptoBalance">2.15 ETH</div>
-                <div class="balance-change">
-                    <i class="fas fa-arrow-up"></i>
-                    <span id="balanceChange">2.5%</span>
-                </div>
-                <div class="security-badge">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Wallet Secured</span>
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="action-btn" id="sendBtn">
-                    <i class="fas fa-paper-plane"></i>
-                    <span>Send</span>
-                </button>
-                <button class="action-btn" id="receiveBtn">
-                    <i class="fas fa-download"></i>
-                    <span>Receive</span>
-                </button>
-                <button class="action-btn" id="swapBtn">
-                    <i class="fas fa-exchange-alt"></i>
-                    <span>Swap</span>
-                </button>
-                <button class="action-btn" id="stakeBtn">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Stake</span>
-                </button>
-            </div>
-            
-            <div class="wallet-connect-section">
-                <div class="wallet-connect-title">
-                    <i class="fas fa-plug"></i>
-                    <span>WalletConnect</span>
-                </div>
-                <select class="network-selector" id="networkSelector">
-                    <option value="1">Ethereum Mainnet</option>
-                    <option value="5">Goerli Testnet</option>
-                    <option value="56">BNB Chain</option>
-                    <option value="97">BNB Testnet</option>
-                    <option value="137">Polygon Mainnet</option>
-                    <option value="80001">Mumbai Testnet</option>
-                </select>
-                <button id="connectBtn" class="wallet-connect-btn">
-                    <i class="fas fa-link"></i>
-                    <span>Connect Wallet</span>
-                </button>
-            </div>
-            
-            <div class="section-title">
-                <i class="fas fa-coins"></i>
-                <span>Tokens</span>
-            </div>
-            <div class="token-list" id="tokenList">
-                <!-- Tokens will be populated by JavaScript -->
-            </div>
-            <button class="add-token-btn" id="addTokenBtn">
-                <i class="fas fa-plus"></i>
-                <span>Add Token</span>
-            </button>
-            
-            <div class="recent-transactions">
-                <div class="section-title">
-                    <i class="fas fa-history"></i>
-                    <span>Recent Transactions</span>
-                </div>
-                <ul class="transaction-list" id="transactionList">
-                    <!-- Transactions will be populated by JavaScript -->
-                </ul>
-            </div>
-        </div>
-        
-        <div class="wallet-footer">
-            <div class="wallet-address">
-                <i class="fas fa-user-circle"></i>
-                <span id="walletAddress">Not connected</span>
-                <div id="statusIndicator" class="status-indicator"></div>
-            </div>
-            <div class="wallet-actions">
-                <button class="wallet-action-btn" id="settingsBtn">
-                    <i class="fas fa-cog"></i>
-                </button>
-                <button class="wallet-action-btn" id="disconnectBtn">
-                    <i class="fas fa-power-off"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Password Setup Modal -->
-    <div id="passwordSetupModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Set Wallet Password</h2>
-            <div class="modal-message">
-                <div class="form-group">
-                    <label class="form-label" for="newPassword">New Password</label>
-                    <input type="password" class="form-input" id="newPassword" placeholder="Minimum 8 characters">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="confirmPassword">Confirm Password</label>
-                    <input type="password" class="form-input" id="confirmPassword" placeholder="Re-enter your password">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="transactionPin">Transaction PIN (6 digits)</label>
-                    <input type="password" class="form-input" id="transactionPin" placeholder="Enter 6-digit PIN" maxlength="6">
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn secondary" id="cancelPasswordSetup">Cancel</button>
-                <button class="modal-btn primary" id="confirmPasswordSetup">Set Password</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Transaction PIN Modal -->
-    <div id="pinModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Confirm Transaction</h2>
-            <div class="modal-message">
-                <p>Enter your 6-digit PIN to authorize this transaction</p>
-                <div class="pin-display" id="pinDisplay">
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                </div>
-                <div class="pin-container">
-                    <button class="pin-btn" data-value="1">1</button>
-                    <button class="pin-btn" data-value="2">2</button>
-                    <button class="pin-btn" data-value="3">3</button>
-                    <button class="pin-btn" data-value="4">4</button>
-                    <button class="pin-btn" data-value="5">5</button>
-                    <button class="pin-btn" data-value="6">6</button>
-                    <button class="pin-btn" data-value="7">7</button>
-                    <button class="pin-btn" data-value="8">8</button>
-                    <button class="pin-btn" data-value="9">9</button>
-                    <button class="pin-btn" id="pinBackspace"><i class="fas fa-backspace"></i></button>
-                    <button class="pin-btn" data-value="0">0</button>
-                    <button class="pin-btn" id="pinClear">C</button>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn secondary" id="cancelPin">Cancel</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Send Modal -->
-    <div id="sendModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Send Assets</h2>
-            <div class="modal-message">
-                <div class="form-group">
-                    <label class="form-label" for="sendTokenSelect">Token</label>
-                    <select class="form-input" id="sendTokenSelect">
-                        <option value="ETH">ETH</option>
-                        <option value="BNB">BNB</option>
-                        <option value="USDC">USDC</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="recipientAddress">Recipient Address</label>
-                    <input type="text" class="form-input" id="recipientAddress" placeholder="0x...">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="sendAmount">Amount</label>
-                    <input type="text" class="form-input" id="sendAmount" placeholder="0.0">
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn secondary" id="cancelSend">Cancel</button>
-                <button class="modal-btn primary" id="confirmSend">Send</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Receive Modal -->
-    <div id="receiveModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Receive Assets</h2>
-            <div class="modal-message">
-                <p>Share your wallet address to receive funds</p>
-                <div class="wallet-address" style="justify-content: center; margin: 20px 0;">
-                    <i class="fas fa-wallet"></i>
-                    <span id="receiveAddress">0x0000...0000</span>
-                </div>
-                <div class="qr-code-placeholder" style="width: 200px; height: 200px; background: #f5f5f5; margin: 0 auto; display: flex; justify-content: center; align-items: center; border-radius: 10px;">
-                    <span style="color: #333;">QR Code</span>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn primary" id="copyAddress">Copy Address</button>
-                <button class="modal-btn secondary" id="closeReceive">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Add Token Modal -->
-    <div id="addTokenModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Add Token</h2>
-            <div class="modal-message">
-                <div class="form-group">
-                    <label class="form-label" for="tokenContract">Token Contract Address</label>
-                    <input type="text" class="form-input" id="tokenContract" placeholder="0x...">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="tokenSymbol">Token Symbol</label>
-                    <input type="text" class="form-input" id="tokenSymbol" placeholder="e.g., UNI">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="tokenDecimals">Token Decimals</label>
-                    <input type="number" class="form-input" id="tokenDecimals" placeholder="18" value="18">
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn secondary" id="cancelAddToken">Cancel</button>
-                <button class="modal-btn primary" id="confirmAddToken">Add Token</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Security Settings</h2>
-            <div class="modal-message">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <span>Dark/Light Mode</span>
-                    <div class="theme-toggle active" id="settingsThemeToggle">
-                        <i class="fas fa-sun"></i>
-                        <i class="fas fa-moon"></i>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <span>Hide Balance</span>
-                    <div class="balance-toggle" id="settingsBalanceToggle">
-                        <i class="fas fa-eye"></i>
-                        <i class="fas fa-eye-slash"></i>
-                    </div>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="changePassword">
-                        <i class="fas fa-key"></i>
-                        <span>Change Password</span>
-                    </button>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="changePin">
-                        <i class="fas fa-lock"></i>
-                        <span>Change Transaction PIN</span>
-                    </button>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <button class="action-btn" style="width: 100%; margin-top: 10px;" id="toggleBiometric">
-                        <i class="fas fa-fingerprint"></i>
-                        <span>Toggle Biometric Auth</span>
-                    </button>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <button class="action-btn" style="width: 100%; margin-top: 10px; background: rgba(231, 76, 60, 0.2);" id="clearData">
-                        <i class="fas fa-trash"></i>
-                        <span>Clear All Data</span>
-                    </button>
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="modal-btn secondary" id="closeSettings">Close</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Notification -->
-    <div id="notification" class="notification">
-        <i class="fas fa-info-circle"></i>
-        <span id="notificationText">This is a notification</span>
-    </div>
-
+    <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const authContainer = document.getElementById('authContainer');
-            const walletContainer = document.getElementById('walletContainer');
-            const setupScreen = document.getElementById('setupScreen');
-            const loginScreen = document.getElementById('loginScreen');
-            const setupPasswordBtn = document.getElementById('setupPassword');
-            const setupBiometricBtn = document.getElementById('setupBiometric');
-            const passwordInput = document.getElementById('passwordInput');
-            const loginPasswordBtn = document.getElementById('loginPassword');
-            const loginBiometricBtn = document.getElementById('loginBiometric');
-            const passwordSetupModal = document.getElementById('passwordSetupModal');
-            const newPasswordInput = document.getElementById('newPassword');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-            const transactionPinInput = document.getElementById('transactionPin');
-            const cancelPasswordSetup = document.getElementById('cancelPasswordSetup');
-            const confirmPasswordSetup = document.getElementById('confirmPasswordSetup');
-            const pinModal = document.getElementById('pinModal');
-            const pinDisplay = document.getElementById('pinDisplay');
-            const pinBackspace = document.getElementById('pinBackspace');
-            const pinClear = document.getElementById('pinClear');
-            const cancelPin = document.getElementById('cancelPin');
-            const connectBtn = document.getElementById('connectBtn');
-            const disconnectBtn = document.getElementById('disconnectBtn');
-            const walletAddress = document.getElementById('walletAddress');
-            const statusIndicator = document.getElementById('statusIndicator');
-            const networkSelector = document.getElementById('networkSelector');
-            const sendBtn = document.getElementById('sendBtn');
-            const receiveBtn = document.getElementById('receiveBtn');
-            const swapBtn = document.getElementById('swapBtn');
-            const stakeBtn = document.getElementById('stakeBtn');
-            const addTokenBtn = document.getElementById('addTokenBtn');
-            const settingsBtn = document.getElementById('settingsBtn');
-            const sendModal = document.getElementById('sendModal');
-            const receiveModal = document.getElementById('receiveModal');
-            const addTokenModal = document.getElementById('addTokenModal');
-            const settingsModal = document.getElementById('settingsModal');
-            const cancelSend = document.getElementById('cancelSend');
-            const confirmSend = document.getElementById('confirmSend');
-            const closeReceive = document.getElementById('closeReceive');
-            const copyAddress = document.getElementById('copyAddress');
-            const receiveAddress = document.getElementById('receiveAddress');
-            const cancelAddToken = document.getElementById('cancelAddToken');
-            const confirmAddToken = document.getElementById('confirmAddToken');
-            const closeSettings = document.getElementById('closeSettings');
-            const changePassword = document.getElementById('changePassword');
-            const changePin = document.getElementById('changePin');
-            const toggleBiometric = document.getElementById('toggleBiometric');
-            const clearData = document.getElementById('clearData');
-            const notification = document.getElementById('notification');
-            const notificationText = document.getElementById('notificationText');
-            const tokenList = document.getElementById('tokenList');
-            const transactionList = document.getElementById('transactionList');
-            const totalBalance = document.getElementById('totalBalance');
-            const cryptoBalance = document.getElementById('cryptoBalance');
-            const balanceChange = document.getElementById('balanceChange');
-            const themeToggle = document.getElementById('themeToggle');
-            const balanceToggle = document.getElementById('balanceToggle');
-            const settingsThemeToggle = document.getElementById('settingsThemeToggle');
-            const settingsBalanceToggle = document.getElementById('settingsBalanceToggle');
+    // ---- CONFIGURATION ----
+    const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+    const APPWRITE_PROJECT = '6839d9640019316a160d';
+    const APPWRITE_DB_ID = '6839dcca000190bf99f6';
+    const APPWRITE_COLLECTION_ID = 'users';
+    const SUPREMEAMER_RECEIVER_BNB = '0xYourBnbAddressHere'; // CHANGE TO YOURS
 
-            // Security state
-            let isAuthenticated = false;
-            let walletPassword = null;
-            let transactionPin = null;
-            let isBiometricEnabled = false;
-            let currentPinInput = '';
-            let pendingTransaction = null;
+    const UPGRADE_FEES = {
+        "0.05": "0.002",
+        "0.1": "0.009"
+    };
+    const UPGRADE_SPEEDS = {
+        "0.05": 0.05,
+        "0.1": 0.1
+    };
+    const NORMAL_SPEED = 0.0002;
+    const UPGRADE_DURATION = 360 * 24 * 3600;
+    const CLAIM_INTERVAL = 30 * 24 * 3600;
+    const WITHDRAW_ELIGIBILITY_FEE_BNB = "0.0017";
+    const WITHDRAW_MIN_SA = 50000;
+    const WITHDRAW_FEE_PERCENT = 6;
+    const WITHDRAW_DAYS = [9, 13];
 
-            // WalletConnect provider instance
-            let walletConnectProvider = null;
-            let isConnected = false;
-            let currentAccount = null;
-            let currentChainId = 1;
-            let tokenPrices = {};
-            let userTokens = [];
-            let isBalanceHidden = false;
+    // Appwrite
+    const { Client, Account, Databases, Query } = Appwrite;
+    const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
+    const account = new Account(client);
+    const databases = new Databases(client);
 
-            // Initialize the app
-            function initApp() {
-                checkAuthStatus();
-                loadThemePreference();
-                loadBalanceVisibilityPreference();
-                
-                // Set up interval to periodically update token prices
-                setInterval(fetchTokenPrices, 60000); // Update every minute
+    // ---- Profile Dropdown ----
+    document.getElementById('profileDropdownBtn').onclick = function(e) {
+        e.stopPropagation();
+        let menu = document.getElementById('profileDropdownMenu');
+        menu.style.display = (menu.style.display === "block") ? "none" : "block";
+    };
+    document.addEventListener('click', function() {
+        let menu = document.getElementById('profileDropdownMenu');
+        if (menu.style.display === "block") menu.style.display = "none";
+    });
+    document.getElementById('profileDropdownMenu').onclick = function(e) { e.stopPropagation(); };
+    document.getElementById('logoutBtn').onclick = async function(e) {
+        e.preventDefault();
+        try { await account.deleteSession('current'); } catch (err) {}
+        window.location.href = "login.html";
+    };
+    async function displayUser() {
+        try {
+            const user = await account.get();
+            const res = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, [Query.equal("userId", user.$id)]);
+            if (res.documents.length > 0) {
+                const profile = res.documents[0];
+                document.getElementById('dropdownUsername').innerHTML = `<span class="emoji-avatar">🧑</span> ${profile.name}`;
+                document.getElementById('dropdownEmail').innerHTML = `<span class="emoji-avatar">✉️</span> ${profile.email}`;
             }
+        } catch (err) {}
+    }
+    displayUser();
 
-            // Check authentication status
-            function checkAuthStatus() {
-                const savedPassword = localStorage.getItem('supremeamer-password');
-                const savedPin = localStorage.getItem('supremeamer-pin');
-                const savedBiometric = localStorage.getItem('supremeamer-biometric');
-                
-                if (savedPassword && savedPin) {
-                    walletPassword = savedPassword;
-                    transactionPin = savedPin;
-                    isBiometricEnabled = savedBiometric === 'true';
-                    
-                    // Show login screen
-                    setupScreen.style.display = 'none';
-                    loginScreen.style.display = 'block';
-                } else {
-                    // Show setup screen
-                    setupScreen.style.display = 'block';
-                    loginScreen.style.display = 'none';
-                }
-            }
+    // ---- Light/Dark Toggle ----
+    function setTheme(light) {
+        if(light) {
+            document.body.classList.add('light');
+            localStorage.setItem('theme','light');
+            document.getElementById('lightToggleBtn').textContent='🌞';
+        } else {
+            document.body.classList.remove('light');
+            localStorage.setItem('theme','dark');
+            document.getElementById('lightToggleBtn').textContent='🌙';
+        }
+    }
+    document.getElementById('lightToggleBtn').onclick = function() {
+        setTheme(!document.body.classList.contains('light'));
+    };
+    // On load, restore theme
+    if(localStorage.getItem('theme')==='light') setTheme(true);
 
-            // Setup password authentication
-            function setupPassword() {
-                passwordSetupModal.style.display = 'flex';
-            }
+    // ---- Mining State ----
+    let minedCoins = parseFloat(localStorage.getItem('minedCoins')||'0');
+    let miningActive = false;
+    let miningSpeed = NORMAL_SPEED;
+    let miningUpgrade = JSON.parse(localStorage.getItem('miningUpgrade') || 'null');
+    let miningUpgradeStart = miningUpgrade?.startTime||0;
+    let miningUpgradeSpeed = miningUpgrade?.upgradeSpeed||0;
+    let miningUpgradeLastClaim = miningUpgrade?.lastClaim||0;
+    let miningTimerInterval = null;
 
-            // Confirm password setup
-            function confirmPasswordSetupHandler() {
-                const newPassword = newPasswordInput.value;
-                const confirmPassword = confirmPasswordInput.value;
-                const pin = transactionPinInput.value;
-                
-                if (newPassword.length < 8) {
-                    showNotification('Password must be at least 8 characters', 'error');
+    function getCurrentSpeed() {
+        if (isUpgradeActive()) return miningUpgrade.upgradeSpeed;
+        return NORMAL_SPEED;
+    }
+    function getUpgradeTimeLeft() {
+        if (!isUpgradeActive()) return 0;
+        return Math.max((miningUpgrade.startTime+UPGRADE_DURATION)-Math.floor(Date.now()/1000),0);
+    }
+    function getNextClaimTime() {
+        if (!isUpgradeActive()) return 0;
+        return miningUpgrade.lastClaim+CLAIM_INTERVAL;
+    }
+    function canClaim() {
+        return isUpgradeActive() && Math.floor(Date.now()/1000)>=getNextClaimTime();
+    }
+    function isUpgradeActive() {
+        return miningUpgrade && miningUpgrade.startTime && miningUpgrade.upgradeSpeed && Date.now()/1000 < miningUpgrade.startTime+UPGRADE_DURATION;
+    }
+    function setMiningUpgrade(speed, bnbFee) {
+        miningUpgrade = {
+            upgradeSpeed: speed,
+            bnbFee: bnbFee,
+            startTime: Math.floor(Date.now()/1000),
+            lastClaim: Math.floor(Date.now()/1000)
+        };
+        localStorage.setItem('miningUpgrade', JSON.stringify(miningUpgrade));
+    }
+    function endUpgrade() {
+        miningUpgrade = null;
+        localStorage.removeItem('miningUpgrade');
+    }
+    function addMinedCoins(amount) {
+        minedCoins += amount;
+        localStorage.setItem('minedCoins', minedCoins);
+    }
+    function updateMinedCoinsDisplay() {
+        document.getElementById('minedCoins').textContent = `Mined Coins: ${minedCoins.toFixed(4)} SA`;
+    }
+    function updateTimerDisplay() {
+        if (isUpgradeActive()) {
+            let timeLeft = getUpgradeTimeLeft();
+            document.getElementById('timer').textContent = timeLeft>0?formatTime(timeLeft):"00:00:00";
+        } else {
+            let remaining = 7*3600-(parseInt(localStorage.getItem('miningSessionElapsed')||'0'));
+            if(remaining<0) remaining=0;
+            document.getElementById('timer').textContent = formatTime(remaining);
+        }
+    }
+    function formatTime(sec) {
+        const d = Math.floor(sec/86400);
+        const h = Math.floor((sec%86400) / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        return d > 0
+          ? `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+          : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+    function updateUpgradeInfo() {
+        const claimStatus = document.getElementById('claimStatus');
+        if(isUpgradeActive()){
+            let nextClaim = getNextClaimTime();
+            let canClaimNow = canClaim();
+            claimStatus.innerHTML = `Upgrade: <b>${miningUpgrade.upgradeSpeed} SA/sec</b>, ${formatTime(getUpgradeTimeLeft())} left<br>
+            Next claim: <b>${new Date(nextClaim*1000).toLocaleDateString()}</b> ${canClaimNow?'<span style="color:#00ffb3;">Ready!</span>':''}`;
+        } else {
+            claimStatus.innerHTML = "";
+        }
+    }
+
+    // ---- Upgrade Modal ----
+    function showUpgradeModal() {
+        document.getElementById('upgradeModal').style.display = 'flex';
+    }
+    function hideUpgradeModal() {
+        document.getElementById('upgradeModal').style.display = 'none';
+    }
+    document.getElementById('showUpgradeBtn').onclick = showUpgradeModal;
+    window.upgradeMining = async function(speedKey){
+        hideUpgradeModal();
+        if(isUpgradeActive()){ alert("Already upgraded!"); return; }
+        if(!window.ethereum) return alert("Connect a BNB wallet.");
+        if(!confirm(`Upgrade mining speed to ${UPGRADE_SPEEDS[speedKey]} SA/sec for 360 days? Cost: ${UPGRADE_FEES[speedKey]} BNB`)) return;
+        try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const tx = await signer.sendTransaction({
+                to: SUPREMEAMER_RECEIVER_BNB,
+                value: ethers.utils.parseEther(UPGRADE_FEES[speedKey])
+            });
+            await tx.wait();
+            setMiningUpgrade(UPGRADE_SPEEDS[speedKey], UPGRADE_FEES[speedKey]);
+            updateUpgradeInfo();
+            updateMinedCoinsDisplay();
+            alert("Upgrade successful! Mining speed increased.");
+        } catch (e) {
+            alert("Upgrade cancelled or failed.");
+        }
+    };
+
+    // ---- Mining Logic ----
+    document.getElementById('mineBtn').onclick = function() {
+        if (miningActive) { return; }
+        miningActive = true;
+        let sessionStart = Date.now();
+        let sessionElapsed = parseInt(localStorage.getItem('miningSessionElapsed')||'0');
+        let sessionInterval = setInterval(function(){
+            let speed = getCurrentSpeed();
+            minedCoins += speed;
+            localStorage.setItem('minedCoins', minedCoins);
+            updateMinedCoinsDisplay();
+
+            if(!isUpgradeActive()){
+                let elapsed = Math.floor((Date.now()-sessionStart)/1000)+sessionElapsed;
+                if(elapsed>=7*3600){
+                    miningActive = false;
+                    clearInterval(sessionInterval);
+                    localStorage.setItem('miningSessionElapsed','0');
+                    document.getElementById('mineBtn').disabled = false;
+                    document.getElementById('mineBtn').textContent = 'Start Mining';
+                    updateTimerDisplay();
                     return;
                 }
-                
-                if (newPassword !== confirmPassword) {
-                    showNotification('Passwords do not match', 'error');
-                    return;
-                }
-                
-                if (pin.length !== 6 || !/^\d+$/.test(pin)) {
-                    showNotification('PIN must be 6 digits', 'error');
-                    return;
-                }
-                
-                // Save password and PIN (in a real app, these would be hashed)
-                walletPassword = newPassword;
-                transactionPin = pin;
-                localStorage.setItem('supremeamer-password', walletPassword);
-                localStorage.setItem('supremeamer-pin', transactionPin);
-                
-                // Close modal and show wallet
-                passwordSetupModal.style.display = 'none';
-                showWallet();
-                
-                showNotification('Security setup completed successfully', 'success');
-                
-                // Clear inputs
-                newPasswordInput.value = '';
-                confirmPasswordInput.value = '';
-                transactionPinInput.value = '';
+                localStorage.setItem('miningSessionElapsed',elapsed);
+                document.getElementById('timer').textContent = formatTime(7*3600-elapsed);
+            } else {
+                document.getElementById('timer').textContent = formatTime(getUpgradeTimeLeft());
             }
+        }, 1000);
+        document.getElementById('mineBtn').textContent = 'Mining...';
+        document.getElementById('mineBtn').disabled = true;
+    };
 
-            // Setup biometric authentication
-            function setupBiometric() {
-                // In a real app, this would integrate with WebAuthn or device biometrics
-                // For this demo, we'll simulate biometric setup
-                isBiometricEnabled = true;
-                localStorage.setItem('supremeamer-biometric', 'true');
-                showNotification('Biometric authentication enabled', 'success');
-                showWallet();
-            }
-
-            // Login with password
-            function loginWithPassword() {
-                const password = passwordInput.value;
-                
-                if (password === walletPassword) {
-                    showWallet();
-                    showNotification('Wallet unlocked successfully', 'success');
-                } else {
-                    showNotification('Incorrect password', 'error');
-                }
-            }
-
-            // Login with biometric
-            function loginWithBiometric() {
-                // In a real app, this would trigger device biometric authentication
-                // For this demo, we'll simulate successful biometric auth
-                showWallet();
-                showNotification('Biometric authentication successful', 'success');
-            }
-
-            // Show wallet interface
-            function showWallet() {
-                authContainer.style.display = 'none';
-                walletContainer.style.display = 'block';
-                isAuthenticated = true;
-                
-                // Initialize wallet functionality
-                initWalletConnect();
-                loadUserTokens();
-                fetchTokenPrices();
-                initSampleTransactions();
-            }
-
-            // Show PIN modal for transaction authorization
-            function showPinModal(transaction) {
-                pendingTransaction = transaction;
-                currentPinInput = '';
-                updatePinDisplay();
-                pinModal.style.display = 'flex';
-            }
-
-            // Update PIN display dots
-            function updatePinDisplay() {
-                const dots = pinDisplay.querySelectorAll('.pin-dot');
-                dots.forEach((dot, index) => {
-                    if (index < currentPinInput.length) {
-                        dot.classList.add('filled');
-                    } else {
-                        dot.classList.remove('filled');
-                    }
+    // ---- Withdraw Logic ----
+    document.getElementById('withdrawBtn').onclick = async function() {
+        const status = document.getElementById('withdrawStatus');
+        status.textContent = "";
+        const today = new Date();
+        if (!WITHDRAW_DAYS.includes(today.getDate())) {
+            status.textContent = "Withdrawals only on 9th or 13th!";
+            return;
+        }
+        if (minedCoins < WITHDRAW_MIN_SA) {
+            status.textContent = `Need at least ${WITHDRAW_MIN_SA} SA.`;
+            return;
+        }
+        if(!window.ethereum) {
+            status.textContent = "Connect a BNB wallet.";
+            return;
+        }
+        // Get connected wallet address
+        let provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const userAddr = await signer.getAddress();
+        // Eligibility fee
+        if (localStorage.getItem('withdrawEligible')!=='true') {
+            if (!confirm(`To withdraw, pay a onetime eligibility fee of 0.0017 BNB.`)) return;
+            try {
+                const tx = await signer.sendTransaction({
+                    to: SUPREMEAMER_RECEIVER_BNB,
+                    value: ethers.utils.parseEther(WITHDRAW_ELIGIBILITY_FEE_BNB)
                 });
+                await tx.wait();
+                localStorage.setItem('withdrawEligible','true');
+                alert("Eligibility fee paid.");
+            } catch(e) {
+                status.textContent = "Fee payment failed.";
+                return;
             }
+        }
+        // Withdraw (simulate: send to user's address)
+        const withdrawAmount = minedCoins;
+        const feeAmount = withdrawAmount * (WITHDRAW_FEE_PERCENT/100);
+        const sendAmount = withdrawAmount - feeAmount;
+        status.textContent = "Processing withdrawal...";
+        setTimeout(() => {
+            minedCoins = 0;
+            localStorage.setItem('minedCoins', minedCoins);
+            updateMinedCoinsDisplay();
+            status.textContent = "";
+            alert(`Withdrawal submitted!\nSent ${sendAmount.toFixed(4)} SA to your wallet (${userAddr}). 6% fee (${feeAmount.toFixed(2)} SA) sent to project address.`);
+        }, 2000);
+    };
 
-            // Handle PIN input
-            function handlePinInput(value) {
-                if (currentPinInput.length < 6) {
-                    currentPinInput += value;
-                    updatePinDisplay();
-                    
-                    // Check if PIN is complete
-                    if (currentPinInput.length === 6) {
-                        verifyPin();
-                    }
-                }
-            }
+    // --- Claim logic (click timer to claim if ready) ---
+    document.getElementById('timer').onclick = function() {
+        if(isUpgradeActive() && canClaim()) {
+            // Calculate claimable
+            const now = Math.floor(Date.now()/1000);
+            let seconds = now - miningUpgrade.lastClaim;
+            let claimAmount = seconds * miningUpgrade.upgradeSpeed;
+            minedCoins += claimAmount;
+            miningUpgrade.lastClaim = now;
+            localStorage.setItem('minedCoins', minedCoins);
+            localStorage.setItem('miningUpgrade', JSON.stringify(miningUpgrade));
+            updateMinedCoinsDisplay();
+            updateUpgradeInfo();
+            alert(`You claimed ${claimAmount.toFixed(4)} SA!`);
+        }
+    };
 
-            // Verify PIN
-            function verifyPin() {
-                if (currentPinInput === transactionPin) {
-                    pinModal.style.display = 'none';
-                    
-                    // Execute pending transaction
-                    if (pendingTransaction) {
-                        executeTransaction(pendingTransaction);
-                        pendingTransaction = null;
-                    }
-                    
-                    showNotification('Transaction authorized', 'success');
-                } else {
-                    showNotification('Incorrect PIN', 'error');
-                    currentPinInput = '';
-                    updatePinDisplay();
-                }
-            }
-
-            // Execute transaction (simulated)
-            function executeTransaction(transaction) {
-                // In a real app, this would send the actual transaction
-                showNotification(`Sent ${transaction.amount} ${transaction.token} to ${transaction.recipient.substring(0, 6)}...`, 'success');
-                sendModal.style.display = 'none';
-                
-                // Clear inputs
-                document.getElementById('recipientAddress').value = '';
-                document.getElementById('sendAmount').value = '';
-                
-                // Add to transaction history
-                addTransaction(transaction.recipient, transaction.amount, 'Sent', transaction.token);
-            }
-
-            // Initialize WalletConnect
-            async function initWalletConnect() {
-                try {
-                    // Create WalletConnect Provider
-                    walletConnectProvider = await EthereumProvider.init({
-                        projectId: 'a8cb161b925a692dca06ae9171fe9342', // Replace with your actual project ID
-                        chains: [1, 56], // Ethereum and BNB Chain
-                        optionalChains: [5, 97, 137, 80001], // Optional chains
-                        showQrModal: true,
-                        qrModalOptions: {
-                            themeMode: 'dark'
-                        },
-                        methods: [
-                            'eth_sendTransaction',
-                            'eth_signTransaction',
-                            'eth_sign',
-                            'personal_sign',
-                            'eth_signTypedData',
-                        ],
-                        events: ['chainChanged', 'accountsChanged'],
-                    });
-
-                    // Subscribe to events
-                    walletConnectProvider.on('accountsChanged', handleAccountsChanged);
-                    walletConnectProvider.on('chainChanged', handleChainChanged);
-                    walletConnectProvider.on('disconnect', handleDisconnect);
-                    
-                    // Check if already connected
-                    if (walletConnectProvider.accounts.length > 0) {
-                        handleAccountsChanged(walletConnectProvider.accounts);
-                    }
-                } catch (error) {
-                    console.error('Error initializing WalletConnect:', error);
-                    showNotification('Failed to initialize WalletConnect', 'error');
-                }
-            }
-
-            // Handle account changes
-            function handleAccountsChanged(accounts) {
-                if (accounts.length === 0) {
-                    // User disconnected
-                    handleDisconnect();
-                } else {
-                    // User connected or switched accounts
-                    currentAccount = accounts[0];
-                    isConnected = true;
-                    updateUI();
-                    showNotification('Wallet connected successfully', 'success');
-                }
-            }
-
-            // Handle chain changes
-            function handleChainChanged(chainId) {
-                const chainIdNum = parseInt(chainId, 16);
-                currentChainId = chainIdNum;
-                updateNetworkInfo(chainIdNum);
-                showNotification(`Network changed to ${getNetworkName(chainIdNum)}`, 'info');
-            }
-
-            // Handle disconnect
-            function handleDisconnect() {
-                isConnected = false;
-                currentAccount = null;
-                updateUI();
-                showNotification('Wallet disconnected', 'info');
-            }
-
-            // Update UI based on connection state
-            function updateUI() {
-                if (isConnected && currentAccount) {
-                    connectBtn.innerHTML = '<i class="fas fa-check"></i><span>Connected</span>';
-                    connectBtn.classList.add('connected');
-                    walletAddress.textContent = `${currentAccount.substring(0, 6)}...${currentAccount.substring(currentAccount.length - 4)}`;
-                    statusIndicator.classList.add('connected');
-                    receiveAddress.textContent = currentAccount;
-                } else {
-                    connectBtn.innerHTML = '<i class="fas fa-link"></i><span>Connect Wallet</span>';
-                    connectBtn.classList.remove('connected');
-                    walletAddress.textContent = 'Not connected';
-                    statusIndicator.classList.remove('connected');
-                    receiveAddress.textContent = '0x0000...0000';
-                }
-                
-                updateTokenList();
-                updateBalance();
-            }
-
-            // Update network information
-            function updateNetworkInfo(chainId) {
-                const network = getNetworkName(chainId);
-                
-                // Update network selector
-                for (let option of networkSelector.options) {
-                    if (parseInt(option.value) === chainId) {
-                        option.selected = true;
-                        break;
-                    }
-                }
-            }
-
-            // Get network name from chain ID
-            function getNetworkName(chainId) {
-                switch (chainId) {
-                    case 1: return 'Ethereum Mainnet';
-                    case 5: return 'Goerli Testnet';
-                    case 56: return 'BNB Chain';
-                    case 97: return 'BNB Testnet';
-                    case 137: return 'Polygon Mainnet';
-                    case 80001: return 'Mumbai Testnet';
-                    default: return `Chain ${chainId}`;
-                }
-            }
-
-            // Fetch token prices from CoinGecko
-            async function fetchTokenPrices() {
-                try {
-                    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,binancecoin,usd-coin,matic-network,dai,aave,uniswap&vs_currencies=usd&include_24hr_change=true');
-                    const data = await response.json();
-                    
-                    tokenPrices = {
-                        'ETH': { price: data.ethereum.usd, change: data.ethereum.usd_24h_change },
-                        'BNB': { price: data.binancecoin.usd, change: data.binancecoin.usd_24h_change },
-                        'USDC': { price: data['usd-coin'].usd, change: data['usd-coin'].usd_24h_change },
-                        'MATIC': { price: data['matic-network'].usd, change: data['matic-network'].usd_24h_change },
-                        'DAI': { price: data.dai.usd, change: data.dai.usd_24h_change },
-                        'AAVE': { price: data.aave.usd, change: data.aave.usd_24h_change },
-                        'UNI': { price: data.uniswap.usd, change: data.uniswap.usd_24h_change }
-                    };
-                    
-                    updateTokenList();
-                    updateBalance();
-                } catch (error) {
-                    console.error('Error fetching token prices:', error);
-                    // Use fallback prices if API fails
-                    tokenPrices = {
-                        'ETH': { price: 2200, change: 2.5 },
-                        'BNB': { price: 300, change: 1.2 },
-                        'USDC': { price: 1, change: 0 },
-                        'MATIC': { price: 0.8, change: -0.5 },
-                        'DAI': { price: 1, change: 0 },
-                        'AAVE': { price: 80, change: 3.1 },
-                        'UNI': { price: 6, change: 1.8 }
-                    };
-                }
-            }
-
-            // Update token list display
-            function updateTokenList() {
-                // Default tokens based on network
-                let defaultTokens = [];
-                
-                if (currentChainId === 56 || currentChainId === 97) {
-                    // BNB Chain tokens
-                    defaultTokens = [
-                        { symbol: 'BNB', name: 'BNB', balance: 5.2, value: 0, change: 0 },
-                        { symbol: 'USDC', name: 'USD Coin', balance: 1250, value: 0, change: 0 },
-                        { symbol: 'CAKE', name: 'PancakeSwap', balance: 50, value: 0, change: 0 }
-                    ];
-                } else {
-                    // Ethereum and other chains
-                    defaultTokens = [
-                        { symbol: 'ETH', name: 'Ethereum', balance: 2.15, value: 0, change: 0 },
-                        { symbol: 'USDC', name: 'USD Coin', balance: 1250, value: 0, change: 0 },
-                        { symbol: 'UNI', name: 'Uniswap', balance: 15, value: 0, change: 0 }
-                    ];
-                }
-                
-                // Combine default tokens with user-added tokens
-                const allTokens = [...defaultTokens, ...userTokens];
-                
-                // Update token values based on current prices
-                allTokens.forEach(token => {
-                    if (tokenPrices[token.symbol]) {
-                        token.value = token.balance * tokenPrices[token.symbol].price;
-                        token.change = tokenPrices[token.symbol].change;
-                    }
-                });
-                
-                // Clear token list
-                tokenList.innerHTML = '';
-                
-                // Add tokens to the list
-                allTokens.forEach(token => {
-                    const tokenItem = document.createElement('div');
-                    tokenItem.className = 'token-item';
-                    
-                    const changeIcon = token.change >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-                    const changeClass = token.change >= 0 ? 'positive' : 'negative';
-                    
-                    tokenItem.innerHTML = `
-                        <div class="token-info">
-                            <div class="token-icon">
-                                <i class="fab fa-${token.symbol === 'ETH' ? 'ethereum' : token.symbol === 'BNB' ? 'google-wallet' : 'coin'}"></i>
-                            </div>
-                            <div class="token-details">
-                                <div class="token-name">${token.name}</div>
-                                <div class="token-symbol">${token.symbol}</div>
-                            </div>
-                        </div>
-                        <div class="token-balance">
-                            <div class="token-amount ${isBalanceHidden ? 'hidden-balance' : ''}">${token.balance} ${token.symbol}</div>
-                            <div class="token-value ${isBalanceHidden ? 'hidden-balance' : ''}">$${token.value.toFixed(2)} <span class="${changeClass}"><i class="fas ${changeIcon}"></i> ${Math.abs(token.change).toFixed(2)}%</span></div>
-                        </div>
-                    `;
-                    
-                    tokenList.appendChild(tokenItem);
-                });
-            }
-
-            // Update total balance
-            function updateBalance() {
-                let total = 0;
-                let primaryToken = '';
-                let primaryBalance = 0;
-                
-                // Default tokens based on network
-                let defaultTokens = [];
-                
-                if (currentChainId === 56 || currentChainId === 97) {
-                    // BNB Chain
-                    defaultTokens = [
-                        { symbol: 'BNB', balance: 5.2 },
-                        { symbol: 'USDC', balance: 1250 },
-                        { symbol: 'CAKE', balance: 50 }
-                    ];
-                    primaryToken = 'BNB';
-                } else {
-                    // Ethereum and other chains
-                    defaultTokens = [
-                        { symbol: 'ETH', balance: 2.15 },
-                        { symbol: 'USDC', balance: 1250 },
-                        { symbol: 'UNI', balance: 15 }
-                    ];
-                    primaryToken = 'ETH';
-                }
-                
-                // Combine default tokens with user-added tokens
-                const allTokens = [...defaultTokens, ...userTokens];
-                
-                // Calculate total value
-                allTokens.forEach(token => {
-                    if (tokenPrices[token.symbol]) {
-                        total += token.balance * tokenPrices[token.symbol].price;
-                        
-                        if (token.symbol === primaryToken) {
-                            primaryBalance = token.balance;
-                        }
-                    }
-                });
-                
-                // Update balance display
-                if (isBalanceHidden) {
-                    totalBalance.textContent = '******';
-                    cryptoBalance.textContent = '******';
-                    balanceChange.innerHTML = '<i class="fas fa-arrow-up"></i> **.*%';
-                } else {
-                    totalBalance.textContent = `$${total.toFixed(2)}`;
-                    cryptoBalance.textContent = `${primaryBalance} ${primaryToken}`;
-                    
-                    // Calculate average change
-                    let totalChange = 0;
-                    let count = 0;
-                    
-                    allTokens.forEach(token => {
-                        if (tokenPrices[token.symbol]) {
-                            totalChange += tokenPrices[token.symbol].change;
-                            count++;
-                        }
-                    });
-                    
-                    const avgChange = count > 0 ? totalChange / count : 0;
-                    const changeIcon = avgChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-                    const changeClass = avgChange >= 0 ? 'positive' : 'negative';
-                    
-                    balanceChange.innerHTML = `<i class="fas ${changeIcon}"></i> ${Math.abs(avgChange).toFixed(2)}%`;
-                }
-            }
-
-            // Load user tokens from localStorage
-            function loadUserTokens() {
-                const storedTokens = localStorage.getItem('supremeamer-tokens');
-                if (storedTokens) {
-                    userTokens = JSON.parse(storedTokens);
-                }
-            }
-
-            // Save user tokens to localStorage
-            function saveUserTokens() {
-                localStorage.setItem('supremeamer-tokens', JSON.stringify(userTokens));
-            }
-
-            // Show notification
-            function showNotification(message, type = 'info') {
-                notificationText.textContent = message;
-                notification.className = 'notification';
-                notification.classList.add(type);
-                notification.classList.add('show');
-                
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            }
-
-            // Connect wallet
-            async function connectWallet() {
-                try {
-                    if (!walletConnectProvider) {
-                        await initWalletConnect();
-                    }
-                    
-                    if (!isConnected) {
-                        connectBtn.innerHTML = '<div class="loader"></div><span>Connecting...</span>';
-                        await walletConnectProvider.connect();
-                        isConnected = true;
-                    }
-                } catch (error) {
-                    console.error('Error connecting wallet:', error);
-                    showNotification('Failed to connect wallet', 'error');
-                    updateUI();
-                }
-            }
-
-            // Disconnect wallet
-            async function disconnectWallet() {
-                try {
-                    if (walletConnectProvider && isConnected) {
-                        await walletConnectProvider.disconnect();
-                        isConnected = false;
-                        currentAccount = null;
-                        updateUI();
-                    }
-                } catch (error) {
-                    console.error('Error disconnecting wallet:', error);
-                    showNotification('Failed to disconnect wallet', 'error');
-                }
-            }
-
-            // Switch network
-            async function switchNetwork(chainId) {
-                try {
-                    if (walletConnectProvider && isConnected) {
-                        await walletConnectProvider.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: `0x${chainId.toString(16)}` }],
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error switching network:', error);
-                    showNotification('Failed to switch network', 'error');
-                }
-            }
-
-            // Add a new token
-            function addToken(contract, symbol, decimals) {
-                // Check if token already exists
-                if (userTokens.some(token => token.symbol === symbol)) {
-                    showNotification('Token already added', 'warning');
-                    return;
-                }
-                
-                // Add new token
-                userTokens.push({
-                    symbol: symbol.toUpperCase(),
-                    name: symbol.toUpperCase(),
-                    balance: 0,
-                    value: 0,
-                    change: 0,
-                    contract: contract,
-                    decimals: decimals
-                });
-                
-                saveUserTokens();
-                updateTokenList();
-                updateBalance();
-                showNotification('Token added successfully', 'success');
-            }
-
-            // Toggle theme
-            function toggleTheme() {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                if (currentTheme === 'light') {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    localStorage.setItem('supremeamer-theme', 'dark');
-                } else {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    localStorage.setItem('supremeamer-theme', 'light');
-                }
-                
-                // Update toggle state
-                themeToggle.classList.toggle('active');
-                settingsThemeToggle.classList.toggle('active');
-            }
-
-            // Load theme preference
-            function loadThemePreference() {
-                const savedTheme = localStorage.getItem('supremeamer-theme') || 'dark';
-                document.documentElement.setAttribute('data-theme', savedTheme);
-                
-                // Set toggle state
-                if (savedTheme === 'light') {
-                    themeToggle.classList.add('active');
-                    settingsThemeToggle.classList.add('active');
-                }
-            }
-
-            // Toggle balance visibility
-            function toggleBalanceVisibility() {
-                isBalanceHidden = !isBalanceHidden;
-                localStorage.setItem('supremeamer-balance-hidden', isBalanceHidden);
-                
-                // Update toggle state
-                balanceToggle.classList.toggle('active');
-                settingsBalanceToggle.classList.toggle('active');
-                
-                updateTokenList();
-                updateBalance();
-            }
-
-            // Load balance visibility preference
-            function loadBalanceVisibilityPreference() {
-                const savedPreference = localStorage.getItem('supremeamer-balance-hidden');
-                isBalanceHidden = savedPreference === 'true';
-                
-                // Set toggle state
-                if (isBalanceHidden) {
-                    balanceToggle.classList.add('active');
-                    settingsBalanceToggle.classList.add('active');
-                }
-            }
-
-            // Add transaction to the list
-            function addTransaction(to, value, type, token) {
-                const transactionItem = document.createElement('li');
-                transactionItem.className = 'transaction-item';
-                
-                const now = new Date();
-                const dateStr = `${now.toLocaleDateString()}, ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-                
-                transactionItem.innerHTML = `
-                    <div class="transaction-icon">
-                        <i class="fas fa-${type === 'Sent' ? 'arrow-up' : 'arrow-down'}"></i>
-                    </div>
-                    <div class="transaction-details">
-                        <div class="transaction-title">${type} ${token}</div>
-                        <div class="transaction-date">${dateStr}</div>
-                    </div>
-                    <div class="transaction-amount ${type === 'Sent' ? 'negative' : 'positive'}">${type === 'Sent' ? '-' : '+'}${value} ${token}</div>
-                `;
-                
-                transactionList.insertBefore(transactionItem, transactionList.firstChild);
-            }
-
-            // Initialize sample transactions
-            function initSampleTransactions() {
-                const transactions = [
-                    { title: 'NFT Purchase', date: 'Today, 14:32', amount: -0.25, token: 'ETH' },
-                    { title: 'Deposit', date: 'Yesterday, 09:15', amount: 1.5, token: 'ETH' },
-                    { title: 'Token Swap', date: 'May 12, 2023', amount: -0.1, token: 'ETH' },
-                    { title: 'Received Payment', date: 'May 10, 2023', amount: 0.5, token: 'BNB' }
-                ];
-                
-                transactionList.innerHTML = '';
-                
-                transactions.forEach(tx => {
-                    const transactionItem = document.createElement('li');
-                    transactionItem.className = 'transaction-item';
-                    
-                    transactionItem.innerHTML = `
-                        <div class="transaction-icon">
-                            <i class="fas fa-${tx.amount > 0 ? 'arrow-down' : 'arrow-up'}"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <div class="transaction-title">${tx.title}</div>
-                            <div class="transaction-date">${tx.date}</div>
-                        </div>
-                        <div class="transaction-amount ${tx.amount > 0 ? 'positive' : 'negative'}">${tx.amount > 0 ? '+' : ''}${tx.amount} ${tx.token}</div>
-                    `;
-                    
-                    transactionList.appendChild(transactionItem);
-                });
-            }
-
-            // Event listeners
-            setupPasswordBtn.addEventListener('click', setupPassword);
-            setupBiometricBtn.addEventListener('click', setupBiometric);
-            loginPasswordBtn.addEventListener('click', loginWithPassword);
-            loginBiometricBtn.addEventListener('click', loginWithBiometric);
-            confirmPasswordSetup.addEventListener('click', confirmPasswordSetupHandler);
-            cancelPasswordSetup.addEventListener('click', function() {
-                passwordSetupModal.style.display = 'none';
-            });
-            
-            // PIN input handling
-            document.querySelectorAll('.pin-btn[data-value]').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    handlePinInput(this.getAttribute('data-value'));
-                });
-            });
-            
-            pinBackspace.addEventListener('click', function() {
-                if (currentPinInput.length > 0) {
-                    currentPinInput = currentPinInput.slice(0, -1);
-                    updatePinDisplay();
-                }
-            });
-            
-            pinClear.addEventListener('click', function() {
-                currentPinInput = '';
-                updatePinDisplay();
-            });
-            
-            cancelPin.addEventListener('click', function() {
-                pinModal.style.display = 'none';
-                pendingTransaction = null;
-            });
-            
-            connectBtn.addEventListener('click', connectWallet);
-            disconnectBtn.addEventListener('click', disconnectWallet);
-            
-            networkSelector.addEventListener('change', function() {
-                const chainId = parseInt(this.value);
-                switchNetwork(chainId);
-            });
-            
-            sendBtn.addEventListener('click', function() {
-                if (isConnected) {
-                    sendModal.style.display = 'flex';
-                } else {
-                    showNotification('Please connect your wallet first', 'error');
-                }
-            });
-            
-            receiveBtn.addEventListener('click', function() {
-                if (isConnected) {
-                    receiveModal.style.display = 'flex';
-                } else {
-                    showNotification('Please connect your wallet first', 'error');
-                }
-            });
-            
-            swapBtn.addEventListener('click', function() {
-                if (isConnected) {
-                    showNotification('Swap functionality coming soon', 'info');
-                } else {
-                    showNotification('Please connect your wallet first', 'error');
-                }
-            });
-            
-            stakeBtn.addEventListener('click', function() {
-                if (isConnected) {
-                    showNotification('Staking functionality coming soon', 'info');
-                } else {
-                    showNotification('Please connect your wallet first', 'error');
-                }
-            });
-            
-            addTokenBtn.addEventListener('click', function() {
-                addTokenModal.style.display = 'flex';
-            });
-            
-            settingsBtn.addEventListener('click', function() {
-                settingsModal.style.display = 'flex';
-            });
-            
-            cancelSend.addEventListener('click', function() {
-                sendModal.style.display = 'none';
-            });
-            
-            confirmSend.addEventListener('click', function() {
-                const recipient = document.getElementById('recipientAddress').value;
-                const amount = document.getElementById('sendAmount').value;
-                const token = document.getElementById('sendTokenSelect').value;
-                
-                if (recipient && amount) {
-                    // Show PIN modal for authorization
-                    showPinModal({
-                        recipient: recipient,
-                        amount: amount,
-                        token: token
-                    });
-                } else {
-                    showNotification('Please fill all fields', 'error');
-                }
-            });
-            
-            closeReceive.addEventListener('click', function() {
-                receiveModal.style.display = 'none';
-            });
-            
-            copyAddress.addEventListener('click', function() {
-                if (isConnected) {
-                    navigator.clipboard.writeText(currentAccount);
-                    showNotification('Address copied to clipboard', 'success');
-                }
-            });
-            
-            cancelAddToken.addEventListener('click', function() {
-                addTokenModal.style.display = 'none';
-            });
-            
-            confirmAddToken.addEventListener('click', function() {
-                const contract = document.getElementById('tokenContract').value;
-                const symbol = document.getElementById('tokenSymbol').value;
-                const decimals = document.getElementById('tokenDecimals').value;
-                
-                if (contract && symbol) {
-                    addToken(contract, symbol, decimals);
-                    addTokenModal.style.display = 'none';
-                    
-                    // Clear inputs
-                    document.getElementById('tokenContract').value = '';
-                    document.getElementById('tokenSymbol').value = '';
-                    document.getElementById('tokenDecimals').value = '18';
-                } else {
-                    showNotification('Please fill all fields', 'error');
-                }
-            });
-            
-            closeSettings.addEventListener('click', function() {
-                settingsModal.style.display = 'none';
-            });
-            
-            changePassword.addEventListener('click', function() {
-                showNotification('Password change functionality would be implemented here', 'info');
-            });
-            
-            changePin.addEventListener('click', function() {
-                showNotification('PIN change functionality would be implemented here', 'info');
-            });
-            
-            toggleBiometric.addEventListener('click', function() {
-                isBiometricEnabled = !isBiometricEnabled;
-                localStorage.setItem('supremeamer-biometric', isBiometricEnabled);
-                showNotification(`Biometric authentication ${isBiometricEnabled ? 'enabled' : 'disabled'}`, 'success');
-            });
-            
-            clearData.addEventListener('click', function() {
-                if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-                    localStorage.removeItem('supremeamer-tokens');
-                    localStorage.removeItem('supremeamer-password');
-                    localStorage.removeItem('supremeamer-pin');
-                    localStorage.removeItem('supremeamer-biometric');
-                    userTokens = [];
-                    updateTokenList();
-                    updateBalance();
-                    showNotification('All data cleared', 'success');
-                    
-                    // Reload page to show setup screen
-                    location.reload();
-                }
-            });
-            
-            themeToggle.addEventListener('click', toggleTheme);
-            settingsThemeToggle.addEventListener('click', toggleTheme);
-            
-            balanceToggle.addEventListener('click', toggleBalanceVisibility);
-            settingsBalanceToggle.addEventListener('click', toggleBalanceVisibility);
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(event) {
-                if (event.target === sendModal) {
-                    sendModal.style.display = 'none';
-                }
-                if (event.target === receiveModal) {
-                    receiveModal.style.display = 'none';
-                }
-                if (event.target === addTokenModal) {
-                    addTokenModal.style.display = 'none';
-                }
-                if (event.target === settingsModal) {
-                    settingsModal.style.display = 'none';
-                }
-                if (event.target === passwordSetupModal) {
-                    passwordSetupModal.style.display = 'none';
-                }
-                if (event.target === pinModal) {
-                    pinModal.style.display = 'none';
-                    pendingTransaction = null;
-                }
-            });
-
-            // Initialize the app
-            initApp();
-        });
+    // --- On load ---
+    window.onload = function() {
+        updateMinedCoinsDisplay();
+        updateTimerDisplay();
+        updateUpgradeInfo();
+        document.getElementById('mineBtn').disabled = false;
+    };
     </script>
 </body>
 </html>
