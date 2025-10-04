@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupremeAmer Coin - Mining Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>SupremeAmer Coin - Advanced Mining Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style id="theme-style">
+    <style>
         :root {
             --primary-color: #ff6b00;
             --secondary-color: #ffa726;
             --accent-color: #ff3d00;
             --success-color: #4caf50;
+            --info-color: #2196f3;
             --dark-bg: #121212;
             --darker-bg: #0a0a0a;
             --card-bg-dark: rgba(30, 30, 40, 0.95);
@@ -21,6 +22,7 @@
             --light-bg: #f8f9fa;
             --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --glow: 0 0 15px rgba(255, 107, 0, 0.5);
         }
         
         * {
@@ -62,6 +64,11 @@
             z-index: 1000;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 20px;
+            padding-right: 20px;
         }
         
         body.light .header {
@@ -69,12 +76,27 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
         
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: var(--glow);
+        }
+        
         /* Profile Dropdown */
         .profile-container {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            position: relative;
         }
         
         .emoji-avatar {
@@ -226,6 +248,7 @@
             position: relative;
             border: 3px solid var(--primary-color);
             transition: all 0.3s;
+            cursor: pointer;
         }
         
         #coinLogo:hover {
@@ -465,11 +488,6 @@
         
         /* Light/Dark Toggle */
         .light-toggle {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.5rem;
             background: none;
             border: none;
             color: var(--secondary-color);
@@ -482,11 +500,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.5rem;
         }
         
         .light-toggle:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-50%) rotate(30deg);
+            transform: rotate(30deg);
         }
         
         body.light .light-toggle {
@@ -710,6 +729,176 @@
             }
         }
         
+        /* New Features */
+        .network-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--success-color);
+            margin-bottom: 10px;
+        }
+        
+        .network-status.offline {
+            color: var(--accent-color);
+        }
+        
+        .network-status i {
+            font-size: 0.8rem;
+        }
+        
+        .click-bonus {
+            position: absolute;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            pointer-events: none;
+            animation: floatUp 1s forwards;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+        
+        .achievements {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .achievement {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .achievement i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--secondary-color);
+        }
+        
+        .achievement.locked i {
+            color: #666;
+        }
+        
+        .achievement.locked {
+            opacity: 0.5;
+        }
+        
+        .achievement-name {
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .achievement-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .achievement-progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .referral-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+        
+        .referral-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .referral-code {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .referral-input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body.light .referral-input {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            color: var(--text-light);
+        }
+        
+        .copy-btn {
+            padding: 10px 15px;
+            background: var(--gradient);
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .referral-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .referral-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .referral-stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        .referral-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dark);
+        }
+        
+        body.light .referral-stat-label {
+            color: var(--text-light);
+        }
+        
         /* Responsive */
         @media (max-width: 600px) {
             .header {
@@ -761,7 +950,6 @@
             }
             
             .light-toggle {
-                left: 15px;
                 font-size: 1.3rem;
             }
             
@@ -769,6 +957,10 @@
                 width: 50px;
                 height: 50px;
                 font-size: 1.3rem;
+            }
+            
+            .achievements {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -781,21 +973,26 @@
     </div>
     
     <div class="header">
-        <button class="light-toggle" id="lightToggleBtn" aria-label="Toggle light/dark mode">🌙</button>
-        SUPREMEAMER COIN 🚀
-        <div class="profile-container">
-            <button id="profileDropdownBtn" class="emoji-avatar">
-                👤
-            </button>
-            <div id="profileDropdownMenu" class="profile-dropdown-content">
-                <div id="dropdownUsername" style="padding:12px 20px; font-weight:600; display:flex; align-items:center; gap:8px;">
-                    <span class="emoji-avatar">🧑</span> <span id="username">Loading...</span>
+        <div class="header-title">
+            <div class="logo">SA</div>
+            SUPREMEAMER COIN
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <button class="light-toggle" id="lightToggleBtn" aria-label="Toggle light/dark mode">🌙</button>
+            <div class="profile-container">
+                <button id="profileDropdownBtn" class="emoji-avatar">
+                    👤
+                </button>
+                <div id="profileDropdownMenu" class="profile-dropdown-content">
+                    <div id="dropdownUsername" style="padding:12px 20px; font-weight:600; display:flex; align-items:center; gap:8px;">
+                        <span class="emoji-avatar">🧑</span> <span id="username">Loading...</span>
+                    </div>
+                    <div id="dropdownEmail" style="padding:0 20px 12px 20px; color:var(--secondary-color); font-size:0.9rem; display:flex; align-items:center; gap:8px;">
+                        <span class="emoji-avatar">✉️</span> <span id="email">Loading...</span>
+                    </div>
+                    <hr>
+                    <a href="#" id="logoutBtn">Logout</a>
                 </div>
-                <div id="dropdownEmail" style="padding:0 20px 12px 20px; color:var(--secondary-color); font-size:0.9rem; display:flex; align-items:center; gap:8px;">
-                    <span class="emoji-avatar">✉️</span> <span id="email">Loading...</span>
-                </div>
-                <hr>
-                <a href="#" id="logoutBtn">Logout</a>
             </div>
         </div>
     </div>
@@ -804,6 +1001,11 @@
         <div class="dashboard">
             <div class="mining-card">
                 <div style="font-size:1.8rem; color:var(--secondary-color); margin-bottom:10px; font-weight:700;">Mining Dashboard</div>
+                
+                <div class="network-status" id="networkStatus">
+                    <i class="fas fa-circle"></i>
+                    <span>Network Connected</span>
+                </div>
                 
                 <div id="logoContainer">
                     <img id="coinLogo" src="supremeamer_coin.png" alt="SupremeAmer Coin" class="pulse">
@@ -862,6 +1064,52 @@
                         <div>Minimum Withdrawal: <strong>50,000 SA</strong></div>
                         <div>Withdrawal Days: <strong>9th & 13th</strong> of each month</div>
                         <div>Withdrawal Fee: <strong>6%</strong></div>
+                    </div>
+                </div>
+                
+                <div class="achievements">
+                    <div class="achievement" id="achievement1">
+                        <i class="fas fa-medal"></i>
+                        <div class="achievement-name">First Miner</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-bar" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="achievement" id="achievement2">
+                        <i class="fas fa-trophy"></i>
+                        <div class="achievement-name">SA Collector</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-bar" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="achievement locked" id="achievement3">
+                        <i class="fas fa-crown"></i>
+                        <div class="achievement-name">Upgrade Master</div>
+                        <div class="achievement-progress">
+                            <div class="achievement-progress-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="referral-section">
+                    <div class="referral-title">Referral Program</div>
+                    <div class="referral-code">
+                        <input type="text" class="referral-input" id="referralCode" value="SA-REF-12345" readonly>
+                        <button class="copy-btn" id="copyReferralBtn">Copy</button>
+                    </div>
+                    <div class="referral-stats">
+                        <div class="referral-stat">
+                            <div class="referral-stat-value" id="referralCount">5</div>
+                            <div class="referral-stat-label">Referrals</div>
+                        </div>
+                        <div class="referral-stat">
+                            <div class="referral-stat-value" id="referralEarnings">1,250</div>
+                            <div class="referral-stat-label">SA Earned</div>
+                        </div>
+                        <div class="referral-stat">
+                            <div class="referral-stat-value" id="referralBonus">10%</div>
+                            <div class="referral-stat-label">Bonus</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1079,6 +1327,52 @@
         }
     }
 
+    // ---- Click Bonus ----
+    document.getElementById('coinLogo').addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Create click bonus element
+        const bonus = document.createElement('div');
+        bonus.className = 'click-bonus';
+        bonus.textContent = '+0.1 SA';
+        bonus.style.left = `${x}px`;
+        bonus.style.top = `${y}px`;
+        
+        document.getElementById('logoContainer').appendChild(bonus);
+        
+        // Add coins
+        addMinedCoins(0.1);
+        updateMinedCoinsDisplay();
+        updateStats();
+        
+        // Remove element after animation
+        setTimeout(() => {
+            bonus.remove();
+        }, 1000);
+    });
+
+    // ---- Copy Referral Code ----
+    document.getElementById('copyReferralBtn').addEventListener('click', function() {
+        const referralInput = document.getElementById('referralCode');
+        referralInput.select();
+        document.execCommand('copy');
+        showNotification('Referral code copied to clipboard!', 'success');
+    });
+
+    // ---- Network Status ----
+    function updateNetworkStatus() {
+        const networkStatus = document.getElementById('networkStatus');
+        if (window.ethereum && window.ethereum.isConnected()) {
+            networkStatus.innerHTML = '<i class="fas fa-circle"></i><span>Network Connected</span>';
+            networkStatus.classList.remove('offline');
+        } else {
+            networkStatus.innerHTML = '<i class="fas fa-circle"></i><span>Network Offline</span>';
+            networkStatus.classList.add('offline');
+        }
+    }
+
     // ---- Mining State ----
     let minedCoins = parseFloat(localStorage.getItem('minedCoins')||'0');
     let miningActive = false;
@@ -1120,6 +1414,13 @@
         localStorage.setItem('miningUpgrade', JSON.stringify(miningUpgrade));
         updateStats();
         showNotification(`Mining speed upgraded to ${speed} SA/sec!`, "success");
+        
+        // Unlock achievement if this is the first upgrade
+        const achievement = document.getElementById('achievement3');
+        if (achievement.classList.contains('locked')) {
+            achievement.classList.remove('locked');
+            showNotification('Achievement Unlocked: Upgrade Master!', 'success');
+        }
     }
     function endUpgrade() {
         miningUpgrade = null;
@@ -1132,6 +1433,9 @@
         totalMined += amount;
         localStorage.setItem('minedCoins', minedCoins);
         localStorage.setItem('totalMined', totalMined);
+        
+        // Update achievements
+        updateAchievements();
     }
     function updateMinedCoinsDisplay() {
         document.getElementById('minedCoins').textContent = `${minedCoins.toFixed(4)} SA`;
@@ -1193,6 +1497,18 @@
             Next claim: <b>${new Date(nextClaim*1000).toLocaleDateString()}</b> ${canClaimNow?'<span style="color:#00ffb3;">Ready!</span>':''}`;
         } else {
             claimStatus.innerHTML = "";
+        }
+    }
+    
+    // ---- Achievements ----
+    function updateAchievements() {
+        // Update SA Collector achievement
+        const saCollectorProgress = Math.min((minedCoins / 10000) * 100, 100);
+        document.querySelector('#achievement2 .achievement-progress-bar').style.width = `${saCollectorProgress}%`;
+        
+        if (minedCoins >= 10000 && document.getElementById('achievement2').classList.contains('locked')) {
+            document.getElementById('achievement2').classList.remove('locked');
+            showNotification('Achievement Unlocked: SA Collector!', 'success');
         }
     }
 
@@ -1413,6 +1729,8 @@
         updateUpgradeInfo();
         updateProgressBar();
         updateStats();
+        updateNetworkStatus();
+        updateAchievements();
         document.getElementById('mineBtn').disabled = false;
         
         // Check if upgrade expired
