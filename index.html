@@ -13,6 +13,7 @@
             --accent-color: #ff3d00;
             --success-color: #4caf50;
             --info-color: #2196f3;
+            --warning-color: #ff9800;
             --dark-bg: #121212;
             --darker-bg: #0a0a0a;
             --card-bg-dark: rgba(30, 30, 40, 0.95);
@@ -43,6 +44,7 @@
             align-items: center;
             overflow-x: hidden;
             position: relative;
+            padding-bottom: 100px;
         }
         
         body.light {
@@ -121,7 +123,7 @@
             right: 0;
             top: 50px;
             background: var(--card-bg-dark);
-            min-width: 220px;
+            min-width: 240px;
             border-radius: 12px;
             box-shadow: var(--shadow);
             z-index: 1001;
@@ -151,23 +153,30 @@
             margin: 8px 0;
         }
         
-        .profile-dropdown-content a {
-            color: var(--accent-color);
+        .profile-dropdown-content .dropdown-item {
+            color: var(--text-dark);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
-            display: block;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             transition: all 0.2s;
             border-radius: 0;
             padding: 12px 20px;
         }
         
-        .profile-dropdown-content a:hover {
+        .profile-dropdown-content .dropdown-item:hover {
             background: rgba(255, 255, 255, 0.05);
         }
         
-        body.light .profile-dropdown-content a:hover {
+        body.light .profile-dropdown-content .dropdown-item:hover {
             background: rgba(0, 0, 0, 0.05);
+        }
+        
+        .profile-dropdown-content .dropdown-item i {
+            width: 20px;
+            text-align: center;
         }
         
         /* Main Container */
@@ -179,6 +188,7 @@
             max-width: 1200px;
             padding: 20px;
             gap: 20px;
+            flex: 1;
         }
         
         .dashboard {
@@ -486,32 +496,6 @@
             font-size: 1.2rem;
         }
         
-        /* Light/Dark Toggle */
-        .light-toggle {
-            background: none;
-            border: none;
-            color: var(--secondary-color);
-            cursor: pointer;
-            z-index: 101;
-            transition: all 0.3s;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-        
-        .light-toggle:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(30deg);
-        }
-        
-        body.light .light-toggle {
-            color: var(--primary-color);
-        }
-        
         /* Status Messages */
         .claim-status, .withdraw-status {
             margin: 10px 0 0 0;
@@ -622,53 +606,61 @@
             margin-top: 10px;
         }
         
-        /* Footer */
-        .footer {
-            width: 100%;
+        /* Floating Footer */
+        .floating-footer {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            justify-content: space-around;
-            padding: 20px 0;
-            background: rgba(255, 184, 0, 0.05);
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -4px 20px rgba(255, 152, 0, 0.1);
+            justify-content: center;
+            gap: 15px;
+            padding: 15px 25px;
+            background: var(--card-bg-dark);
+            border-radius: 50px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
             z-index: 999;
-            backdrop-filter: blur(5px);
-            margin-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
         }
         
-        .footer button {
-            background: rgba(255, 255, 255, 0.1);
+        body.light .floating-footer {
+            background: var(--card-bg-light);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating-footer button {
+            background: transparent;
             color: var(--primary-color);
             border: none;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.2s;
             cursor: pointer;
             position: relative;
         }
         
-        .footer button:hover {
+        .floating-footer button:hover {
             background: var(--primary-color);
             color: #fff;
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 107, 0, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
         }
         
-        .footer button.active {
+        .floating-footer button.active {
             background: var(--primary-color);
             color: #fff;
         }
         
-        .footer button .tooltip {
+        .floating-footer button .tooltip {
             position: absolute;
-            bottom: 70px;
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
             background: #333;
@@ -682,9 +674,9 @@
             transition: all 0.2s;
         }
         
-        .footer button:hover .tooltip {
+        .floating-footer button:hover .tooltip {
             opacity: 1;
-            bottom: 75px;
+            bottom: 65px;
         }
         
         /* Animations */
@@ -899,6 +891,143 @@
             color: var(--text-light);
         }
         
+        /* Leaderboard */
+        .leaderboard-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+        
+        .leaderboard-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .leaderboard-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+        
+        .leaderboard-rank {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .leaderboard-user {
+            flex: 1;
+            margin-left: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .leaderboard-value {
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+        
+        /* Daily Bonus */
+        .daily-bonus-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .daily-bonus-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .daily-bonus-days {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .bonus-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .bonus-day-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .bonus-day.active .bonus-day-circle {
+            background: var(--gradient);
+            color: #111;
+        }
+        
+        .bonus-day.claimed .bonus-day-circle {
+            background: var(--success-color);
+            color: #fff;
+        }
+        
+        .bonus-day-label {
+            font-size: 0.7rem;
+        }
+        
+        .bonus-claim-btn {
+            padding: 10px 20px;
+            background: var(--gradient);
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        
+        .bonus-claim-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 107, 0, 0.4);
+        }
+        
+        .bonus-claim-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
         /* Responsive */
         @media (max-width: 600px) {
             .header {
@@ -915,7 +1044,7 @@
             }
             
             .profile-dropdown-content {
-                min-width: 180px;
+                min-width: 200px;
                 font-size: 0.9rem;
             }
             
@@ -949,18 +1078,26 @@
                 grid-template-columns: 1fr;
             }
             
-            .light-toggle {
-                font-size: 1.3rem;
+            .floating-footer {
+                padding: 12px 20px;
+                gap: 10px;
+                bottom: 15px;
             }
             
-            .footer button {
-                width: 50px;
-                height: 50px;
-                font-size: 1.3rem;
+            .floating-footer button {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
             }
             
             .achievements {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .daily-bonus-days {
+                flex-wrap: wrap;
+                gap: 10px;
+                justify-content: center;
             }
         }
     </style>
@@ -978,7 +1115,6 @@
             SUPREMEAMER COIN
         </div>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <button class="light-toggle" id="lightToggleBtn" aria-label="Toggle light/dark mode">🌙</button>
             <div class="profile-container">
                 <button id="profileDropdownBtn" class="emoji-avatar">
                     👤
@@ -991,7 +1127,23 @@
                         <span class="emoji-avatar">✉️</span> <span id="email">Loading...</span>
                     </div>
                     <hr>
-                    <a href="#" id="logoutBtn">Logout</a>
+                    <div class="dropdown-item" id="themeToggleBtn">
+                        <i class="fas fa-moon"></i>
+                        <span>Dark Mode</span>
+                    </div>
+                    <div class="dropdown-item" id="settingsBtn">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </div>
+                    <div class="dropdown-item" id="helpBtn">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Help & Support</span>
+                    </div>
+                    <hr>
+                    <div class="dropdown-item" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1112,11 +1264,29 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="leaderboard-section">
+                    <div class="leaderboard-title">
+                        <span>Top Miners</span>
+                        <i class="fas fa-trophy" style="color: var(--secondary-color);"></i>
+                    </div>
+                    <div class="leaderboard-list" id="leaderboardList">
+                        <!-- Leaderboard items will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="daily-bonus-section">
+                    <div class="daily-bonus-title">Daily Bonus</div>
+                    <div class="daily-bonus-days" id="dailyBonusDays">
+                        <!-- Daily bonus days will be populated by JavaScript -->
+                    </div>
+                    <button class="bonus-claim-btn" id="bonusClaimBtn" disabled>Claim Daily Bonus</button>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="footer">
+    <div class="floating-footer">
         <button onclick="window.location.href='index.html'" title="Home">
             <i class="fas fa-home"></i>
             <span class="tooltip">Home</span>
@@ -1132,6 +1302,10 @@
         <button onclick="window.location.href='dapp.html'" title="DApp">
             <i class="fas fa-gamepad"></i>
             <span class="tooltip">DApp</span>
+        </button>
+        <button id="supportBtn" title="Support">
+            <i class="fas fa-headset"></i>
+            <span class="tooltip">Support</span>
         </button>
     </div>
     
@@ -1254,6 +1428,34 @@
             showNotification("Error logging out", "error");
         }
     };
+
+    // ---- Theme Toggle inside Profile Dropdown ----
+    document.getElementById('themeToggleBtn').onclick = function() {
+        setTheme(!document.body.classList.contains('light'));
+        // Update the theme toggle button text
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        if (document.body.classList.contains('light')) {
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
+        } else {
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
+        }
+    };
+
+    // ---- Settings Button ----
+    document.getElementById('settingsBtn').onclick = function() {
+        showNotification("Settings panel will be available soon", "info");
+    };
+
+    // ---- Help Button ----
+    document.getElementById('helpBtn').onclick = function() {
+        showNotification("Help & Support will be available soon", "info");
+    };
+
+    // ---- Support Button in Footer ----
+    document.getElementById('supportBtn').onclick = function() {
+        showNotification("Contact support at: support@supremeamer.com", "info");
+    };
+
     async function displayUser() {
         try {
             const user = await account.get();
@@ -1274,16 +1476,11 @@
         if(light) {
             document.body.classList.add('light');
             localStorage.setItem('theme','light');
-            document.getElementById('lightToggleBtn').textContent='🌞';
         } else {
             document.body.classList.remove('light');
             localStorage.setItem('theme','dark');
-            document.getElementById('lightToggleBtn').textContent='🌙';
         }
     }
-    document.getElementById('lightToggleBtn').onclick = function() {
-        setTheme(!document.body.classList.contains('light'));
-    };
     // On load, restore theme
     if(localStorage.getItem('theme')==='light') setTheme(true);
 
@@ -1371,6 +1568,79 @@
             networkStatus.innerHTML = '<i class="fas fa-circle"></i><span>Network Offline</span>';
             networkStatus.classList.add('offline');
         }
+    }
+
+    // ---- Leaderboard ----
+    function populateLeaderboard() {
+        const leaderboardList = document.getElementById('leaderboardList');
+        const leaderboardData = [
+            { rank: 1, user: "CryptoKing", value: "125,430 SA" },
+            { rank: 2, user: "MiningMaster", value: "98,760 SA" },
+            { rank: 3, user: "BlockchainPro", value: "87,540 SA" },
+            { rank: 4, user: "SAEnthusiast", value: "76,320 SA" },
+            { rank: 5, user: "CoinMiner", value: "65,100 SA" }
+        ];
+        
+        leaderboardList.innerHTML = '';
+        
+        leaderboardData.forEach(item => {
+            const leaderboardItem = document.createElement('div');
+            leaderboardItem.className = 'leaderboard-item';
+            leaderboardItem.innerHTML = `
+                <div class="leaderboard-rank">${item.rank}</div>
+                <div class="leaderboard-user">${item.user}</div>
+                <div class="leaderboard-value">${item.value}</div>
+            `;
+            leaderboardList.appendChild(leaderboardItem);
+        });
+    }
+
+    // ---- Daily Bonus ----
+    function setupDailyBonus() {
+        const dailyBonusDays = document.getElementById('dailyBonusDays');
+        const bonusClaimBtn = document.getElementById('bonusClaimBtn');
+        
+        const days = [
+            { day: 1, bonus: "100 SA", claimed: true },
+            { day: 2, bonus: "200 SA", claimed: true },
+            { day: 3, bonus: "300 SA", claimed: true },
+            { day: 4, bonus: "500 SA", claimed: false },
+            { day: 5, bonus: "800 SA", claimed: false },
+            { day: 6, bonus: "1300 SA", claimed: false },
+            { day: 7, bonus: "2100 SA", claimed: false }
+        ];
+        
+        dailyBonusDays.innerHTML = '';
+        
+        days.forEach(dayInfo => {
+            const bonusDay = document.createElement('div');
+            bonusDay.className = `bonus-day ${dayInfo.claimed ? 'claimed' : ''} ${dayInfo.day === 4 ? 'active' : ''}`;
+            bonusDay.innerHTML = `
+                <div class="bonus-day-circle">${dayInfo.day}</div>
+                <div class="bonus-day-label">${dayInfo.bonus}</div>
+            `;
+            dailyBonusDays.appendChild(bonusDay);
+        });
+        
+        // Enable claim button for active day
+        bonusClaimBtn.disabled = false;
+        bonusClaimBtn.textContent = "Claim 500 SA Bonus";
+        
+        bonusClaimBtn.addEventListener('click', function() {
+            addMinedCoins(500);
+            updateMinedCoinsDisplay();
+            updateStats();
+            showNotification("Daily bonus claimed: 500 SA!", "success");
+            bonusClaimBtn.disabled = true;
+            bonusClaimBtn.textContent = "Bonus Claimed";
+            
+            // Update the active day to claimed
+            const activeDay = document.querySelector('.bonus-day.active');
+            if (activeDay) {
+                activeDay.classList.remove('active');
+                activeDay.classList.add('claimed');
+            }
+        });
     }
 
     // ---- Mining State ----
@@ -1731,6 +2001,8 @@
         updateStats();
         updateNetworkStatus();
         updateAchievements();
+        populateLeaderboard();
+        setupDailyBonus();
         document.getElementById('mineBtn').disabled = false;
         
         // Check if upgrade expired
