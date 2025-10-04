@@ -1299,7 +1299,7 @@
             let userTokens = [];
             let isBalanceHidden = false;
 
-            // Real WalletConnect Project ID - YOUR ACTUAL ID
+            // Real WalletConnect Project ID
             const WALLETCONNECT_PROJECT_ID = 'a8cb161b925a692dca06ae9171fe9342';
 
             // Initialize the app
@@ -1414,7 +1414,6 @@
                 isAuthenticated = true;
                 
                 // Initialize wallet functionality
-                initWalletConnect();
                 loadUserTokens();
                 fetchTokenPrices();
                 initSampleTransactions();
@@ -1486,22 +1485,23 @@
                 addTransaction(transaction.recipient, transaction.amount, 'Sent', transaction.token);
             }
 
-            // Initialize WalletConnect
+            // Initialize WalletConnect with better error handling
             async function initWalletConnect() {
                 try {
                     console.log('Initializing WalletConnect...');
                     
+                    // Check if WalletConnect is available
+                    if (typeof EthereumProvider === 'undefined') {
+                        throw new Error('WalletConnect library not loaded');
+                    }
+                    
                     // Create WalletConnect Provider with real Project ID
                     walletConnectProvider = await EthereumProvider.init({
                         projectId: WALLETCONNECT_PROJECT_ID,
-                        chains: [1, 56, 137], // Ethereum, BNB Chain, Polygon
-                        optionalChains: [5, 97, 80001], // Testnets
+                        chains: [1], // Start with just Ethereum Mainnet for stability
                         showQrModal: true,
                         qrModalOptions: {
-                            themeMode: 'dark',
-                            themeVariables: {
-                                '--wcm-z-index': '1000'
-                            }
+                            themeMode: 'dark'
                         },
                         methods: [
                             'eth_sendTransaction',
@@ -1519,47 +1519,65 @@
                     walletConnectProvider.on('disconnect', handleDisconnect);
                     
                     // Check if already connected
-                    if (walletConnectProvider.accounts.length > 0) {
+                    if (walletConnectProvider.accounts && walletConnectProvider.accounts.length > 0) {
                         handleAccountsChanged(walletConnectProvider.accounts);
                     }
                     
                     console.log('WalletConnect initialized successfully');
+                    return true;
                 } catch (error) {
                     console.error('Error initializing WalletConnect:', error);
-                    showNotification('Failed to initialize WalletConnect provider', 'error');
+                    showNotification('Failed to initialize WalletConnect. Please try MetaMask instead.', 'error');
+                    return false;
                 }
             }
 
-            // Connect with WalletConnect
+            // Connect with WalletConnect - FIXED VERSION
             async function connectWithWalletConnect() {
                 try {
+                    // Show loading state
+                    connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Initializing...</span>';
+                    
+                    // Initialize provider if not already done
                     if (!walletConnectProvider) {
-                        await initWalletConnect();
+                        const initSuccess = await initWalletConnect();
+                        if (!initSuccess) {
+                            throw new Error('WalletConnect initialization failed');
+                        }
                     }
                     
-                    if (!isConnected) {
-                        connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Connecting...</span>';
-                        
-                        // Add timeout for connection
-                        const timeoutPromise = new Promise((_, reject) => {
-                            setTimeout(() => reject(new Error('Connection timeout')), 30000);
-                        });
-                        
-                        await Promise.race([walletConnectProvider.connect(), timeoutPromise]);
+                    // Check if provider is still null
+                    if (!walletConnectProvider) {
+                        throw new Error('WalletConnect provider is not available');
                     }
+                    
+                    // Update button to connecting state
+                    connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Connecting...</span>';
+                    
+                    // Add timeout for connection
+                    const timeoutPromise = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error('Connection timeout')), 30000);
+                    });
+                    
+                    // Attempt connection
+                    await Promise.race([walletConnectProvider.connect(), timeoutPromise]);
+                    
                 } catch (error) {
                     console.error('WalletConnect connection error:', error);
+                    
+                    // Reset button state
+                    updateUI();
                     
                     // More specific error messages
                     if (error.message.includes('timeout')) {
                         showNotification('Connection timed out. Please try again.', 'error');
                     } else if (error.message.includes('User rejected')) {
                         showNotification('Connection was cancelled', 'warning');
+                    } else if (error.message.includes('initialization failed') || error.message.includes('not available')) {
+                        showNotification('WalletConnect is not available. Please try MetaMask.', 'error');
                     } else {
-                        showNotification(`WalletConnect failed: ${error.message}`, 'error');
+                        showNotification(`Connection failed: ${error.message}`, 'error');
                     }
-                    
-                    updateUI();
                 }
             }
 
