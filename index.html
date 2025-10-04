@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SupremeAmer - Secure Web3 Wallet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.10.1/dist/umd/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/modal@2.6.2/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
     <style>
+        /* Previous CSS styles remain exactly the same */
         :root {
             --primary: #3498db;
             --secondary: #2ecc71;
@@ -1290,8 +1290,7 @@
             let currentPinInput = '';
             let pendingTransaction = null;
 
-            // WalletConnect provider instance
-            let walletConnectProvider = null;
+            // Wallet state
             let isConnected = false;
             let currentAccount = null;
             let currentChainId = 1;
@@ -1299,7 +1298,7 @@
             let userTokens = [];
             let isBalanceHidden = false;
 
-            // Real WalletConnect Project ID
+            // WalletConnect Project ID
             const WALLETCONNECT_PROJECT_ID = 'a8cb161b925a692dca06ae9171fe9342';
 
             // Initialize the app
@@ -1309,7 +1308,7 @@
                 loadBalanceVisibilityPreference();
                 
                 // Set up interval to periodically update token prices
-                setInterval(fetchTokenPrices, 60000); // Update every minute
+                setInterval(fetchTokenPrices, 60000);
             }
 
             // Check authentication status
@@ -1323,11 +1322,9 @@
                     transactionPin = savedPin;
                     isBiometricEnabled = savedBiometric === 'true';
                     
-                    // Show login screen
                     setupScreen.style.display = 'none';
                     loginScreen.style.display = 'block';
                 } else {
-                    // Show setup screen
                     setupScreen.style.display = 'block';
                     loginScreen.style.display = 'none';
                 }
@@ -1359,19 +1356,16 @@
                     return;
                 }
                 
-                // Save password and PIN (in a real app, these would be hashed)
                 walletPassword = newPassword;
                 transactionPin = pin;
                 localStorage.setItem('supremeamer-password', walletPassword);
                 localStorage.setItem('supremeamer-pin', transactionPin);
                 
-                // Close modal and show wallet
                 passwordSetupModal.style.display = 'none';
                 showWallet();
                 
                 showNotification('Security setup completed successfully', 'success');
                 
-                // Clear inputs
                 newPasswordInput.value = '';
                 confirmPasswordInput.value = '';
                 transactionPinInput.value = '';
@@ -1379,8 +1373,6 @@
 
             // Setup biometric authentication
             function setupBiometric() {
-                // In a real app, this would integrate with WebAuthn or device biometrics
-                // For this demo, we'll simulate biometric setup
                 isBiometricEnabled = true;
                 localStorage.setItem('supremeamer-biometric', 'true');
                 showNotification('Biometric authentication enabled', 'success');
@@ -1401,8 +1393,6 @@
 
             // Login with biometric
             function loginWithBiometric() {
-                // In a real app, this would trigger device biometric authentication
-                // For this demo, we'll simulate successful biometric auth
                 showWallet();
                 showNotification('Biometric authentication successful', 'success');
             }
@@ -1413,7 +1403,6 @@
                 walletContainer.style.display = 'block';
                 isAuthenticated = true;
                 
-                // Initialize wallet functionality
                 loadUserTokens();
                 fetchTokenPrices();
                 initSampleTransactions();
@@ -1445,7 +1434,6 @@
                     currentPinInput += value;
                     updatePinDisplay();
                     
-                    // Check if PIN is complete
                     if (currentPinInput.length === 6) {
                         verifyPin();
                     }
@@ -1457,7 +1445,6 @@
                 if (currentPinInput === transactionPin) {
                     pinModal.style.display = 'none';
                     
-                    // Execute pending transaction
                     if (pendingTransaction) {
                         executeTransaction(pendingTransaction);
                         pendingTransaction = null;
@@ -1473,110 +1460,61 @@
 
             // Execute transaction (simulated)
             function executeTransaction(transaction) {
-                // In a real app, this would send the actual transaction
                 showNotification(`Sent ${transaction.amount} ${transaction.token} to ${transaction.recipient.substring(0, 6)}...`, 'success');
                 sendModal.style.display = 'none';
                 
-                // Clear inputs
                 document.getElementById('recipientAddress').value = '';
                 document.getElementById('sendAmount').value = '';
                 
-                // Add to transaction history
                 addTransaction(transaction.recipient, transaction.amount, 'Sent', transaction.token);
             }
 
-            // Initialize WalletConnect with better error handling
-            async function initWalletConnect() {
-                try {
-                    console.log('Initializing WalletConnect...');
-                    
-                    // Check if WalletConnect is available
-                    if (typeof EthereumProvider === 'undefined') {
-                        throw new Error('WalletConnect library not loaded');
-                    }
-                    
-                    // Create WalletConnect Provider with real Project ID
-                    walletConnectProvider = await EthereumProvider.init({
-                        projectId: WALLETCONNECT_PROJECT_ID,
-                        chains: [1], // Start with just Ethereum Mainnet for stability
-                        showQrModal: true,
-                        qrModalOptions: {
-                            themeMode: 'dark'
-                        },
-                        methods: [
-                            'eth_sendTransaction',
-                            'eth_signTransaction',
-                            'eth_sign',
-                            'personal_sign',
-                            'eth_signTypedData',
-                        ],
-                        events: ['chainChanged', 'accountsChanged', 'disconnect'],
-                    });
-
-                    // Subscribe to events
-                    walletConnectProvider.on('accountsChanged', handleAccountsChanged);
-                    walletConnectProvider.on('chainChanged', handleChainChanged);
-                    walletConnectProvider.on('disconnect', handleDisconnect);
-                    
-                    // Check if already connected
-                    if (walletConnectProvider.accounts && walletConnectProvider.accounts.length > 0) {
-                        handleAccountsChanged(walletConnectProvider.accounts);
-                    }
-                    
-                    console.log('WalletConnect initialized successfully');
-                    return true;
-                } catch (error) {
-                    console.error('Error initializing WalletConnect:', error);
-                    showNotification('Failed to initialize WalletConnect. Please try MetaMask instead.', 'error');
-                    return false;
-                }
-            }
-
-            // Connect with WalletConnect - FIXED VERSION
+            // SIMPLE WalletConnect Implementation
             async function connectWithWalletConnect() {
                 try {
-                    // Show loading state
-                    connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Initializing...</span>';
-                    
-                    // Initialize provider if not already done
-                    if (!walletConnectProvider) {
-                        const initSuccess = await initWalletConnect();
-                        if (!initSuccess) {
-                            throw new Error('WalletConnect initialization failed');
-                        }
-                    }
-                    
-                    // Check if provider is still null
-                    if (!walletConnectProvider) {
-                        throw new Error('WalletConnect provider is not available');
-                    }
-                    
-                    // Update button to connecting state
                     connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Connecting...</span>';
                     
-                    // Add timeout for connection
-                    const timeoutPromise = new Promise((_, reject) => {
-                        setTimeout(() => reject(new Error('Connection timeout')), 30000);
+                    // Check if WalletConnect is available
+                    if (typeof WalletConnectProvider === 'undefined') {
+                        throw new Error('WalletConnect not available. Please try MetaMask.');
+                    }
+                    
+                    // Create a simple provider
+                    const provider = new WalletConnectProvider.default({
+                        infuraId: WALLETCONNECT_PROJECT_ID, // Using as Infura ID for simplicity
+                        qrcode: true,
+                        rpc: {
+                            1: 'https://mainnet.infura.io/v3/' + WALLETCONNECT_PROJECT_ID,
+                            56: 'https://bsc-dataseed.binance.org/',
+                            137: 'https://polygon-rpc.com/'
+                        }
                     });
                     
-                    // Attempt connection
-                    await Promise.race([walletConnectProvider.connect(), timeoutPromise]);
+                    // Enable session (triggers QR Code modal)
+                    await provider.enable();
+                    
+                    // Get accounts
+                    const accounts = await provider.request({ method: 'eth_accounts' });
+                    
+                    if (accounts.length > 0) {
+                        currentAccount = accounts[0];
+                        isConnected = true;
+                        updateUI();
+                        showNotification('WalletConnect connected successfully', 'success');
+                    } else {
+                        throw new Error('No accounts found');
+                    }
                     
                 } catch (error) {
-                    console.error('WalletConnect connection error:', error);
-                    
-                    // Reset button state
+                    console.error('WalletConnect error:', error);
                     updateUI();
                     
-                    // More specific error messages
-                    if (error.message.includes('timeout')) {
-                        showNotification('Connection timed out. Please try again.', 'error');
-                    } else if (error.message.includes('User rejected')) {
-                        showNotification('Connection was cancelled', 'warning');
-                    } else if (error.message.includes('initialization failed') || error.message.includes('not available')) {
-                        showNotification('WalletConnect is not available. Please try MetaMask.', 'error');
+                    if (error.message.includes('User closed modal')) {
+                        showNotification('Connection cancelled', 'warning');
+                    } else if (error.message.includes('not available')) {
+                        showNotification('WalletConnect not available. Please try MetaMask.', 'error');
                     } else {
-                        showNotification(`Connection failed: ${error.message}`, 'error');
+                        showNotification('Failed to connect with WalletConnect', 'error');
                     }
                 }
             }
@@ -1594,14 +1532,12 @@
                         currentAccount = accounts[0];
                         isConnected = true;
                         
-                        // Get current chain ID
                         const chainId = await window.ethereum.request({ method: 'eth_chainId' });
                         currentChainId = parseInt(chainId, 16);
                         
                         updateUI();
                         showNotification('MetaMask connected successfully', 'success');
                         
-                        // Set up event listeners for MetaMask
                         window.ethereum.on('accountsChanged', handleAccountsChanged);
                         window.ethereum.on('chainChanged', handleChainChanged);
                     } else {
@@ -1623,10 +1559,8 @@
             // Handle account changes
             function handleAccountsChanged(accounts) {
                 if (accounts.length === 0) {
-                    // User disconnected
                     handleDisconnect();
                 } else {
-                    // User connected or switched accounts
                     currentAccount = Array.isArray(accounts) ? accounts[0] : accounts;
                     isConnected = true;
                     updateUI();
@@ -1678,7 +1612,6 @@
             function updateNetworkInfo(chainId) {
                 const network = getNetworkName(chainId);
                 
-                // Update network selector
                 for (let option of networkSelector.options) {
                     if (parseInt(option.value) === chainId) {
                         option.selected = true;
@@ -1720,7 +1653,6 @@
                     updateBalance();
                 } catch (error) {
                     console.error('Error fetching token prices:', error);
-                    // Use fallback prices if API fails
                     tokenPrices = {
                         'ETH': { price: 2200, change: 2.5 },
                         'BNB': { price: 300, change: 1.2 },
@@ -1735,18 +1667,15 @@
 
             // Update token list display
             function updateTokenList() {
-                // Default tokens based on network
                 let defaultTokens = [];
                 
                 if (currentChainId === 56 || currentChainId === 97) {
-                    // BNB Chain tokens
                     defaultTokens = [
                         { symbol: 'BNB', name: 'BNB', balance: 5.2, value: 0, change: 0 },
                         { symbol: 'USDC', name: 'USD Coin', balance: 1250, value: 0, change: 0 },
                         { symbol: 'CAKE', name: 'PancakeSwap', balance: 50, value: 0, change: 0 }
                     ];
                 } else {
-                    // Ethereum and other chains
                     defaultTokens = [
                         { symbol: 'ETH', name: 'Ethereum', balance: 2.15, value: 0, change: 0 },
                         { symbol: 'USDC', name: 'USD Coin', balance: 1250, value: 0, change: 0 },
@@ -1754,10 +1683,8 @@
                     ];
                 }
                 
-                // Combine default tokens with user-added tokens
                 const allTokens = [...defaultTokens, ...userTokens];
                 
-                // Update token values based on current prices
                 allTokens.forEach(token => {
                     if (tokenPrices[token.symbol]) {
                         token.value = token.balance * tokenPrices[token.symbol].price;
@@ -1765,10 +1692,8 @@
                     }
                 });
                 
-                // Clear token list
                 tokenList.innerHTML = '';
                 
-                // Add tokens to the list
                 allTokens.forEach(token => {
                     const tokenItem = document.createElement('div');
                     tokenItem.className = 'token-item';
@@ -1802,11 +1727,9 @@
                 let primaryToken = '';
                 let primaryBalance = 0;
                 
-                // Default tokens based on network
                 let defaultTokens = [];
                 
                 if (currentChainId === 56 || currentChainId === 97) {
-                    // BNB Chain
                     defaultTokens = [
                         { symbol: 'BNB', balance: 5.2 },
                         { symbol: 'USDC', balance: 1250 },
@@ -1814,7 +1737,6 @@
                     ];
                     primaryToken = 'BNB';
                 } else {
-                    // Ethereum and other chains
                     defaultTokens = [
                         { symbol: 'ETH', balance: 2.15 },
                         { symbol: 'USDC', balance: 1250 },
@@ -1823,10 +1745,8 @@
                     primaryToken = 'ETH';
                 }
                 
-                // Combine default tokens with user-added tokens
                 const allTokens = [...defaultTokens, ...userTokens];
                 
-                // Calculate total value
                 allTokens.forEach(token => {
                     if (tokenPrices[token.symbol]) {
                         total += token.balance * tokenPrices[token.symbol].price;
@@ -1837,7 +1757,6 @@
                     }
                 });
                 
-                // Update balance display
                 if (isBalanceHidden) {
                     totalBalance.textContent = '******';
                     cryptoBalance.textContent = '******';
@@ -1846,7 +1765,6 @@
                     totalBalance.textContent = `$${total.toFixed(2)}`;
                     cryptoBalance.textContent = `${primaryBalance} ${primaryToken}`;
                     
-                    // Calculate average change
                     let totalChange = 0;
                     let count = 0;
                     
@@ -1893,16 +1811,6 @@
             // Disconnect wallet
             async function disconnectWallet() {
                 try {
-                    if (walletConnectProvider && isConnected) {
-                        await walletConnectProvider.disconnect();
-                    }
-                    
-                    // Also disconnect from MetaMask if connected
-                    if (window.ethereum && window.ethereum.removeListener) {
-                        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-                        window.ethereum.removeListener('chainChanged', handleChainChanged);
-                    }
-                    
                     isConnected = false;
                     currentAccount = null;
                     updateUI();
@@ -1921,11 +1829,6 @@
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: `0x${chainId.toString(16)}` }],
                         });
-                    } else if (walletConnectProvider && isConnected) {
-                        await walletConnectProvider.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: `0x${chainId.toString(16)}` }],
-                        });
                     }
                 } catch (error) {
                     console.error('Error switching network:', error);
@@ -1935,13 +1838,11 @@
 
             // Add a new token
             function addToken(contract, symbol, decimals) {
-                // Check if token already exists
                 if (userTokens.some(token => token.symbol === symbol)) {
                     showNotification('Token already added', 'warning');
                     return;
                 }
                 
-                // Add new token
                 userTokens.push({
                     symbol: symbol.toUpperCase(),
                     name: symbol.toUpperCase(),
@@ -1969,7 +1870,6 @@
                     localStorage.setItem('supremeamer-theme', 'light');
                 }
                 
-                // Update toggle state
                 themeToggle.classList.toggle('active');
                 settingsThemeToggle.classList.toggle('active');
             }
@@ -1979,7 +1879,6 @@
                 const savedTheme = localStorage.getItem('supremeamer-theme') || 'dark';
                 document.documentElement.setAttribute('data-theme', savedTheme);
                 
-                // Set toggle state
                 if (savedTheme === 'light') {
                     themeToggle.classList.add('active');
                     settingsThemeToggle.classList.add('active');
@@ -1991,7 +1890,6 @@
                 isBalanceHidden = !isBalanceHidden;
                 localStorage.setItem('supremeamer-balance-hidden', isBalanceHidden);
                 
-                // Update toggle state
                 balanceToggle.classList.toggle('active');
                 settingsBalanceToggle.classList.toggle('active');
                 
@@ -2004,7 +1902,6 @@
                 const savedPreference = localStorage.getItem('supremeamer-balance-hidden');
                 isBalanceHidden = savedPreference === 'true';
                 
-                // Set toggle state
                 if (isBalanceHidden) {
                     balanceToggle.classList.add('active');
                     settingsBalanceToggle.classList.add('active');
@@ -2073,7 +1970,6 @@
                 passwordSetupModal.style.display = 'none';
             });
             
-            // PIN input handling
             document.querySelectorAll('.pin-btn[data-value]').forEach(btn => {
                 btn.addEventListener('click', function() {
                     handlePinInput(this.getAttribute('data-value'));
@@ -2156,7 +2052,6 @@
                 const token = document.getElementById('sendTokenSelect').value;
                 
                 if (recipient && amount) {
-                    // Show PIN modal for authorization
                     showPinModal({
                         recipient: recipient,
                         amount: amount,
@@ -2191,7 +2086,6 @@
                     addToken(contract, symbol, decimals);
                     addTokenModal.style.display = 'none';
                     
-                    // Clear inputs
                     document.getElementById('tokenContract').value = '';
                     document.getElementById('tokenSymbol').value = '';
                     document.getElementById('tokenDecimals').value = '18';
@@ -2229,7 +2123,6 @@
                     updateBalance();
                     showNotification('All data cleared', 'success');
                     
-                    // Reload page to show setup screen
                     location.reload();
                 }
             });
@@ -2240,7 +2133,6 @@
             balanceToggle.addEventListener('click', toggleBalanceVisibility);
             settingsBalanceToggle.addEventListener('click', toggleBalanceVisibility);
             
-            // Close modals when clicking outside
             window.addEventListener('click', function(event) {
                 if (event.target === sendModal) {
                     sendModal.style.display = 'none';
