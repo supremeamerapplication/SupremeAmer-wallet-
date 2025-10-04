@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SupremeAmer - Secure Web3 Wallet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.10.1/dist/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
     <style>
-        /* Previous CSS styles remain exactly the same */
+        /* All the previous CSS styles remain exactly the same */
         :root {
             --primary: #3498db;
             --secondary: #2ecc71;
@@ -1298,6 +1298,9 @@
             let userTokens = [];
             let isBalanceHidden = false;
 
+            // WalletConnect provider
+            let walletConnectProvider = null;
+
             // WalletConnect Project ID
             const WALLETCONNECT_PROJECT_ID = 'a8cb161b925a692dca06ae9171fe9342';
 
@@ -1469,50 +1472,77 @@
                 addTransaction(transaction.recipient, transaction.amount, 'Sent', transaction.token);
             }
 
-            // SIMPLE WalletConnect Implementation
+            // WalletConnect v2 Implementation
             async function connectWithWalletConnect() {
                 try {
-                    connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Connecting...</span>';
+                    connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Initializing...</span>';
                     
                     // Check if WalletConnect is available
-                    if (typeof WalletConnectProvider === 'undefined') {
-                        throw new Error('WalletConnect not available. Please try MetaMask.');
+                    if (typeof EthereumProvider === 'undefined') {
+                        throw new Error('WalletConnect library not loaded');
                     }
                     
-                    // Create a simple provider
-                    const provider = new WalletConnectProvider.default({
-                        infuraId: WALLETCONNECT_PROJECT_ID, // Using as Infura ID for simplicity
-                        qrcode: true,
-                        rpc: {
-                            1: 'https://mainnet.infura.io/v3/' + WALLETCONNECT_PROJECT_ID,
-                            56: 'https://bsc-dataseed.binance.org/',
-                            137: 'https://polygon-rpc.com/'
+                    // Initialize WalletConnect v2 Provider
+                    walletConnectProvider = await EthereumProvider.init({
+                        projectId: WALLETCONNECT_PROJECT_ID,
+                        chains: [1], // Ethereum Mainnet
+                        showQrModal: true,
+                        qrModalOptions: {
+                            themeMode: 'dark'
+                        },
+                        methods: [
+                            'eth_sendTransaction',
+                            'personal_sign',
+                            'eth_signTypedData'
+                        ]
+                    });
+                    
+                    // Set up event listeners
+                    walletConnectProvider.on('connect', () => {
+                        console.log('WalletConnect connected');
+                        const accounts = walletConnectProvider.accounts;
+                        if (accounts && accounts.length > 0) {
+                            currentAccount = accounts[0];
+                            isConnected = true;
+                            updateUI();
+                            showNotification('WalletConnect connected successfully', 'success');
                         }
                     });
                     
-                    // Enable session (triggers QR Code modal)
-                    await provider.enable();
+                    walletConnectProvider.on('disconnect', () => {
+                        console.log('WalletConnect disconnected');
+                        isConnected = false;
+                        currentAccount = null;
+                        updateUI();
+                        showNotification('Wallet disconnected', 'info');
+                    });
                     
-                    // Get accounts
-                    const accounts = await provider.request({ method: 'eth_accounts' });
+                    walletConnectProvider.on('chainChanged', (chainId) => {
+                        currentChainId = parseInt(chainId, 16);
+                        updateNetworkInfo(currentChainId);
+                        showNotification(`Network changed to ${getNetworkName(currentChainId)}`, 'info');
+                    });
                     
-                    if (accounts.length > 0) {
-                        currentAccount = accounts[0];
+                    // Check if already connected
+                    if (walletConnectProvider.accounts && walletConnectProvider.accounts.length > 0) {
+                        currentAccount = walletConnectProvider.accounts[0];
                         isConnected = true;
                         updateUI();
-                        showNotification('WalletConnect connected successfully', 'success');
-                    } else {
-                        throw new Error('No accounts found');
+                        return;
                     }
+                    
+                    // Connect to WalletConnect
+                    connectWalletConnectBtn.innerHTML = '<div class="loader"></div><span>Connecting...</span>';
+                    await walletConnectProvider.connect();
                     
                 } catch (error) {
                     console.error('WalletConnect error:', error);
                     updateUI();
                     
-                    if (error.message.includes('User closed modal')) {
+                    if (error.message?.includes('User closed modal')) {
                         showNotification('Connection cancelled', 'warning');
-                    } else if (error.message.includes('not available')) {
-                        showNotification('WalletConnect not available. Please try MetaMask.', 'error');
+                    } else if (error.message?.includes('not available')) {
+                        showNotification('WalletConnect not available', 'error');
                     } else {
                         showNotification('Failed to connect with WalletConnect', 'error');
                     }
@@ -1811,6 +1841,15 @@
             // Disconnect wallet
             async function disconnectWallet() {
                 try {
+                    if (walletConnectProvider) {
+                        await walletConnectProvider.disconnect();
+                    }
+                    
+                    if (window.ethereum && window.ethereum.removeListener) {
+                        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+                        window.ethereum.removeListener('chainChanged', handleChainChanged);
+                    }
+                    
                     isConnected = false;
                     currentAccount = null;
                     updateUI();
@@ -1826,6 +1865,11 @@
                 try {
                     if (window.ethereum && isConnected) {
                         await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: `0x${chainId.toString(16)}` }],
+                        });
+                    } else if (walletConnectProvider && isConnected) {
+                        await walletConnectProvider.request({
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: `0x${chainId.toString(16)}` }],
                         });
