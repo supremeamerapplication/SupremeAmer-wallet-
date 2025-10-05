@@ -1246,6 +1246,110 @@
             transition: width 0.3s;
         }
         
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            z-index: 2003;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
+        }
+        
+        .login-modal-content {
+            background: #fff;
+            color: #222;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90vw;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            transform: scale(0.95);
+            animation: modalAppear 0.3s forwards;
+        }
+        
+        .login-modal-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .form-group input {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 0, 0.2);
+        }
+        
+        .login-btn {
+            padding: 14px;
+            background: var(--gradient);
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 107, 0, 0.4);
+        }
+        
+        .login-toggle {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .login-toggle a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .login-toggle a:hover {
+            text-decoration: underline;
+        }
+        
         /* Responsive */
         @media (max-width: 600px) {
             .header {
@@ -1329,6 +1433,45 @@
     </style>
 </head>
 <body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-modal-content">
+            <h2 id="loginModalTitle">Login to SupremeAmer Coin</h2>
+            <div class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button class="login-btn" id="loginSubmitBtn">Login</button>
+                <div class="login-toggle">
+                    Don't have an account? <a id="toggleToRegister">Register</a>
+                </div>
+            </div>
+            <div class="login-form" id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password" required>
+                </div>
+                <button class="login-btn" id="registerSubmitBtn">Register</button>
+                <div class="login-toggle">
+                    Already have an account? <a id="toggleToLogin">Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification System -->
     <div id="notification" class="notification">
         <i class="fas fa-check-circle"></i>
@@ -1347,10 +1490,10 @@
                 </button>
                 <div id="profileDropdownMenu" class="profile-dropdown-content">
                     <div id="dropdownUsername" style="padding:12px 20px; font-weight:600; display:flex; align-items:center; gap:8px;">
-                        <span class="emoji-avatar">🧑</span> <span id="username">Loading...</span>
+                        <span class="emoji-avatar">🧑</span> <span id="username">Guest User</span>
                     </div>
                     <div id="dropdownEmail" style="padding:0 20px 12px 20px; color:var(--secondary-color); font-size:0.9rem; display:flex; align-items:center; gap:8px;">
-                        <span class="emoji-avatar">✉️</span> <span id="email">Loading...</span>
+                        <span class="emoji-avatar">✉️</span> <span id="email">Please login</span>
                     </div>
                     <hr>
                     <div class="dropdown-item" id="themeToggleBtn">
@@ -1366,7 +1509,11 @@
                         <span>Help & Support</span>
                     </div>
                     <hr>
-                    <div class="dropdown-item" id="logoutBtn">
+                    <div class="dropdown-item" id="loginBtn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login / Register</span>
+                    </div>
+                    <div class="dropdown-item" id="logoutBtn" style="display: none;">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </div>
@@ -1386,7 +1533,7 @@
                 </div>
                 
                 <div id="logoContainer">
-                    <img id="coinLogo" src="supremeamer_coin.png" alt="SupremeAmer Coin" class="pulse">
+                    <div id="coinLogo" style="background: var(--gradient); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2rem; font-weight: 800;">SA</div>
                 </div>
                 
                 <div class="mined-coins" id="minedCoins">0 SA</div>
@@ -1398,9 +1545,9 @@
                 
                 <div class="timer" id="timer">07:00:00</div>
                 
-                <button class="mine-btn" id="mineBtn">
+                <button class="mine-btn" id="mineBtn" disabled>
                     <i class="fas fa-hammer"></i>
-                    <span id="mineBtnText">Start Mining</span>
+                    <span id="mineBtnText">Please Login to Mine</span>
                 </button>
                 
                 <div class="session-info" id="sessionInfo">
@@ -1426,11 +1573,11 @@
                     <span id="tapCounter">0/700</span>
                 </div>
                 
-                <button class="upgrade-btn" id="showUpgradeBtn">
+                <button class="upgrade-btn" id="showUpgradeBtn" disabled>
                     <i class="fas fa-bolt"></i>Upgrade Mining Speed
                 </button>
                 
-                <button class="withdraw-btn" id="withdrawBtn">
+                <button class="withdraw-btn" id="withdrawBtn" disabled>
                     <i class="fas fa-wallet"></i>Withdraw SA Coins
                 </button>
                 
@@ -1601,7 +1748,42 @@
     <!-- Confetti Container -->
     <div id="confettiContainer"></div>
     
+    <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <script>
+    // ---- CONFIGURATION ----
+    const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+    const APPWRITE_PROJECT = '6839d9640019316a160d';
+    const APPWRITE_DB_ID = '6839dcca000190bf99f6';
+    const APPWRITE_COLLECTION_ID = 'users';
+    const SUPREMEAMER_RECEIVER_BNB = '0xYourBnbAddressHere'; // CHANGE TO YOURS
+
+    const UPGRADE_FEES = {
+        "0.05": "0.002",
+        "0.1": "0.009"
+    };
+    const UPGRADE_SPEEDS = {
+        "0.05": 0.05,
+        "0.1": 0.1
+    };
+    const NORMAL_SPEED = 0.0002;
+    const UPGRADE_DURATION = 360 * 24 * 3600;
+    const CLAIM_INTERVAL = 30 * 24 * 3600;
+    const WITHDRAW_ELIGIBILITY_FEE_BNB = "0.0017";
+    const WITHDRAW_MIN_SA = 50000;
+    const WITHDRAW_FEE_PERCENT = 6;
+    const WITHDRAW_DAYS = [9, 13];
+
+    // Appwrite
+    const { Client, Account, Databases, Query } = Appwrite;
+    const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
+    const account = new Account(client);
+    const databases = new Databases(client);
+
+    // ---- Authentication State ----
+    let currentUser = null;
+    let isLoggedIn = false;
+
     // ---- Notification System ----
     function showNotification(message, type = 'info', duration = 3000) {
         const notification = document.getElementById('notification');
@@ -1630,6 +1812,264 @@
         }, duration);
     }
 
+    // ---- Login/Register Modal ----
+    const loginModal = document.getElementById('loginModal');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const toggleToRegister = document.getElementById('toggleToRegister');
+    const toggleToLogin = document.getElementById('toggleToLogin');
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+    const registerSubmitBtn = document.getElementById('registerSubmitBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    function showLoginModal() {
+        loginModal.style.display = 'flex';
+        loginForm.style.display = 'flex';
+        registerForm.style.display = 'none';
+        document.getElementById('loginModalTitle').textContent = 'Login to SupremeAmer Coin';
+    }
+
+    function showRegisterModal() {
+        loginModal.style.display = 'flex';
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'flex';
+        document.getElementById('loginModalTitle').textContent = 'Register for SupremeAmer Coin';
+    }
+
+    function hideLoginModal() {
+        loginModal.style.display = 'none';
+    }
+
+    loginBtn.addEventListener('click', showLoginModal);
+    toggleToRegister.addEventListener('click', showRegisterModal);
+    toggleToLogin.addEventListener('click', showLoginModal);
+
+    // ---- Login Function ----
+    loginSubmitBtn.addEventListener('click', async function() {
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!email || !password) {
+            showNotification('Please fill in all fields', 'error');
+            return;
+        }
+        
+        try {
+            loginSubmitBtn.disabled = true;
+            loginSubmitBtn.textContent = 'Logging in...';
+            
+            // Create session
+            await account.createEmailSession(email, password);
+            
+            // Get user data
+            const user = await account.get();
+            currentUser = user;
+            isLoggedIn = true;
+            
+            // Update UI
+            updateUIForLoggedInUser();
+            hideLoginModal();
+            showNotification('Login successful!', 'success');
+            
+            // Load user data from Appwrite
+            await loadUserData();
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            showNotification('Login failed. Please check your credentials.', 'error');
+        } finally {
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.textContent = 'Login';
+        }
+    });
+
+    // ---- Register Function ----
+    registerSubmitBtn.addEventListener('click', async function() {
+        const name = document.getElementById('registerName').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        
+        if (!name || !email || !password) {
+            showNotification('Please fill in all fields', 'error');
+            return;
+        }
+        
+        if (password.length < 8) {
+            showNotification('Password must be at least 8 characters', 'error');
+            return;
+        }
+        
+        try {
+            registerSubmitBtn.disabled = true;
+            registerSubmitBtn.textContent = 'Registering...';
+            
+            // Create user account
+            await account.create('unique()', email, password, name);
+            
+            // Create session
+            await account.createEmailSession(email, password);
+            
+            // Get user data
+            const user = await account.get();
+            currentUser = user;
+            isLoggedIn = true;
+            
+            // Create user document in database
+            await databases.createDocument(
+                APPWRITE_DB_ID,
+                APPWRITE_COLLECTION_ID,
+                'unique()',
+                {
+                    userId: user.$id,
+                    name: name,
+                    email: email,
+                    minedCoins: 0,
+                    totalMined: 0,
+                    lastActive: new Date().toISOString(),
+                    referralCode: `SA-REF-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+                    referralCount: 0,
+                    referralEarnings: 0
+                }
+            );
+            
+            // Update UI
+            updateUIForLoggedInUser();
+            hideLoginModal();
+            showNotification('Registration successful!', 'success');
+            
+            // Initialize user data
+            await loadUserData();
+            
+        } catch (error) {
+            console.error('Registration error:', error);
+            showNotification('Registration failed. Email might already be in use.', 'error');
+        } finally {
+            registerSubmitBtn.disabled = false;
+            registerSubmitBtn.textContent = 'Register';
+        }
+    });
+
+    // ---- Logout Function ----
+    logoutBtn.addEventListener('click', async function() {
+        try {
+            await account.deleteSession('current');
+            currentUser = null;
+            isLoggedIn = false;
+            
+            // Update UI
+            updateUIForLoggedOutUser();
+            showNotification('Logged out successfully', 'success');
+            
+        } catch (error) {
+            console.error('Logout error:', error);
+            showNotification('Error logging out', 'error');
+        }
+    });
+
+    // ---- Update UI Based on Login State ----
+    function updateUIForLoggedInUser() {
+        document.getElementById('username').textContent = currentUser.name;
+        document.getElementById('email').textContent = currentUser.email;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'block';
+        
+        // Enable mining features
+        document.getElementById('mineBtn').disabled = false;
+        document.getElementById('mineBtnText').textContent = 'Start Mining';
+        document.getElementById('showUpgradeBtn').disabled = false;
+        document.getElementById('withdrawBtn').disabled = false;
+        document.getElementById('bonusClaimBtn').disabled = false;
+    }
+
+    function updateUIForLoggedOutUser() {
+        document.getElementById('username').textContent = 'Guest User';
+        document.getElementById('email').textContent = 'Please login';
+        loginBtn.style.display = 'block';
+        logoutBtn.style.display = 'none';
+        
+        // Disable mining features
+        document.getElementById('mineBtn').disabled = true;
+        document.getElementById('mineBtnText').textContent = 'Please Login to Mine';
+        document.getElementById('showUpgradeBtn').disabled = true;
+        document.getElementById('withdrawBtn').disabled = true;
+        document.getElementById('bonusClaimBtn').disabled = true;
+        
+        // Reset mining state
+        stopMining();
+        minedCoins = 0;
+        sessionEarnings = 0;
+        totalMined = 0;
+        miningTime = 0;
+        updateMinedCoinsDisplay();
+        updateStats();
+    }
+
+    // ---- Load User Data from Appwrite ----
+    async function loadUserData() {
+        if (!isLoggedIn) return;
+        
+        try {
+            const response = await databases.listDocuments(
+                APPWRITE_DB_ID,
+                APPWRITE_COLLECTION_ID,
+                [Query.equal('userId', currentUser.$id)]
+            );
+            
+            if (response.documents.length > 0) {
+                const userData = response.documents[0];
+                
+                // Update local state with data from Appwrite
+                minedCoins = userData.minedCoins || 0;
+                totalMined = userData.totalMined || 0;
+                
+                // Update referral data
+                document.getElementById('referralCode').value = userData.referralCode || 'SA-REF-12345';
+                document.getElementById('referralCount').textContent = userData.referralCount || 0;
+                document.getElementById('referralEarnings').textContent = userData.referralEarnings || 0;
+                
+                // Update UI
+                updateMinedCoinsDisplay();
+                updateStats();
+                
+                // Check if there's an active mining session
+                checkPersistentMiningSession();
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
+        }
+    }
+
+    // ---- Update User Data in Appwrite ----
+    async function updateUserInAppwrite() {
+        if (!isLoggedIn) return;
+        
+        try {
+            const response = await databases.listDocuments(
+                APPWRITE_DB_ID,
+                APPWRITE_COLLECTION_ID,
+                [Query.equal('userId', currentUser.$id)]
+            );
+            
+            if (response.documents.length > 0) {
+                const userDoc = response.documents[0];
+                
+                await databases.updateDocument(
+                    APPWRITE_DB_ID,
+                    APPWRITE_COLLECTION_ID,
+                    userDoc.$id,
+                    {
+                        minedCoins: minedCoins,
+                        totalMined: totalMined,
+                        lastActive: new Date().toISOString()
+                    }
+                );
+            }
+        } catch (error) {
+            console.error('Error updating user data:', error);
+        }
+    }
+
     // ---- Profile Dropdown ----
     document.getElementById('profileDropdownBtn').onclick = function(e) {
         e.stopPropagation();
@@ -1641,17 +2081,6 @@
         if (menu.style.display === "block") menu.style.display = "none";
     });
     document.getElementById('profileDropdownMenu').onclick = function(e) { e.stopPropagation(); };
-    document.getElementById('logoutBtn').onclick = async function(e) {
-        e.preventDefault();
-        try { 
-            showNotification("Logged out successfully", "success");
-            setTimeout(() => {
-                window.location.href = "login.html";
-            }, 1000);
-        } catch (err) {
-            showNotification("Error logging out", "error");
-        }
-    };
 
     // ---- Theme Toggle inside Profile Dropdown ----
     document.getElementById('themeToggleBtn').onclick = function() {
@@ -1784,6 +2213,12 @@
 
     // ---- Click Bonus with Tap Limit ----
     document.getElementById('coinLogo').addEventListener('click', function(e) {
+        if (!isLoggedIn) {
+            showNotification("Please login to start mining", "error");
+            showLoginModal();
+            return;
+        }
+        
         // Check if user has taps remaining
         if (!updateTapCounter()) {
             showNotification("Daily tap limit reached! Come back tomorrow.", "error");
@@ -1843,27 +2278,43 @@
     async function populateLeaderboard() {
         const leaderboardList = document.getElementById('leaderboardList');
         
-        // Sample leaderboard data
-        const leaderboardData = [
-            { rank: 1, user: "CryptoKing", value: "125,430 SA" },
-            { rank: 2, user: "MiningMaster", value: "98,760 SA" },
-            { rank: 3, user: "BlockchainPro", value: "87,540 SA" },
-            { rank: 4, user: "SAEnthusiast", value: "76,320 SA" },
-            { rank: 5, user: "CoinMiner", value: "65,100 SA" }
-        ];
-        
-        leaderboardList.innerHTML = '';
-        
-        leaderboardData.forEach(item => {
-            const leaderboardItem = document.createElement('div');
-            leaderboardItem.className = 'leaderboard-item';
-            leaderboardItem.innerHTML = `
-                <div class="leaderboard-rank">${item.rank}</div>
-                <div class="leaderboard-user">${item.user}</div>
-                <div class="leaderboard-value">${item.value}</div>
-            `;
-            leaderboardList.appendChild(leaderboardItem);
-        });
+        try {
+            // Get all users from Appwrite
+            const users = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
+            
+            // Sort users by mined coins
+            const sortedUsers = users.documents.sort((a, b) => {
+                return (b.minedCoins || 0) - (a.minedCoins || 0);
+            }).slice(0, 10); // Get top 10
+            
+            leaderboardList.innerHTML = '';
+            
+            if (sortedUsers.length === 0) {
+                leaderboardList.innerHTML = '<div style="text-align:center; padding:20px; color:var(--secondary-color);">No miners yet. Be the first!</div>';
+                return;
+            }
+            
+            sortedUsers.forEach((user, index) => {
+                const leaderboardItem = document.createElement('div');
+                leaderboardItem.className = 'leaderboard-item';
+                
+                // Highlight current user
+                if (isLoggedIn && user.userId === currentUser.$id) {
+                    leaderboardItem.classList.add('current-user-highlight');
+                }
+                
+                leaderboardItem.innerHTML = `
+                    <div class="leaderboard-rank">${index + 1}</div>
+                    <div class="leaderboard-user">${user.name || 'Anonymous'}</div>
+                    <div class="leaderboard-value">${(user.minedCoins || 0).toFixed(2)} SA</div>
+                `;
+                leaderboardList.appendChild(leaderboardItem);
+            });
+            
+        } catch (error) {
+            console.error("Error fetching leaderboard:", error);
+            leaderboardList.innerHTML = '<div style="text-align:center; padding:20px; color:var(--accent-color);">Error loading leaderboard</div>';
+        }
     }
 
     // ---- Daily Bonus ----
@@ -1934,6 +2385,12 @@
         }
         
         bonusClaimBtn.addEventListener('click', function() {
+            if (!isLoggedIn) {
+                showNotification("Please login to claim bonus", "error");
+                showLoginModal();
+                return;
+            }
+            
             if (bonusClaimBtn.disabled) return;
             
             addMinedCoins(500);
@@ -1975,39 +2432,19 @@
     }
 
     // ---- Mining State ----
-    let minedCoins = parseFloat(localStorage.getItem('minedCoins')||'0');
-    let miningActive = localStorage.getItem('miningActive') === 'true';
-    let miningSpeed = 0.0002; // NORMAL_SPEED
+    let minedCoins = 0;
+    let miningActive = false;
+    let miningSpeed = NORMAL_SPEED;
     let miningUpgrade = JSON.parse(localStorage.getItem('miningUpgrade') || 'null');
-    let miningUpgradeStart = miningUpgrade?.startTime||0;
-    let miningUpgradeSpeed = miningUpgrade?.upgradeSpeed||0;
-    let miningUpgradeLastClaim = miningUpgrade?.lastClaim||0;
     let miningTimerInterval = null;
-    let sessionEarnings = parseFloat(localStorage.getItem('sessionEarnings')||'0');
-    let totalMined = parseFloat(localStorage.getItem('totalMined')||'0');
-    let miningTime = parseInt(localStorage.getItem('miningTime')||'0');
+    let sessionEarnings = 0;
+    let totalMined = 0;
+    let miningTime = 0;
     
     // Enhanced mining session management
-    let miningSessionStart = parseInt(localStorage.getItem('miningSessionStart')||'0');
-    let miningSessionEnd = parseInt(localStorage.getItem('miningSessionEnd')||'0');
+    let miningSessionStart = 0;
+    let miningSessionEnd = 0;
     const miningSessionDuration = 7 * 3600 * 1000; // 7 hours in milliseconds
-
-    // Upgrade constants
-    const UPGRADE_DURATION = 360 * 24 * 3600;
-    const CLAIM_INTERVAL = 30 * 24 * 3600;
-    const WITHDRAW_ELIGIBILITY_FEE_BNB = "0.0017";
-    const WITHDRAW_MIN_SA = 50000;
-    const WITHDRAW_FEE_PERCENT = 6;
-    const WITHDRAW_DAYS = [9, 13];
-    const UPGRADE_FEES = {
-        "0.05": "0.002",
-        "0.1": "0.009"
-    };
-    const UPGRADE_SPEEDS = {
-        "0.05": 0.05,
-        "0.1": 0.1
-    };
-    const NORMAL_SPEED = 0.0002;
 
     function getCurrentSpeed() {
         if (isUpgradeActive()) return miningUpgrade.upgradeSpeed;
@@ -2054,9 +2491,11 @@
         minedCoins += amount;
         sessionEarnings += amount;
         totalMined += amount;
-        localStorage.setItem('minedCoins', minedCoins);
-        localStorage.setItem('sessionEarnings', sessionEarnings);
-        localStorage.setItem('totalMined', totalMined);
+        
+        // Update Appwrite if logged in
+        if (isLoggedIn) {
+            updateUserInAppwrite();
+        }
         
         // Update achievements
         updateAchievements();
@@ -2158,6 +2597,29 @@
         }
     }
     
+    // ---- Persistent Mining Timer ----
+    function checkPersistentMiningSession() {
+        miningSessionStart = parseInt(localStorage.getItem('miningSessionStart') || '0');
+        miningSessionEnd = parseInt(localStorage.getItem('miningSessionEnd') || '0');
+        miningActive = localStorage.getItem('miningActive') === 'true';
+        
+        if (miningActive && miningSessionStart > 0 && miningSessionEnd > Date.now()) {
+            // Calculate coins earned while offline
+            const now = Date.now();
+            const elapsed = now - miningSessionStart;
+            const coinsEarned = (elapsed / 1000) * getCurrentSpeed();
+            addMinedCoins(coinsEarned);
+            
+            // Continue mining
+            document.getElementById('mineBtn').innerHTML = '<i class="fas fa-cog fa-spin" style="margin-right: 8px;"></i> Mining...';
+            document.getElementById('mineBtn').disabled = false;
+            startMining();
+        } else if (miningActive) {
+            // Session expired
+            stopMining();
+        }
+    }
+    
     // ---- Achievements ----
     function updateAchievements() {
         // Update SA Collector achievement
@@ -2172,6 +2634,12 @@
 
     // ---- Upgrade Modal ----
     function showUpgradeModal() {
+        if (!isLoggedIn) {
+            showNotification("Please login to upgrade mining", "error");
+            showLoginModal();
+            return;
+        }
+        
         document.getElementById('upgradeModal').style.display = 'flex';
     }
     function hideUpgradeModal() {
@@ -2190,11 +2658,23 @@
         }
         
         try {
-            // Simulate upgrade transaction
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const userAddr = await signer.getAddress();
+            
+            // Show confirmation with more details
+            const confirmed = confirm(`Upgrade mining speed to ${UPGRADE_SPEEDS[speedKey]} SA/sec for 360 days?\n\nCost: ${UPGRADE_FEES[speedKey]} BNB\n\nWallet: ${userAddr.substring(0,6)}...${userAddr.substring(38)}`);
+            if(!confirmed) return;
+            
             showNotification("Processing upgrade transaction...", "info");
             
-            // Simulate transaction delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            const tx = await signer.sendTransaction({
+                to: SUPREMEAMER_RECEIVER_BNB,
+                value: ethers.utils.parseEther(UPGRADE_FEES[speedKey])
+            });
+            
+            showNotification("Transaction sent! Waiting for confirmation...", "info");
+            await tx.wait();
             
             setMiningUpgrade(UPGRADE_SPEEDS[speedKey], UPGRADE_FEES[speedKey]);
             updateUpgradeInfo();
@@ -2210,7 +2690,7 @@
 
     // ---- Enhanced Mining Logic ----
     function startMining() {
-        if (miningActive) { return; }
+        if (miningActive || !isLoggedIn) { return; }
         
         miningActive = true;
         localStorage.setItem('miningActive', 'true');
@@ -2226,7 +2706,7 @@
         document.getElementById('mineBtn').innerHTML = '<i class="fas fa-cog fa-spin" style="margin-right: 8px;"></i> Mining...';
         
         miningTimerInterval = setInterval(function(){
-            if (!miningActive) {
+            if (!miningActive || !isLoggedIn) {
                 clearInterval(miningTimerInterval);
                 return;
             }
@@ -2244,7 +2724,6 @@
             let speed = getCurrentSpeed();
             addMinedCoins(speed);
             miningTime++;
-            localStorage.setItem('miningTime', miningTime.toString());
             
             // Update displays
             updateMinedCoinsDisplay();
@@ -2278,6 +2757,12 @@
     }
 
     document.getElementById('mineBtn').onclick = function() {
+        if (!isLoggedIn) {
+            showNotification("Please login to start mining", "error");
+            showLoginModal();
+            return;
+        }
+        
         if (miningActive) {
             stopMining();
         } else {
@@ -2287,6 +2772,12 @@
 
     // ---- Withdraw Logic ----
     document.getElementById('withdrawBtn').onclick = async function() {
+        if (!isLoggedIn) {
+            showNotification("Please login to withdraw", "error");
+            showLoginModal();
+            return;
+        }
+        
         const status = document.getElementById('withdrawStatus');
         status.textContent = "";
         const today = new Date();
@@ -2328,9 +2819,13 @@
             
             try {
                 showNotification("Processing eligibility fee payment...", "info");
+                const tx = await signer.sendTransaction({
+                    to: SUPREMEAMER_RECEIVER_BNB,
+                    value: ethers.utils.parseEther(WITHDRAW_ELIGIBILITY_FEE_BNB)
+                });
                 
-                // Simulate transaction delay
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                showNotification("Transaction sent! Waiting for confirmation...", "info");
+                await tx.wait();
                 
                 localStorage.setItem('withdrawEligible','true');
                 showNotification("Eligibility fee paid successfully!", "success");
@@ -2362,11 +2857,14 @@
         setTimeout(() => {
             minedCoins = 0;
             sessionEarnings = 0;
-            localStorage.setItem('minedCoins', minedCoins);
-            localStorage.setItem('sessionEarnings', sessionEarnings);
             updateMinedCoinsDisplay();
             updateStats();
             status.textContent = "";
+            
+            // Update Appwrite
+            if (isLoggedIn) {
+                updateUserInAppwrite();
+            }
             
             createConfetti();
             showNotification(`Withdrawal successful! ${sendAmount.toFixed(2)} SA sent to your wallet.`, "success");
@@ -2377,6 +2875,12 @@
 
     // --- Claim logic (click timer to claim if ready) ---
     document.getElementById('timer').onclick = function() {
+        if (!isLoggedIn) {
+            showNotification("Please login to claim rewards", "error");
+            showLoginModal();
+            return;
+        }
+        
         if(isUpgradeActive() && canClaim()) {
             // Calculate claimable
             const now = Math.floor(Date.now()/1000);
@@ -2403,7 +2907,19 @@
     };
 
     // --- On load ---
-    window.onload = function() {
+    window.onload = async function() {
+        // Check if user is already logged in
+        try {
+            const user = await account.get();
+            currentUser = user;
+            isLoggedIn = true;
+            updateUIForLoggedInUser();
+            await loadUserData();
+        } catch (error) {
+            console.log("No active session, user needs to login");
+            updateUIForLoggedOutUser();
+        }
+        
         updateMinedCoinsDisplay();
         updateTimerDisplay();
         updateUpgradeInfo();
@@ -2415,37 +2931,6 @@
         setupDailyBonus();
         updateTapCounter();
         
-        // Check if mining was active before page reload
-        if (miningActive) {
-            // Check if session is still valid
-            const now = Date.now();
-            miningSessionStart = parseInt(localStorage.getItem('miningSessionStart') || '0');
-            miningSessionEnd = parseInt(localStorage.getItem('miningSessionEnd') || '0');
-            
-            if (miningSessionStart > 0 && miningSessionEnd > now) {
-                // Calculate coins earned while offline
-                const elapsed = now - miningSessionStart;
-                const coinsEarned = (elapsed / 1000) * getCurrentSpeed();
-                addMinedCoins(coinsEarned);
-                
-                // Continue mining
-                document.getElementById('mineBtn').innerHTML = '<i class="fas fa-cog fa-spin" style="margin-right: 8px;"></i> Mining...';
-                document.getElementById('mineBtn').disabled = true;
-                startMining();
-            } else {
-                // Session expired
-                miningActive = false;
-                localStorage.setItem('miningActive', 'false');
-                miningSessionStart = 0;
-                miningSessionEnd = 0;
-                localStorage.removeItem('miningSessionStart');
-                localStorage.removeItem('miningSessionEnd');
-                document.getElementById('mineBtn').disabled = false;
-            }
-        } else {
-            document.getElementById('mineBtn').disabled = false;
-        }
-        
         // Check if upgrade expired
         if (isUpgradeActive() && getUpgradeTimeLeft() <= 0) {
             endUpgrade();
@@ -2453,7 +2938,11 @@
         
         // Show welcome message
         setTimeout(() => {
-            showNotification("Welcome to SupremeAmer Coin Mining!", "info");
+            if (!isLoggedIn) {
+                showNotification("Welcome to SupremeAmer Coin! Please login to start mining.", "info");
+            } else {
+                showNotification("Welcome back to SupremeAmer Coin Mining!", "info");
+            }
         }, 1000);
     };
     </script>
