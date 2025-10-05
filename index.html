@@ -20,10 +20,10 @@
             --card-bg-light: rgba(255, 255, 255, 0.95);
             --text-dark: #ffffff;
             --text-light: #333333;
-            --light-bg: #e3f2fd; /* Sky blue background */
+            --light-bg: #e3f2fd;
             --light-card: #ffffff;
-            --light-text: #0d47a1; /* Dark blue text */
-            --light-secondary: #42a5f5; /* Medium blue for secondary elements */
+            --light-text: #0d47a1;
+            --light-secondary: #42a5f5;
             --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             --glow: 0 0 15px rgba(255, 107, 0, 0.5);
@@ -161,7 +161,7 @@
         }
         
         body.light .profile-dropdown-content {
-            background: #e3f2fd; /* Sky blue background for dropdown */
+            background: #e3f2fd;
             color: var(--light-text);
             border: 1px solid rgba(66, 165, 245, 0.2);
         }
@@ -1601,39 +1601,7 @@
     <!-- Confetti Container -->
     <div id="confettiContainer"></div>
     
-    <!-- Appwrite SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
     <script>
-    // ---- CONFIGURATION ----
-    const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-    const APPWRITE_PROJECT = '6839d9640019316a160d';
-    const APPWRITE_DB_ID = '6839dcca000190bf99f6';
-    const APPWRITE_COLLECTION_ID = 'users';
-    const SUPREMEAMER_RECEIVER_BNB = '0xYourBnbAddressHere'; // CHANGE TO YOURS
-
-    const UPGRADE_FEES = {
-        "0.05": "0.002",
-        "0.1": "0.009"
-    };
-    const UPGRADE_SPEEDS = {
-        "0.05": 0.05,
-        "0.1": 0.1
-    };
-    const NORMAL_SPEED = 0.0002;
-    const UPGRADE_DURATION = 360 * 24 * 3600;
-    const CLAIM_INTERVAL = 30 * 24 * 3600;
-    const WITHDRAW_ELIGIBILITY_FEE_BNB = "0.0017";
-    const WITHDRAW_MIN_SA = 50000;
-    const WITHDRAW_FEE_PERCENT = 6;
-    const WITHDRAW_DAYS = [9, 13];
-
-    // Appwrite
-    const { Client, Account, Databases, Query } = Appwrite;
-    const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
-    const account = new Account(client);
-    const databases = new Databases(client);
-
     // ---- Notification System ----
     function showNotification(message, type = 'info', duration = 3000) {
         const notification = document.getElementById('notification');
@@ -1676,7 +1644,6 @@
     document.getElementById('logoutBtn').onclick = async function(e) {
         e.preventDefault();
         try { 
-            await account.deleteSession('current'); 
             showNotification("Logged out successfully", "success");
             setTimeout(() => {
                 window.location.href = "login.html";
@@ -1726,21 +1693,6 @@
     document.getElementById('supportBtn').onclick = function() {
         showNotification("Contact support at: support@supremeamer.com", "info");
     };
-
-    async function displayUser() {
-        try {
-            const user = await account.get();
-            const res = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, [Query.equal("userId", user.$id)]);
-            if (res.documents.length > 0) {
-                const profile = res.documents[0];
-                document.getElementById('username').textContent = profile.name;
-                document.getElementById('email').textContent = profile.email;
-            }
-        } catch (err) {
-            console.error("Error fetching user:", err);
-        }
-    }
-    displayUser();
 
     // ---- Light/Dark Toggle ----
     function setTheme(light) {
@@ -1891,77 +1843,27 @@
     async function populateLeaderboard() {
         const leaderboardList = document.getElementById('leaderboardList');
         
-        try {
-            // Get all users from Appwrite
-            const users = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
-            
-            // Sort users by mined coins (assuming each user has a 'minedCoins' field)
-            const sortedUsers = users.documents.sort((a, b) => {
-                return (b.minedCoins || 0) - (a.minedCoins || 0);
-            }).slice(0, 10); // Get top 10
-            
-            leaderboardList.innerHTML = '';
-            
-            // Get current user
-            const currentUser = await account.get();
-            
-            sortedUsers.forEach((user, index) => {
-                const leaderboardItem = document.createElement('div');
-                leaderboardItem.className = 'leaderboard-item';
-                
-                // Highlight current user
-                if (user.userId === currentUser.$id) {
-                    leaderboardItem.classList.add('current-user-highlight');
-                }
-                
-                leaderboardItem.innerHTML = `
-                    <div class="leaderboard-rank">${index + 1}</div>
-                    <div class="leaderboard-user">${user.name || 'Anonymous'}</div>
-                    <div class="leaderboard-value">${(user.minedCoins || 0).toFixed(2)} SA</div>
-                `;
-                leaderboardList.appendChild(leaderboardItem);
-            });
-            
-            // If current user is not in top 10, add them at the bottom
-            const currentUserInTop10 = sortedUsers.some(user => user.userId === currentUser.$id);
-            if (!currentUserInTop10) {
-                const currentUserDoc = users.documents.find(user => user.userId === currentUser.$id);
-                if (currentUserDoc) {
-                    const rank = users.documents.findIndex(user => user.userId === currentUser.$id) + 1;
-                    const leaderboardItem = document.createElement('div');
-                    leaderboardItem.className = 'leaderboard-item current-user-highlight';
-                    leaderboardItem.innerHTML = `
-                        <div class="leaderboard-rank">${rank}</div>
-                        <div class="leaderboard-user">${currentUserDoc.name || 'You'}</div>
-                        <div class="leaderboard-value">${(currentUserDoc.minedCoins || 0).toFixed(2)} SA</div>
-                    `;
-                    leaderboardList.appendChild(leaderboardItem);
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching leaderboard:", error);
-            // Fallback to sample data if there's an error
-            const leaderboardData = [
-                { rank: 1, user: "CryptoKing", value: "125,430 SA" },
-                { rank: 2, user: "MiningMaster", value: "98,760 SA" },
-                { rank: 3, user: "BlockchainPro", value: "87,540 SA" },
-                { rank: 4, user: "SAEnthusiast", value: "76,320 SA" },
-                { rank: 5, user: "CoinMiner", value: "65,100 SA" }
-            ];
-            
-            leaderboardList.innerHTML = '';
-            
-            leaderboardData.forEach(item => {
-                const leaderboardItem = document.createElement('div');
-                leaderboardItem.className = 'leaderboard-item';
-                leaderboardItem.innerHTML = `
-                    <div class="leaderboard-rank">${item.rank}</div>
-                    <div class="leaderboard-user">${item.user}</div>
-                    <div class="leaderboard-value">${item.value}</div>
-                `;
-                leaderboardList.appendChild(leaderboardItem);
-            });
-        }
+        // Sample leaderboard data
+        const leaderboardData = [
+            { rank: 1, user: "CryptoKing", value: "125,430 SA" },
+            { rank: 2, user: "MiningMaster", value: "98,760 SA" },
+            { rank: 3, user: "BlockchainPro", value: "87,540 SA" },
+            { rank: 4, user: "SAEnthusiast", value: "76,320 SA" },
+            { rank: 5, user: "CoinMiner", value: "65,100 SA" }
+        ];
+        
+        leaderboardList.innerHTML = '';
+        
+        leaderboardData.forEach(item => {
+            const leaderboardItem = document.createElement('div');
+            leaderboardItem.className = 'leaderboard-item';
+            leaderboardItem.innerHTML = `
+                <div class="leaderboard-rank">${item.rank}</div>
+                <div class="leaderboard-user">${item.user}</div>
+                <div class="leaderboard-value">${item.value}</div>
+            `;
+            leaderboardList.appendChild(leaderboardItem);
+        });
     }
 
     // ---- Daily Bonus ----
@@ -2075,7 +1977,7 @@
     // ---- Mining State ----
     let minedCoins = parseFloat(localStorage.getItem('minedCoins')||'0');
     let miningActive = localStorage.getItem('miningActive') === 'true';
-    let miningSpeed = NORMAL_SPEED;
+    let miningSpeed = 0.0002; // NORMAL_SPEED
     let miningUpgrade = JSON.parse(localStorage.getItem('miningUpgrade') || 'null');
     let miningUpgradeStart = miningUpgrade?.startTime||0;
     let miningUpgradeSpeed = miningUpgrade?.upgradeSpeed||0;
@@ -2089,6 +1991,23 @@
     let miningSessionStart = parseInt(localStorage.getItem('miningSessionStart')||'0');
     let miningSessionEnd = parseInt(localStorage.getItem('miningSessionEnd')||'0');
     const miningSessionDuration = 7 * 3600 * 1000; // 7 hours in milliseconds
+
+    // Upgrade constants
+    const UPGRADE_DURATION = 360 * 24 * 3600;
+    const CLAIM_INTERVAL = 30 * 24 * 3600;
+    const WITHDRAW_ELIGIBILITY_FEE_BNB = "0.0017";
+    const WITHDRAW_MIN_SA = 50000;
+    const WITHDRAW_FEE_PERCENT = 6;
+    const WITHDRAW_DAYS = [9, 13];
+    const UPGRADE_FEES = {
+        "0.05": "0.002",
+        "0.1": "0.009"
+    };
+    const UPGRADE_SPEEDS = {
+        "0.05": 0.05,
+        "0.1": 0.1
+    };
+    const NORMAL_SPEED = 0.0002;
 
     function getCurrentSpeed() {
         if (isUpgradeActive()) return miningUpgrade.upgradeSpeed;
@@ -2141,33 +2060,6 @@
         
         // Update achievements
         updateAchievements();
-        
-        // Update user data in Appwrite
-        updateUserData();
-    }
-    
-    // Update user data in Appwrite
-    async function updateUserData() {
-        try {
-            const user = await account.get();
-            const res = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, [Query.equal("userId", user.$id)]);
-            
-            if (res.documents.length > 0) {
-                const userDoc = res.documents[0];
-                await databases.updateDocument(
-                    APPWRITE_DB_ID, 
-                    APPWRITE_COLLECTION_ID, 
-                    userDoc.$id, 
-                    {
-                        minedCoins: minedCoins,
-                        totalMined: totalMined,
-                        lastActive: new Date().toISOString()
-                    }
-                );
-            }
-        } catch (error) {
-            console.error("Error updating user data:", error);
-        }
     }
     
     function updateMinedCoinsDisplay() {
@@ -2298,23 +2190,11 @@
         }
         
         try {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const userAddr = await signer.getAddress();
-            
-            // Show confirmation with more details
-            const confirmed = confirm(`Upgrade mining speed to ${UPGRADE_SPEEDS[speedKey]} SA/sec for 360 days?\n\nCost: ${UPGRADE_FEES[speedKey]} BNB\n\nWallet: ${userAddr.substring(0,6)}...${userAddr.substring(38)}`);
-            if(!confirmed) return;
-            
+            // Simulate upgrade transaction
             showNotification("Processing upgrade transaction...", "info");
             
-            const tx = await signer.sendTransaction({
-                to: SUPREMEAMER_RECEIVER_BNB,
-                value: ethers.utils.parseEther(UPGRADE_FEES[speedKey])
-            });
-            
-            showNotification("Transaction sent! Waiting for confirmation...", "info");
-            await tx.wait();
+            // Simulate transaction delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
             
             setMiningUpgrade(UPGRADE_SPEEDS[speedKey], UPGRADE_FEES[speedKey]);
             updateUpgradeInfo();
@@ -2448,13 +2328,9 @@
             
             try {
                 showNotification("Processing eligibility fee payment...", "info");
-                const tx = await signer.sendTransaction({
-                    to: SUPREMEAMER_RECEIVER_BNB,
-                    value: ethers.utils.parseEther(WITHDRAW_ELIGIBILITY_FEE_BNB)
-                });
                 
-                showNotification("Transaction sent! Waiting for confirmation...", "info");
-                await tx.wait();
+                // Simulate transaction delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 
                 localStorage.setItem('withdrawEligible','true');
                 showNotification("Eligibility fee paid successfully!", "success");
