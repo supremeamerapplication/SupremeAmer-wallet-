@@ -20,10 +20,10 @@
             --card-bg-light: rgba(255, 255, 255, 0.95);
             --text-dark: #ffffff;
             --text-light: #333333;
-            --light-bg: #f5f7fa;
+            --light-bg: #e3f2fd; /* Sky blue background */
             --light-card: #ffffff;
-            --light-text: #2c3e50;
-            --light-secondary: #7f8c8d;
+            --light-text: #0d47a1; /* Dark blue text */
+            --light-secondary: #42a5f5; /* Medium blue for secondary elements */
             --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
             --glow: 0 0 15px rgba(255, 107, 0, 0.5);
@@ -134,11 +134,11 @@
         }
         
         body.light .emoji-avatar {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.1);
         }
         
         body.light .emoji-avatar:hover {
-            background: rgba(0, 0, 0, 0.08);
+            background: rgba(66, 165, 245, 0.2);
         }
         
         .profile-dropdown-content {
@@ -163,7 +163,7 @@
         body.light .profile-dropdown-content {
             background: var(--light-card);
             color: var(--light-text);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(66, 165, 245, 0.2);
         }
         
         @keyframes fadeIn { 
@@ -195,7 +195,7 @@
         }
         
         body.light .profile-dropdown-content .dropdown-item:hover {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.1);
         }
         
         .profile-dropdown-content .dropdown-item i {
@@ -250,6 +250,7 @@
         body.light .mining-card {
             background: var(--light-card);
             color: var(--light-text);
+            box-shadow: 0 8px 30px rgba(66, 165, 245, 0.15);
         }
         
         .mining-card::before {
@@ -441,6 +442,7 @@
         body.light .stats-card {
             background: var(--light-card);
             color: var(--light-text);
+            box-shadow: 0 8px 30px rgba(66, 165, 245, 0.15);
         }
         
         .stats-title {
@@ -471,7 +473,7 @@
         }
         
         body.light .stats-dropdown-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.1);
         }
         
         .stats-dropdown {
@@ -484,7 +486,7 @@
         }
         
         body.light .stats-dropdown {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.05);
         }
         
         .stats-grid {
@@ -504,7 +506,7 @@
         }
         
         body.light .stat-item {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.05);
         }
         
         .stat-item:hover {
@@ -513,13 +515,17 @@
         }
         
         body.light .stat-item:hover {
-            background: rgba(0, 0, 0, 0.08);
+            background: rgba(66, 165, 245, 0.1);
         }
         
         .stat-value {
             font-size: 1.8rem;
             font-weight: 700;
             color: var(--secondary-color);
+        }
+        
+        body.light .stat-value {
+            color: var(--light-secondary);
         }
         
         .stat-label {
@@ -722,7 +728,8 @@
         
         body.light .floating-footer {
             background: var(--light-card);
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(66, 165, 245, 0.2);
+            box-shadow: 0 8px 30px rgba(66, 165, 245, 0.15);
         }
         
         .floating-footer button {
@@ -853,13 +860,17 @@
         }
         
         body.light .achievement {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.05);
         }
         
         .achievement i {
             font-size: 1.5rem;
             margin-bottom: 5px;
             color: var(--secondary-color);
+        }
+        
+        body.light .achievement i {
+            color: var(--light-secondary);
         }
         
         .achievement.locked i {
@@ -899,7 +910,7 @@
         }
         
         body.light .referral-section {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.05);
         }
         
         .referral-title {
@@ -907,6 +918,10 @@
             margin-bottom: 10px;
             color: var(--secondary-color);
             font-weight: 600;
+        }
+        
+        body.light .referral-title {
+            color: var(--light-secondary);
         }
         
         .referral-code {
@@ -927,8 +942,8 @@
         }
         
         body.light .referral-input {
-            background: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.2);
+            background: rgba(66, 165, 245, 0.05);
+            border: 1px solid rgba(66, 165, 245, 0.2);
             color: var(--light-text);
         }
         
@@ -965,6 +980,10 @@
             color: var(--secondary-color);
         }
         
+        body.light .referral-stat-value {
+            color: var(--light-secondary);
+        }
+        
         .referral-stat-label {
             font-size: 0.8rem;
             color: var(--text-dark);
@@ -983,7 +1002,7 @@
         }
         
         body.light .leaderboard-section {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.05);
         }
         
         .leaderboard-title {
@@ -994,6 +1013,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+        }
+        
+        body.light .leaderboard-title {
+            color: var(--light-secondary);
         }
         
         .leaderboard-list {
@@ -1018,7 +1041,7 @@
         }
         
         body.light .leaderboard-item:hover {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.05);
         }
         
         .leaderboard-item:last-child {
@@ -1048,6 +1071,10 @@
             color: var(--secondary-color);
         }
         
+        body.light .leaderboard-value {
+            color: var(--light-secondary);
+        }
+        
         .current-user-highlight {
             background: rgba(255, 167, 38, 0.2);
             border-radius: 8px;
@@ -1055,7 +1082,7 @@
         }
         
         body.light .current-user-highlight {
-            background: rgba(255, 167, 38, 0.1);
+            background: rgba(66, 165, 245, 0.1);
         }
         
         /* Daily Bonus */
@@ -1068,7 +1095,7 @@
         }
         
         body.light .daily-bonus-section {
-            background: rgba(0, 0, 0, 0.05);
+            background: rgba(66, 165, 245, 0.05);
         }
         
         .daily-bonus-title {
@@ -1076,6 +1103,10 @@
             margin-bottom: 10px;
             color: var(--secondary-color);
             font-weight: 600;
+        }
+        
+        body.light .daily-bonus-title {
+            color: var(--light-secondary);
         }
         
         .daily-bonus-days {
@@ -1140,6 +1171,47 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+        
+        /* Mining Session Info */
+        .session-info {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        body.light .session-info {
+            background: rgba(66, 165, 245, 0.05);
+        }
+        
+        .session-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .session-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .session-label {
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+        
+        body.light .session-label {
+            color: var(--light-text);
+        }
+        
+        .session-value {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        body.light .session-value {
+            color: var(--light-secondary);
         }
         
         /* Responsive */
@@ -1299,6 +1371,21 @@
                     <span id="mineBtnText">Start Mining</span>
                 </button>
                 
+                <div class="session-info" id="sessionInfo">
+                    <div class="session-row">
+                        <span class="session-label">Session Progress:</span>
+                        <span class="session-value" id="sessionProgress">0%</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">Estimated Completion:</span>
+                        <span class="session-value" id="sessionCompletion">--:--:--</span>
+                    </div>
+                    <div class="session-row">
+                        <span class="session-label">SA Earned This Session:</span>
+                        <span class="session-value" id="sessionEarned">0 SA</span>
+                    </div>
+                </div>
+                
                 <button class="upgrade-btn" id="showUpgradeBtn">
                     <i class="fas fa-bolt"></i>Upgrade Mining Speed
                 </button>
@@ -1326,7 +1413,7 @@
                             <div class="stat-label">SA/Sec</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" id="sessionEarnings">0</div>
+                            <div class="stat-value" id="totalSessionEarnings">0</div>
                             <div class="stat-label">Session SA</div>
                         </div>
                         <div class="stat-item">
@@ -1908,13 +1995,14 @@
     let miningUpgradeSpeed = miningUpgrade?.upgradeSpeed||0;
     let miningUpgradeLastClaim = miningUpgrade?.lastClaim||0;
     let miningTimerInterval = null;
-    let sessionEarnings = 0;
+    let sessionEarnings = parseFloat(localStorage.getItem('sessionEarnings')||'0');
     let totalMined = parseFloat(localStorage.getItem('totalMined')||'0');
     let miningTime = parseInt(localStorage.getItem('miningTime')||'0');
     
-    // Persistent mining session
+    // Enhanced mining session management
     let miningSessionStart = parseInt(localStorage.getItem('miningSessionStart')||'0');
-    let miningSessionDuration = 7 * 3600; // 7 hours in seconds
+    let miningSessionEnd = parseInt(localStorage.getItem('miningSessionEnd')||'0');
+    const miningSessionDuration = 7 * 3600 * 1000; // 7 hours in milliseconds
 
     function getCurrentSpeed() {
         if (isUpgradeActive()) return miningUpgrade.upgradeSpeed;
@@ -1962,6 +2050,7 @@
         sessionEarnings += amount;
         totalMined += amount;
         localStorage.setItem('minedCoins', minedCoins);
+        localStorage.setItem('sessionEarnings', sessionEarnings);
         localStorage.setItem('totalMined', totalMined);
         
         // Update achievements
@@ -2005,9 +2094,10 @@
             coinsElement.classList.remove('bounce');
         }, 1000);
     }
+    
     function updateStats() {
         document.getElementById('miningSpeed').textContent = getCurrentSpeed().toFixed(4);
-        document.getElementById('sessionEarnings').textContent = sessionEarnings.toFixed(4);
+        document.getElementById('totalSessionEarnings').textContent = sessionEarnings.toFixed(4);
         document.getElementById('totalMined').textContent = totalMined.toFixed(4);
         
         // Format mining time
@@ -2015,37 +2105,69 @@
         const minutes = Math.floor((miningTime % 3600) / 60);
         document.getElementById('miningTime').textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
     }
+    
+    function updateSessionInfo() {
+        if (miningActive) {
+            const now = Date.now();
+            const elapsed = now - miningSessionStart;
+            const remaining = miningSessionEnd - now;
+            
+            // Update progress
+            const progress = Math.min((elapsed / miningSessionDuration) * 100, 100);
+            document.getElementById('sessionProgress').textContent = `${progress.toFixed(1)}%`;
+            
+            // Update progress bar
+            document.getElementById('miningProgress').style.width = `${progress}%`;
+            
+            // Update estimated completion
+            if (remaining > 0) {
+                document.getElementById('sessionCompletion').textContent = formatTime(remaining / 1000);
+            } else {
+                document.getElementById('sessionCompletion').textContent = "Complete!";
+            }
+            
+            // Update session earnings
+            document.getElementById('sessionEarned').textContent = `${sessionEarnings.toFixed(4)} SA`;
+        }
+    }
+    
     function updateProgressBar() {
         const progressBar = document.getElementById('miningProgress');
         if (isUpgradeActive()) {
             const timeLeft = getUpgradeTimeLeft();
             const progress = 100 - (timeLeft / UPGRADE_DURATION * 100);
             progressBar.style.width = `${progress}%`;
-        } else {
-            const sessionElapsed = Math.floor((Date.now() - miningSessionStart) / 1000);
-            const progress = Math.min((sessionElapsed / miningSessionDuration) * 100, 100);
+        } else if (miningActive) {
+            const elapsed = Date.now() - miningSessionStart;
+            const progress = Math.min((elapsed / miningSessionDuration) * 100, 100);
             progressBar.style.width = `${progress}%`;
+        } else {
+            progressBar.style.width = `0%`;
         }
     }
+    
     function updateTimerDisplay() {
         if (isUpgradeActive()) {
             let timeLeft = getUpgradeTimeLeft();
             document.getElementById('timer').textContent = timeLeft>0?formatTime(timeLeft):"00:00:00";
-        } else {
-            let remaining = miningSessionDuration - Math.floor((Date.now() - miningSessionStart) / 1000);
-            if(remaining < 0) remaining = 0;
+        } else if (miningActive) {
+            let remaining = Math.max((miningSessionEnd - Date.now()) / 1000, 0);
             document.getElementById('timer').textContent = formatTime(remaining);
+        } else {
+            document.getElementById('timer').textContent = formatTime(miningSessionDuration / 1000);
         }
     }
+    
     function formatTime(sec) {
         const d = Math.floor(sec/86400);
         const h = Math.floor((sec%86400) / 3600);
         const m = Math.floor((sec % 3600) / 60);
-        const s = sec % 60;
+        const s = Math.floor(sec % 60);
         return d > 0
           ? `${d}d ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
           : `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     }
+    
     function updateUpgradeInfo() {
         const claimStatus = document.getElementById('claimStatus');
         if(isUpgradeActive()){
@@ -2120,41 +2242,50 @@
         }
     };
 
-    // ---- Mining Logic ----
+    // ---- Enhanced Mining Logic ----
     function startMining() {
         if (miningActive) { return; }
+        
         miningActive = true;
         localStorage.setItem('miningActive', 'true');
         
-        // Set session start time if not already set
-        if (!miningSessionStart) {
-            miningSessionStart = Date.now();
-            localStorage.setItem('miningSessionStart', miningSessionStart.toString());
-        }
+        // Set session start and end times
+        miningSessionStart = Date.now();
+        miningSessionEnd = miningSessionStart + miningSessionDuration;
+        
+        localStorage.setItem('miningSessionStart', miningSessionStart.toString());
+        localStorage.setItem('miningSessionEnd', miningSessionEnd.toString());
         
         // Start mining animation
         document.getElementById('mineBtn').innerHTML = '<i class="fas fa-cog fa-spin" style="margin-right: 8px;"></i> Mining...';
         
         miningTimerInterval = setInterval(function(){
+            if (!miningActive) {
+                clearInterval(miningTimerInterval);
+                return;
+            }
+            
+            const now = Date.now();
+            
+            // Check if session has ended
+            if (now >= miningSessionEnd) {
+                stopMining();
+                showNotification("Mining session completed! Start again to continue.", "info");
+                return;
+            }
+            
+            // Add coins based on current speed
             let speed = getCurrentSpeed();
             addMinedCoins(speed);
             miningTime++;
             localStorage.setItem('miningTime', miningTime.toString());
+            
+            // Update displays
             updateMinedCoinsDisplay();
             updateStats();
-            updateProgressBar();
-
-            if(!isUpgradeActive()){
-                let elapsed = Math.floor((Date.now() - miningSessionStart) / 1000);
-                if(elapsed >= miningSessionDuration){
-                    stopMining();
-                    showNotification("Mining session completed! Start again to continue.", "info");
-                    return;
-                }
-                document.getElementById('timer').textContent = formatTime(miningSessionDuration - elapsed);
-            } else {
-                document.getElementById('timer').textContent = formatTime(getUpgradeTimeLeft());
-            }
+            updateSessionInfo();
+            updateTimerDisplay();
+            
         }, 1000);
         
         document.getElementById('mineBtn').disabled = true;
@@ -2166,8 +2297,18 @@
         clearInterval(miningTimerInterval);
         document.getElementById('mineBtn').disabled = false;
         document.getElementById('mineBtn').innerHTML = '<i class="fas fa-hammer" style="margin-right: 8px;"></i><span id="mineBtnText">Start Mining</span>';
+        
+        // Reset session data
         miningSessionStart = 0;
+        miningSessionEnd = 0;
         localStorage.removeItem('miningSessionStart');
+        localStorage.removeItem('miningSessionEnd');
+        
+        // Reset session info display
+        document.getElementById('sessionProgress').textContent = "0%";
+        document.getElementById('sessionCompletion').textContent = "--:--:--";
+        document.getElementById('sessionEarned').textContent = "0 SA";
+        document.getElementById('miningProgress').style.width = "0%";
     }
 
     document.getElementById('mineBtn').onclick = function() {
@@ -2260,6 +2401,7 @@
             minedCoins = 0;
             sessionEarnings = 0;
             localStorage.setItem('minedCoins', minedCoins);
+            localStorage.setItem('sessionEarnings', sessionEarnings);
             updateMinedCoinsDisplay();
             updateStats();
             status.textContent = "";
@@ -2313,8 +2455,11 @@
         // Check if mining was active before page reload
         if (miningActive) {
             // Check if session is still valid
-            const elapsed = Math.floor((Date.now() - miningSessionStart) / 1000);
-            if (elapsed < miningSessionDuration) {
+            const now = Date.now();
+            miningSessionStart = parseInt(localStorage.getItem('miningSessionStart') || '0');
+            miningSessionEnd = parseInt(localStorage.getItem('miningSessionEnd') || '0');
+            
+            if (miningSessionStart > 0 && miningSessionEnd > now) {
                 // Continue mining
                 document.getElementById('mineBtn').innerHTML = '<i class="fas fa-cog fa-spin" style="margin-right: 8px;"></i> Mining...';
                 document.getElementById('mineBtn').disabled = true;
@@ -2324,7 +2469,9 @@
                 miningActive = false;
                 localStorage.setItem('miningActive', 'false');
                 miningSessionStart = 0;
+                miningSessionEnd = 0;
                 localStorage.removeItem('miningSessionStart');
+                localStorage.removeItem('miningSessionEnd');
                 document.getElementById('mineBtn').disabled = false;
             }
         } else {
