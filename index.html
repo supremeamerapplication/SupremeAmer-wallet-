@@ -161,7 +161,7 @@
         }
         
         body.light .profile-dropdown-content {
-            background: var(--light-card);
+            background: #e3f2fd; /* Sky blue background for dropdown */
             color: var(--light-text);
             border: 1px solid rgba(66, 165, 245, 0.2);
         }
@@ -195,7 +195,7 @@
         }
         
         body.light .profile-dropdown-content .dropdown-item:hover {
-            background: rgba(66, 165, 245, 0.1);
+            background: rgba(66, 165, 245, 0.2);
         }
         
         .profile-dropdown-content .dropdown-item i {
@@ -1214,6 +1214,38 @@
             color: var(--light-secondary);
         }
         
+        /* Tap Counter */
+        .tap-counter {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        body.light .tap-counter {
+            background: rgba(66, 165, 245, 0.05);
+        }
+        
+        .tap-progress {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+        
+        .tap-progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
         /* Responsive */
         @media (max-width: 600px) {
             .header {
@@ -1384,6 +1416,14 @@
                         <span class="session-label">SA Earned This Session:</span>
                         <span class="session-value" id="sessionEarned">0 SA</span>
                     </div>
+                </div>
+                
+                <div class="tap-counter">
+                    <span>Daily Taps:</span>
+                    <div class="tap-progress">
+                        <div class="tap-progress-bar" id="tapProgressBar"></div>
+                    </div>
+                    <span id="tapCounter">0/700</span>
                 </div>
                 
                 <button class="upgrade-btn" id="showUpgradeBtn">
@@ -1755,8 +1795,54 @@
         }
     }
 
-    // ---- Click Bonus ----
+    // ---- Tap Counter System ----
+    let dailyTaps = parseInt(localStorage.getItem('dailyTaps') || '0');
+    let lastTapDate = localStorage.getItem('lastTapDate') || '';
+    const NORMAL_TAP_LIMIT = 700;
+    const UPGRADED_TAP_LIMIT = 4000;
+
+    function updateTapCounter() {
+        const today = new Date().toDateString();
+        
+        // Reset tap count if it's a new day
+        if (lastTapDate !== today) {
+            dailyTaps = 0;
+            lastTapDate = today;
+            localStorage.setItem('dailyTaps', dailyTaps.toString());
+            localStorage.setItem('lastTapDate', today);
+        }
+        
+        const tapLimit = isUpgradeActive() ? UPGRADED_TAP_LIMIT : NORMAL_TAP_LIMIT;
+        const tapPercentage = (dailyTaps / tapLimit) * 100;
+        
+        document.getElementById('tapCounter').textContent = `${dailyTaps}/${tapLimit}`;
+        document.getElementById('tapProgressBar').style.width = `${tapPercentage}%`;
+        
+        // Change color based on usage
+        if (tapPercentage > 80) {
+            document.getElementById('tapProgressBar').style.background = 'var(--accent-color)';
+        } else if (tapPercentage > 60) {
+            document.getElementById('tapProgressBar').style.background = 'var(--warning-color)';
+        } else {
+            document.getElementById('tapProgressBar').style.background = 'var(--gradient)';
+        }
+        
+        return dailyTaps < tapLimit;
+    }
+
+    // ---- Click Bonus with Tap Limit ----
     document.getElementById('coinLogo').addEventListener('click', function(e) {
+        // Check if user has taps remaining
+        if (!updateTapCounter()) {
+            showNotification("Daily tap limit reached! Come back tomorrow.", "error");
+            return;
+        }
+        
+        // Increment tap count
+        dailyTaps++;
+        localStorage.setItem('dailyTaps', dailyTaps.toString());
+        updateTapCounter();
+        
         const rect = this.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -2451,6 +2537,7 @@
         updateAchievements();
         populateLeaderboard();
         setupDailyBonus();
+        updateTapCounter();
         
         // Check if mining was active before page reload
         if (miningActive) {
@@ -2460,6 +2547,11 @@
             miningSessionEnd = parseInt(localStorage.getItem('miningSessionEnd') || '0');
             
             if (miningSessionStart > 0 && miningSessionEnd > now) {
+                // Calculate coins earned while offline
+                const elapsed = now - miningSessionStart;
+                const coinsEarned = (elapsed / 1000) * getCurrentSpeed();
+                addMinedCoins(coinsEarned);
+                
                 // Continue mining
                 document.getElementById('mineBtn').innerHTML = '<i class="fas fa-cog fa-spin" style="margin-right: 8px;"></i> Mining...';
                 document.getElementById('mineBtn').disabled = true;
