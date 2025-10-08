@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SupremeAmer Coin Mining Platform</title>
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@8.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -648,7 +649,7 @@
                                     Withdraw to BNB Wallet
                                 </button>
                                 <p style="font-size: 0.9em; margin-top: 10px; color: #666;">
-                                    Receiver: 0xYourBnbAddressHere
+                                    Receiver: <span id="bnbAddress">0xYourBnbAddressHere</span>
                                 </p>
                             </div>
                         </div>
@@ -750,19 +751,24 @@
     <div class="notification" id="notification"></div>
 
     <script>
-        // Appwrite configuration
+        // ---- CONFIGURATION ----
         const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
         const APPWRITE_PROJECT = '6839d9640019316a160d';
         const APPWRITE_DB_ID = '6839dcca000190bf99f6';
         const APPWRITE_COLLECTION_ID = 'users';
-        const SUPREMEAMER_RECEIVER_BNB = '0xYourBnbAddressHere';
+        const SUPREMEAMER_RECEIVER_BNB = '0xYourBnbAddressHere'; // CHANGE TO YOURS
 
-        // Initialize Appwrite
+        // Initialize Appwrite with your configuration
         const client = new Appwrite.Client();
-        client.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
+        client
+            .setEndpoint(APPWRITE_ENDPOINT)
+            .setProject(APPWRITE_PROJECT);
 
-        const database = new Appwrite.Database(client);
         const account = new Appwrite.Account(client);
+        const databases = new Appwrite.Databases(client);
+
+        // Update BNB address display
+        document.getElementById('bnbAddress').textContent = SUPREMEAMER_RECEIVER_BNB;
 
         // Mining state
         let miningInterval;
@@ -844,8 +850,14 @@
             }
 
             try {
-                // Create user account
-                await account.create('unique()', email, password, username);
+                // Create user account with Appwrite 13.0.0
+                await account.create(
+                    Appwrite.ID.unique(), // Generate unique user ID
+                    email, 
+                    password, 
+                    username
+                );
+                
                 showNotification('Account created successfully! Please login.');
                 showTab('login');
                 
@@ -870,8 +882,8 @@
             }
 
             try {
-                // Create session
-                await account.createEmailSession(email, password);
+                // Create session with Appwrite 13.0.0
+                await account.createEmailPasswordSession(email, password);
                 currentUser = await account.get();
                 userId = currentUser.$id;
                 
@@ -909,24 +921,32 @@
             try {
                 // Check if user document exists
                 try {
-                    const userDoc = await database.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
+                    const userDoc = await databases.getDocument(
+                        APPWRITE_DB_ID, 
+                        APPWRITE_COLLECTION_ID, 
+                        userId
+                    );
+                    
                     coinsMined = userDoc.coinsMined || 0;
                     miningTime = userDoc.miningTime || 0;
                     
                     // Load upgrades
                     if (userDoc.upgrades) {
+                        const savedUpgrades = JSON.parse(userDoc.upgrades);
                         upgrades.forEach(upgrade => {
-                            const savedUpgrade = userDoc.upgrades.find(u => u.id === upgrade.id);
+                            const savedUpgrade = savedUpgrades.find(u => u.id === upgrade.id);
                             if (savedUpgrade) {
                                 upgrade.level = savedUpgrade.level;
+                                upgrade.cost = savedUpgrade.cost;
                             }
                         });
                     }
                     
                     // Load achievements
                     if (userDoc.achievements) {
+                        const savedAchievements = JSON.parse(userDoc.achievements);
                         achievements.forEach(achievement => {
-                            const savedAchievement = userDoc.achievements.find(a => a.id === achievement.id);
+                            const savedAchievement = savedAchievements.find(a => a.id === achievement.id);
                             if (savedAchievement) {
                                 achievement.unlocked = savedAchievement.unlocked;
                                 achievement.progress = savedAchievement.progress;
@@ -936,8 +956,9 @@
                     
                     // Load quests
                     if (userDoc.quests) {
+                        const savedQuests = JSON.parse(userDoc.quests);
                         quests.forEach(quest => {
-                            const savedQuest = userDoc.quests.find(q => q.id === quest.id);
+                            const savedQuest = savedQuests.find(q => q.id === quest.id);
                             if (savedQuest) {
                                 quest.progress = savedQuest.progress;
                                 quest.completed = savedQuest.completed;
@@ -952,22 +973,27 @@
                         miningTime: 0,
                         totalWithdrawn: 0,
                         miningPower: 1,
-                        upgrades: upgrades,
-                        achievements: achievements,
-                        quests: quests,
+                        upgrades: JSON.stringify(upgrades),
+                        achievements: JSON.stringify(achievements),
+                        quests: JSON.stringify(quests),
                         referralCode: generateReferralCode(),
                         referredBy: referralCode,
-                        referrals: [],
+                        referrals: JSON.stringify([]),
                         referralEarnings: 0,
-                        transactions: [],
-                        miningSessions: [],
+                        transactions: JSON.stringify([]),
+                        miningSessions: JSON.stringify([]),
                         createdAt: new Date().toISOString(),
                         username: currentUser.name,
                         email: currentUser.email,
                         lastLogin: new Date().toISOString()
                     };
                     
-                    await database.createDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, userData);
+                    await databases.createDocument(
+                        APPWRITE_DB_ID, 
+                        APPWRITE_COLLECTION_ID, 
+                        userId, 
+                        userData
+                    );
                     
                     // Handle referral if provided
                     if (referralCode) {
@@ -1052,15 +1078,20 @@
         // Update user data in Appwrite
         async function updateUserData() {
             try {
-                await database.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
-                    coinsMined: parseFloat(coinsMined.toFixed(6)),
-                    miningTime: parseFloat(miningTime.toFixed(2)),
-                    lastMiningSession: new Date().toISOString(),
-                    upgrades: upgrades,
-                    achievements: achievements,
-                    quests: quests,
-                    miningPower: calculateTotalMiningPower()
-                });
+                await databases.updateDocument(
+                    APPWRITE_DB_ID, 
+                    APPWRITE_COLLECTION_ID, 
+                    userId, 
+                    {
+                        coinsMined: parseFloat(coinsMined.toFixed(6)),
+                        miningTime: parseFloat(miningTime.toFixed(2)),
+                        lastMiningSession: new Date().toISOString(),
+                        upgrades: JSON.stringify(upgrades),
+                        achievements: JSON.stringify(achievements),
+                        quests: JSON.stringify(quests),
+                        miningPower: calculateTotalMiningPower()
+                    }
+                );
             } catch (error) {
                 console.error('Error updating user data:', error);
             }
@@ -1244,9 +1275,16 @@
 
         async function updateReferralInfo() {
             try {
-                const userDoc = await database.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
+                const userDoc = await databases.getDocument(
+                    APPWRITE_DB_ID, 
+                    APPWRITE_COLLECTION_ID, 
+                    userId
+                );
+                
                 document.getElementById('referralCode').textContent = userDoc.referralCode;
-                document.getElementById('referralCount').textContent = userDoc.referrals ? userDoc.referrals.length : 0;
+                
+                const referrals = JSON.parse(userDoc.referrals || '[]');
+                document.getElementById('referralCount').textContent = referrals.length;
                 document.getElementById('referralEarnings').textContent = userDoc.referralEarnings || 0;
             } catch (error) {
                 console.error('Error loading referral info:', error);
@@ -1263,17 +1301,23 @@
         async function handleReferral(referralCode) {
             try {
                 // Find referrer and update their data
-                const allUsers = await database.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
+                const allUsers = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
                 const referrer = allUsers.documents.find(user => user.referralCode === referralCode);
                 
                 if (referrer) {
-                    const updatedReferrals = [...(referrer.referrals || []), userId];
+                    const referrals = JSON.parse(referrer.referrals || '[]');
+                    const updatedReferrals = [...referrals, userId];
                     const updatedReferralEarnings = (referrer.referralEarnings || 0) + 10; // Bonus for referrer
                     
-                    await database.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, referrer.$id, {
-                        referrals: updatedReferrals,
-                        referralEarnings: updatedReferralEarnings
-                    });
+                    await databases.updateDocument(
+                        APPWRITE_DB_ID, 
+                        APPWRITE_COLLECTION_ID, 
+                        referrer.$id, 
+                        {
+                            referrals: JSON.stringify(updatedReferrals),
+                            referralEarnings: updatedReferralEarnings
+                        }
+                    );
                     
                     // Give bonus to new user
                     coinsMined += 5;
@@ -1287,7 +1331,7 @@
         // Leaderboard system
         async function loadLeaderboard() {
             try {
-                const allUsers = await database.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
+                const allUsers = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
                 const sortedUsers = allUsers.documents
                     .filter(user => user.coinsMined > 0)
                     .sort((a, b) => b.coinsMined - a.coinsMined)
@@ -1316,47 +1360,17 @@
             }
         }
 
-        // Analytics chart
+        // Analytics chart (placeholder - you can integrate Chart.js if needed)
         function initializeChart() {
-            const ctx = document.getElementById('miningChart').getContext('2d');
-            
-            if (miningChart) {
-                miningChart.destroy();
-            }
-            
-            // Generate sample data (in real app, use actual mining session data)
-            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-            const data = [10, 25, 35, 50, 65, 80];
-            
-            miningChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Coins Mined',
-                        data: data,
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
+            const chartContainer = document.getElementById('miningChart');
+            chartContainer.innerHTML = `
+                <div style="text-align: center; padding: 50px; color: #666;">
+                    <h3>📊 Mining Analytics</h3>
+                    <p>Chart visualization will be implemented with Chart.js</p>
+                    <p>Total Coins Mined: <strong>${coinsMined.toFixed(2)} SAM</strong></p>
+                    <p>Total Mining Time: <strong>${miningTime.toFixed(2)} minutes</strong></p>
+                </div>
+            `;
         }
 
         // Withdraw functionality
@@ -1368,7 +1382,11 @@
 
             try {
                 // Get current user data
-                const userDoc = await database.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
+                const userDoc = await databases.getDocument(
+                    APPWRITE_DB_ID, 
+                    APPWRITE_COLLECTION_ID, 
+                    userId
+                );
                 
                 // Create withdrawal transaction
                 const transaction = {
@@ -1382,14 +1400,20 @@
                 // Update achievement
                 updateAchievementProgress('first_withdrawal', 1);
 
-                // Update user document
-                const updatedTransactions = [...(userDoc.transactions || []), JSON.stringify(transaction)];
+                // Parse existing transactions
+                const transactions = JSON.parse(userDoc.transactions || '[]');
+                const updatedTransactions = [...transactions, JSON.stringify(transaction)];
                 
-                await database.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
-                    coinsMined: 0,
-                    totalWithdrawn: (userDoc.totalWithdrawn || 0) + coinsMined,
-                    transactions: updatedTransactions
-                });
+                await databases.updateDocument(
+                    APPWRITE_DB_ID, 
+                    APPWRITE_COLLECTION_ID, 
+                    userId, 
+                    {
+                        coinsMined: 0,
+                        totalWithdrawn: (userDoc.totalWithdrawn || 0) + coinsMined,
+                        transactions: JSON.stringify(updatedTransactions)
+                    }
+                );
 
                 // Reset local state
                 coinsMined = 0;
@@ -1424,8 +1448,13 @@
         // Load transaction history
         async function loadTransactionHistory() {
             try {
-                const userDoc = await database.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
-                const transactions = userDoc.transactions || [];
+                const userDoc = await databases.getDocument(
+                    APPWRITE_DB_ID, 
+                    APPWRITE_COLLECTION_ID, 
+                    userId
+                );
+                
+                const transactions = JSON.parse(userDoc.transactions || '[]');
                 
                 transactionList.innerHTML = '';
                 
