@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupremeAmer Wallet | BNB Chain</title>
+    <title>SupremeAmer Wallet | Custodial BNB Chain Wallet</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
     <style>
         :root {
             --primary: #3c3c3d;
@@ -84,6 +85,71 @@
             height: 8px;
             border-radius: 50%;
             background: var(--success);
+        }
+
+        /* Auth Section */
+        .auth-section {
+            background: var(--card-bg);
+            color: var(--dark);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .auth-section h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .auth-tab.active {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            border-color: var(--secondary);
         }
 
         /* Wallet Overview */
@@ -524,6 +590,26 @@
             margin-top: 25px;
         }
 
+        /* Status Messages */
+        .status-message {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .status-success {
+            background: rgba(68, 189, 50, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-error {
+            background: rgba(232, 65, 24, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .action-buttons {
@@ -537,6 +623,10 @@
             .chat-window {
                 width: 300px;
             }
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -553,166 +643,122 @@
             </div>
         </header>
 
-        <section class="wallet-overview">
-            <p>Total Balance</p>
-            <div class="balance">$4,287.65 <span>USD</span></div>
-            <div class="wallet-address" id="walletAddress">
-                0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+        <!-- Authentication Section -->
+        <section class="auth-section" id="authSection">
+            <h2>Welcome to SupremeAmer Wallet</h2>
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="loginTab">Login</div>
+                <div class="auth-tab" id="registerTab">Register</div>
             </div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" id="sendBtn">
-                    <i class="fas fa-paper-plane"></i> Send
-                </button>
-                <button class="btn btn-primary" id="receiveBtn">
-                    <i class="fas fa-qrcode"></i> Receive
-                </button>
-                <button class="btn btn-secondary" id="swapBtn">
-                    <i class="fas fa-exchange-alt"></i> Swap
-                </button>
-                <button class="btn btn-secondary" id="importBtn">
-                    <i class="fas fa-download"></i> Import
-                </button>
+            
+            <div id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="btn btn-primary" id="loginBtn" style="width: 100%;">Login</button>
             </div>
+            
+            <div id="registerForm" class="hidden">
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                </div>
+                <button class="btn btn-primary" id="registerBtn" style="width: 100%;">Create Wallet</button>
+            </div>
+            
+            <div class="status-message" id="authStatus"></div>
         </section>
 
-        <section class="tokens-section">
-            <div class="section-header">
-                <h2>Your Tokens</h2>
-                <button class="btn btn-secondary">
-                    <i class="fas fa-plus"></i> Add Token
-                </button>
-            </div>
-            <div class="token-list">
-                <div class="token-item">
-                    <div class="token-info">
-                        <div class="token-icon">BNB</div>
-                        <div>
-                            <div class="token-name">BNB</div>
-                            <div class="token-symbol">Binance Coin</div>
-                        </div>
-                    </div>
-                    <div class="token-balance">
-                        <div class="token-amount">2.4587 BNB</div>
-                        <div class="token-value">$987.65</div>
-                    </div>
+        <!-- Wallet Dashboard (Initially Hidden) -->
+        <div id="walletDashboard" class="hidden">
+            <section class="wallet-overview">
+                <p>Total Balance</p>
+                <div class="balance">$<span id="totalBalance">0.00</span> <span>USD</span></div>
+                <div class="wallet-address" id="walletAddress">
+                    Loading...
                 </div>
-                <div class="token-item">
-                    <div class="token-info">
-                        <div class="token-icon" style="background: #f0b90b;">CAKE</div>
-                        <div>
-                            <div class="token-name">PancakeSwap</div>
-                            <div class="token-symbol">CAKE</div>
-                        </div>
-                    </div>
-                    <div class="token-balance">
-                        <div class="token-amount">45.82 CAKE</div>
-                        <div class="token-value">$1,245.32</div>
-                    </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                    <button class="btn btn-primary" id="receiveBtn">
+                        <i class="fas fa-qrcode"></i> Receive
+                    </button>
+                    <button class="btn btn-secondary" id="swapBtn">
+                        <i class="fas fa-exchange-alt"></i> Swap
+                    </button>
+                    <button class="btn btn-secondary" id="importBtn">
+                        <i class="fas fa-download"></i> Import
+                    </button>
                 </div>
-                <div class="token-item">
-                    <div class="token-info">
-                        <div class="token-icon" style="background: #00aaff;">BUSD</div>
-                        <div>
-                            <div class="token-name">Binance USD</div>
-                            <div class="token-symbol">BUSD</div>
-                        </div>
-                    </div>
-                    <div class="token-balance">
-                        <div class="token-amount">1,250.75 BUSD</div>
-                        <div class="token-value">$1,250.75</div>
-                    </div>
-                </div>
-                <div class="token-item">
-                    <div class="token-info">
-                        <div class="token-icon" style="background: #ff6b6b;">SAFE</div>
-                        <div>
-                            <div class="token-name">SupremeAmer</div>
-                            <div class="token-symbol">SAFE</div>
-                        </div>
-                    </div>
-                    <div class="token-balance">
-                        <div class="token-amount">10,000 SAFE</div>
-                        <div class="token-value">$804.93</div>
-                    </div>
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-shield-alt"></i>
+            <section class="tokens-section">
+                <div class="section-header">
+                    <h2>Your Tokens</h2>
+                    <button class="btn btn-secondary" id="addTokenBtn">
+                        <i class="fas fa-plus"></i> Add Token
+                    </button>
                 </div>
-                <h3>Secure Storage</h3>
-                <p>Your private keys are encrypted and stored securely on your device.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-chart-line"></i>
+                <div class="token-list" id="tokenList">
+                    <!-- Tokens will be loaded here -->
                 </div>
-                <h3>Live Prices</h3>
-                <p>Real-time token prices directly from multiple exchanges.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-gas-pump"></i>
+            </section>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Storage</h3>
+                    <p>Your private keys are encrypted and stored securely on our servers.</p>
                 </div>
-                <h3>Low Fees</h3>
-                <p>Optimized transactions with the lowest possible gas fees.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-exchange-alt"></i>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Live Prices</h3>
+                    <p>Real-time token prices directly from multiple exchanges.</p>
                 </div>
-                <h3>Easy Swaps</h3>
-                <p>Swap tokens instantly with the best rates on BNB Chain.</p>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gas-pump"></i>
+                    </div>
+                    <h3>Low Fees</h3>
+                    <p>Optimized transactions with the lowest possible gas fees.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3>Easy Swaps</h3>
+                    <p>Swap tokens instantly with the best rates on BNB Chain.</p>
+                </div>
             </div>
+
+            <section class="transaction-history">
+                <div class="section-header">
+                    <h2>Recent Transactions</h2>
+                    <button class="btn btn-secondary" id="viewAllTxBtn">View All</button>
+                </div>
+                <div class="transaction-list" id="transactionList">
+                    <!-- Transactions will be loaded here -->
+                </div>
+            </section>
         </div>
-
-        <section class="transaction-history">
-            <div class="section-header">
-                <h2>Recent Transactions</h2>
-                <button class="btn btn-secondary">View All</button>
-            </div>
-            <div class="transaction-list">
-                <div class="transaction-item">
-                    <div class="transaction-info">
-                        <div class="transaction-icon sent">
-                            <i class="fas fa-arrow-up"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <h4>Sent BNB</h4>
-                            <p>To: 0x7b8c...d4e5</p>
-                        </div>
-                    </div>
-                    <div class="transaction-amount sent">-0.25 BNB</div>
-                </div>
-                <div class="transaction-item">
-                    <div class="transaction-info">
-                        <div class="transaction-icon received">
-                            <i class="fas fa-arrow-down"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <h4>Received SAFE</h4>
-                            <p>From: 0x3a9b...f2c1</p>
-                        </div>
-                    </div>
-                    <div class="transaction-amount received">+500 SAFE</div>
-                </div>
-                <div class="transaction-item">
-                    <div class="transaction-info">
-                        <div class="transaction-icon">
-                            <i class="fas fa-exchange-alt"></i>
-                        </div>
-                        <div class="transaction-details">
-                            <h4>Swapped CAKE</h4>
-                            <p>To BUSD</p>
-                        </div>
-                    </div>
-                    <div class="transaction-amount">+120 BUSD</div>
-                </div>
-            </div>
-        </section>
     </div>
 
     <!-- Live Chat -->
@@ -761,6 +807,7 @@
                 <label for="amount">Amount</label>
                 <input type="text" id="amount" placeholder="0.00">
             </div>
+            <div class="status-message" id="sendStatus"></div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="cancelSend">Cancel</button>
                 <button class="btn btn-primary" id="confirmSend">Send</button>
@@ -783,8 +830,8 @@
                     </div>
                 </div>
                 <p style="margin-top: 20px; font-weight: 600;">Scan to receive funds</p>
-                <div class="wallet-address" style="margin-top: 15px;">
-                    0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b
+                <div class="wallet-address" id="receiveAddress" style="margin-top: 15px;">
+                    Loading...
                 </div>
             </div>
             <div class="modal-actions">
@@ -832,7 +879,7 @@
             <div style="background: rgba(0, 0, 0, 0.03); padding: 15px; border-radius: 10px; margin: 20px 0;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <span>Price</span>
-                    <span>1 BNB = 12.5 CAKE</span>
+                    <span id="swapPrice">1 BNB = 12.5 CAKE</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <span>Slippage Tolerance</span>
@@ -843,6 +890,7 @@
                     <span>$0.12</span>
                 </div>
             </div>
+            <div class="status-message" id="swapStatus"></div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="cancelSwap">Cancel</button>
                 <button class="btn btn-primary" id="confirmSwap">Swap</button>
@@ -852,6 +900,16 @@
 
     <script>
         // DOM Elements
+        const authSection = document.getElementById('authSection');
+        const walletDashboard = document.getElementById('walletDashboard');
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const authStatus = document.getElementById('authStatus');
+        
         const sendBtn = document.getElementById('sendBtn');
         const receiveBtn = document.getElementById('receiveBtn');
         const swapBtn = document.getElementById('swapBtn');
@@ -873,6 +931,11 @@
         
         const copyAddress = document.getElementById('copyAddress');
         const walletAddress = document.getElementById('walletAddress');
+        const receiveAddress = document.getElementById('receiveAddress');
+        
+        const tokenList = document.getElementById('tokenList');
+        const transactionList = document.getElementById('transactionList');
+        const totalBalance = document.getElementById('totalBalance');
         
         // Chat Elements
         const chatToggle = document.getElementById('chatToggle');
@@ -882,12 +945,77 @@
         const sendMessage = document.getElementById('sendMessage');
         const chatMessages = document.getElementById('chatMessages');
 
+        // State
+        let isLoggedIn = false;
+        let currentUser = null;
+        let userWallet = null;
+
+        // Simulated backend storage
+        const userDatabase = JSON.parse(localStorage.getItem('supremeamer_users') || '{}');
+        const walletDatabase = JSON.parse(localStorage.getItem('supremeamer_wallets') || '{}');
+
+        // Initialize Web3 with Infura (BNB Smart Chain)
+        const INFURA_PROJECT_ID = 'your-infura-project-id'; // Replace with actual Infura ID
+        const BSC_MAINNET_URL = `https://bsc-dataseed.binance.org/`;
+        let web3;
+
+        try {
+            web3 = new Web3(BSC_MAINNET_URL);
+            console.log('Web3 initialized with BSC');
+        } catch (error) {
+            console.error('Error initializing Web3:', error);
+            // Fallback to a mock implementation for demo purposes
+            web3 = {
+                eth: {
+                    getBalance: () => Promise.resolve(web3.utils.toWei('2.5', 'ether')),
+                    getTransactionCount: () => Promise.resolve(10),
+                    sendTransaction: () => Promise.resolve({ transactionHash: '0x' + Math.random().toString(16).substr(2, 64) }),
+                    Contract: function() {
+                        return {
+                            methods: {
+                                balanceOf: () => ({ call: () => Promise.resolve(web3.utils.toWei('1000', 'ether')) }),
+                                transfer: () => ({ send: () => Promise.resolve({ transactionHash: '0x' + Math.random().toString(16).substr(2, 64) }) })
+                            }
+                        };
+                    }
+                },
+                utils: {
+                    toWei: (value, unit) => {
+                        const units = { ether: 1e18, gwei: 1e9, wei: 1 };
+                        return (parseFloat(value) * (units[unit] || 1)).toString();
+                    },
+                    fromWei: (value, unit) => {
+                        const units = { ether: 1e18, gwei: 1e9, wei: 1 };
+                        return (parseFloat(value) / (units[unit] || 1)).toString();
+                    }
+                }
+            };
+        }
+
         // Event Listeners
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        });
+
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+
+        loginBtn.addEventListener('click', handleLogin);
+        registerBtn.addEventListener('click', handleRegister);
+
         sendBtn.addEventListener('click', () => {
             sendModal.style.display = 'flex';
         });
 
         receiveBtn.addEventListener('click', () => {
+            receiveAddress.textContent = userWallet.address;
             receiveModal.style.display = 'flex';
         });
 
@@ -896,7 +1024,7 @@
         });
 
         importBtn.addEventListener('click', () => {
-            alert('Import functionality would be implemented here');
+            alert('Import functionality would allow you to import external wallets');
         });
 
         // Close modals
@@ -921,20 +1049,13 @@
         });
 
         // Confirm actions
-        confirmSend.addEventListener('click', () => {
-            alert('Transaction would be sent to the blockchain');
-            sendModal.style.display = 'none';
-        });
-
-        confirmSwap.addEventListener('click', () => {
-            alert('Swap would be executed');
-            swapModal.style.display = 'none';
-        });
+        confirmSend.addEventListener('click', handleSend);
+        confirmSwap.addEventListener('click', handleSwap);
 
         // Copy wallet address
         copyAddress.addEventListener('click', () => {
-            navigator.clipboard.writeText(walletAddress.textContent);
-            alert('Address copied to clipboard!');
+            navigator.clipboard.writeText(userWallet.address);
+            showStatus(authStatus, 'Address copied to clipboard!', 'success');
         });
 
         // Chat functionality
@@ -952,6 +1073,311 @@
                 sendChatMessage();
             }
         });
+
+        // Functions
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showStatus(authStatus, 'Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (userDatabase[email] && userDatabase[email].password === password) {
+                currentUser = email;
+                userWallet = walletDatabase[email];
+                isLoggedIn = true;
+                
+                showStatus(authStatus, 'Login successful!', 'success');
+                setTimeout(() => {
+                    authSection.classList.add('hidden');
+                    walletDashboard.classList.remove('hidden');
+                    loadWalletData();
+                }, 1000);
+            } else {
+                showStatus(authStatus, 'Invalid email or password', 'error');
+            }
+        }
+
+        function handleRegister() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!email || !password || !confirmPassword) {
+                showStatus(authStatus, 'Please fill in all fields', 'error');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showStatus(authStatus, 'Passwords do not match', 'error');
+                return;
+            }
+            
+            if (userDatabase[email]) {
+                showStatus(authStatus, 'User already exists', 'error');
+                return;
+            }
+            
+            // Create new user and wallet
+            userDatabase[email] = { password, createdAt: new Date().toISOString() };
+            
+            // Generate a new wallet (in a real app, this would be done securely on the server)
+            const newWallet = {
+                address: '0x' + Math.random().toString(16).substr(2, 40),
+                privateKey: 'encrypted_' + Math.random().toString(36).substr(2, 50), // Encrypted in real implementation
+                tokens: {
+                    bnb: { balance: 2.5, value: 987.65 },
+                    cake: { balance: 45.82, value: 1245.32 },
+                    busd: { balance: 1250.75, value: 1250.75 },
+                    safe: { balance: 10000, value: 804.93 }
+                },
+                transactions: []
+            };
+            
+            walletDatabase[email] = newWallet;
+            
+            // Save to localStorage (simulated backend)
+            localStorage.setItem('supremeamer_users', JSON.stringify(userDatabase));
+            localStorage.setItem('supremeamer_wallets', JSON.stringify(walletDatabase));
+            
+            showStatus(authStatus, 'Wallet created successfully!', 'success');
+            setTimeout(() => {
+                // Switch to login tab
+                loginTab.click();
+                document.getElementById('loginEmail').value = email;
+            }, 1500);
+        }
+
+        function loadWalletData() {
+            if (!userWallet) return;
+            
+            // Update wallet address
+            walletAddress.textContent = userWallet.address;
+            
+            // Calculate total balance
+            let total = 0;
+            for (const token in userWallet.tokens) {
+                total += userWallet.tokens[token].value;
+            }
+            totalBalance.textContent = total.toFixed(2);
+            
+            // Load tokens
+            tokenList.innerHTML = '';
+            for (const [token, data] of Object.entries(userWallet.tokens)) {
+                const tokenItem = document.createElement('div');
+                tokenItem.className = 'token-item';
+                
+                let tokenName, tokenSymbol, tokenIcon;
+                switch(token) {
+                    case 'bnb':
+                        tokenName = 'BNB';
+                        tokenSymbol = 'Binance Coin';
+                        tokenIcon = 'BNB';
+                        break;
+                    case 'cake':
+                        tokenName = 'PancakeSwap';
+                        tokenSymbol = 'CAKE';
+                        tokenIcon = 'CAKE';
+                        break;
+                    case 'busd':
+                        tokenName = 'Binance USD';
+                        tokenSymbol = 'BUSD';
+                        tokenIcon = 'BUSD';
+                        break;
+                    case 'safe':
+                        tokenName = 'SupremeAmer';
+                        tokenSymbol = 'SAFE';
+                        tokenIcon = 'SAFE';
+                        break;
+                }
+                
+                tokenItem.innerHTML = `
+                    <div class="token-info">
+                        <div class="token-icon" style="background: ${getTokenColor(token)};">${tokenIcon}</div>
+                        <div>
+                            <div class="token-name">${tokenName}</div>
+                            <div class="token-symbol">${tokenSymbol}</div>
+                        </div>
+                    </div>
+                    <div class="token-balance">
+                        <div class="token-amount">${data.balance} ${token.toUpperCase()}</div>
+                        <div class="token-value">$${data.value.toFixed(2)}</div>
+                    </div>
+                `;
+                
+                tokenList.appendChild(tokenItem);
+            }
+            
+            // Load transactions
+            transactionList.innerHTML = '';
+            if (userWallet.transactions.length === 0) {
+                transactionList.innerHTML = '<p style="text-align: center; color: #777; padding: 20px;">No transactions yet</p>';
+            } else {
+                userWallet.transactions.forEach(tx => {
+                    const txItem = document.createElement('div');
+                    txItem.className = 'transaction-item';
+                    
+                    txItem.innerHTML = `
+                        <div class="transaction-info">
+                            <div class="transaction-icon ${tx.type}">
+                                <i class="fas fa-${tx.type === 'sent' ? 'arrow-up' : 'arrow-down'}"></i>
+                            </div>
+                            <div class="transaction-details">
+                                <h4>${tx.type === 'sent' ? 'Sent' : 'Received'} ${tx.token.toUpperCase()}</h4>
+                                <p>${tx.type === 'sent' ? 'To' : 'From'}: ${tx.address}</p>
+                            </div>
+                        </div>
+                        <div class="transaction-amount ${tx.type}">${tx.type === 'sent' ? '-' : '+'}${tx.amount} ${tx.token.toUpperCase()}</div>
+                    `;
+                    
+                    transactionList.appendChild(txItem);
+                });
+            }
+        }
+
+        function getTokenColor(token) {
+            const colors = {
+                bnb: '#f0b90b',
+                cake: '#d1884f',
+                busd: '#f0b90b',
+                safe: '#ff6b6b'
+            };
+            return colors[token] || '#f8b500';
+        }
+
+        function handleSend() {
+            const recipient = document.getElementById('recipient').value;
+            const token = document.getElementById('tokenSelect').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const sendStatus = document.getElementById('sendStatus');
+            
+            if (!recipient || !amount || amount <= 0) {
+                showStatus(sendStatus, 'Please fill in all fields correctly', 'error');
+                return;
+            }
+            
+            if (amount > userWallet.tokens[token].balance) {
+                showStatus(sendStatus, 'Insufficient balance', 'error');
+                return;
+            }
+            
+            // Simulate transaction
+            showStatus(sendStatus, 'Processing transaction...', 'success');
+            
+            // In a real implementation, this would use web3 to send the transaction
+            setTimeout(() => {
+                // Update balances
+                userWallet.tokens[token].balance -= amount;
+                userWallet.tokens[token].value = userWallet.tokens[token].balance * (userWallet.tokens[token].value / (userWallet.tokens[token].balance + amount));
+                
+                // Add to transaction history
+                userWallet.transactions.unshift({
+                    type: 'sent',
+                    token: token,
+                    amount: amount,
+                    address: recipient.substring(0, 10) + '...' + recipient.substring(recipient.length - 8),
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Save to database
+                walletDatabase[currentUser] = userWallet;
+                localStorage.setItem('supremeamer_wallets', JSON.stringify(walletDatabase));
+                
+                // Update UI
+                loadWalletData();
+                
+                showStatus(sendStatus, 'Transaction sent successfully!', 'success');
+                
+                setTimeout(() => {
+                    sendModal.style.display = 'none';
+                    sendStatus.style.display = 'none';
+                    document.getElementById('recipient').value = '';
+                    document.getElementById('amount').value = '';
+                }, 2000);
+            }, 2000);
+        }
+
+        function handleSwap() {
+            const fromToken = document.getElementById('fromToken').value;
+            const toToken = document.getElementById('toToken').value;
+            const fromAmount = parseFloat(document.getElementById('fromAmount').value);
+            const swapStatus = document.getElementById('swapStatus');
+            
+            if (!fromAmount || fromAmount <= 0) {
+                showStatus(swapStatus, 'Please enter a valid amount', 'error');
+                return;
+            }
+            
+            if (fromAmount > userWallet.tokens[fromToken].balance) {
+                showStatus(swapStatus, 'Insufficient balance', 'error');
+                return;
+            }
+            
+            // Simulate swap
+            showStatus(swapStatus, 'Processing swap...', 'success');
+            
+            // In a real implementation, this would use a DEX like PancakeSwap
+            setTimeout(() => {
+                // Calculate received amount (simplified)
+                const exchangeRate = getExchangeRate(fromToken, toToken);
+                const toAmount = fromAmount * exchangeRate;
+                
+                // Update balances
+                userWallet.tokens[fromToken].balance -= fromAmount;
+                userWallet.tokens[fromToken].value = userWallet.tokens[fromToken].balance * (userWallet.tokens[fromToken].value / (userWallet.tokens[fromToken].balance + fromAmount));
+                
+                userWallet.tokens[toToken].balance += toAmount;
+                userWallet.tokens[toToken].value = userWallet.tokens[toToken].balance * (userWallet.tokens[toToken].value / (userWallet.tokens[toToken].balance - toAmount));
+                
+                // Add to transaction history
+                userWallet.transactions.unshift({
+                    type: 'swap',
+                    fromToken: fromToken,
+                    toToken: toToken,
+                    fromAmount: fromAmount,
+                    toAmount: toAmount,
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Save to database
+                walletDatabase[currentUser] = userWallet;
+                localStorage.setItem('supremeamer_wallets', JSON.stringify(walletDatabase));
+                
+                // Update UI
+                loadWalletData();
+                
+                showStatus(swapStatus, `Swap completed! Received ${toAmount.toFixed(4)} ${toToken.toUpperCase()}`, 'success');
+                
+                setTimeout(() => {
+                    swapModal.style.display = 'none';
+                    swapStatus.style.display = 'none';
+                    document.getElementById('fromAmount').value = '';
+                    document.getElementById('toAmount').value = '';
+                }, 2000);
+            }, 2000);
+        }
+
+        function getExchangeRate(fromToken, toToken) {
+            // Simplified exchange rates
+            const rates = {
+                'bnb-cake': 12.5,
+                'bnb-busd': 400,
+                'bnb-safe': 5000,
+                'cake-bnb': 0.08,
+                'cake-busd': 32,
+                'cake-safe': 400,
+                'busd-bnb': 0.0025,
+                'busd-cake': 0.03125,
+                'busd-safe': 12.5,
+                'safe-bnb': 0.0002,
+                'safe-cake': 0.0025,
+                'safe-busd': 0.08
+            };
+            
+            return rates[`${fromToken}-${toToken}`] || 1;
+        }
 
         function sendChatMessage() {
             const message = chatInput.value.trim();
@@ -987,11 +1413,25 @@
             } else if (lowerMessage.includes('swap') || lowerMessage.includes('exchange')) {
                 return "You can swap tokens directly in the wallet. Just click the 'Swap' button and select the tokens you want to exchange.";
             } else if (lowerMessage.includes('security') || lowerMessage.includes('safe')) {
-                return "Your private keys are encrypted and stored locally on your device. We never have access to your funds.";
+                return "Your private keys are encrypted and stored securely on our servers. We use industry-standard encryption to protect your assets.";
             } else if (lowerMessage.includes('import') || lowerMessage.includes('recover')) {
                 return "You can import an existing wallet using your seed phrase or private key. Just click the 'Import' button.";
+            } else if (lowerMessage.includes('bnb') || lowerMessage.includes('binance')) {
+                return "BNB Smart Chain offers fast transactions and low fees. It's fully compatible with Ethereum tools and dApps.";
             } else {
                 return "Thanks for your message! How else can I help you with your SupremeAmer wallet?";
+            }
+        }
+
+        function showStatus(element, message, type) {
+            element.textContent = message;
+            element.className = `status-message status-${type}`;
+            element.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
             }
         }
 
@@ -1008,26 +1448,19 @@
             }
         });
 
-        // Simulate real-time price updates
-        function updatePrices() {
-            // This would typically fetch from an API
-            const tokens = document.querySelectorAll('.token-value');
-            tokens.forEach(token => {
-                const currentValue = parseFloat(token.textContent.replace('$', '').replace(',', ''));
-                const change = (Math.random() - 0.5) * 10;
-                const newValue = currentValue + change;
-                token.textContent = '$' + newValue.toFixed(2);
-                
-                // Briefly highlight the change
-                token.style.color = change >= 0 ? 'var(--success)' : 'var(--danger)';
-                setTimeout(() => {
-                    token.style.color = '#777';
-                }, 1000);
-            });
+        // Update swap rate when tokens change
+        document.getElementById('fromToken').addEventListener('change', updateSwapRate);
+        document.getElementById('toToken').addEventListener('change', updateSwapRate);
+        
+        function updateSwapRate() {
+            const fromToken = document.getElementById('fromToken').value;
+            const toToken = document.getElementById('toToken').value;
+            const rate = getExchangeRate(fromToken, toToken);
+            document.getElementById('swapPrice').textContent = `1 ${fromToken.toUpperCase()} = ${rate} ${toToken.toUpperCase()}`;
         }
 
-        // Update prices every 10 seconds
-        setInterval(updatePrices, 10000);
+        // Initialize
+        updateSwapRate();
     </script>
 </body>
 </html>
