@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SupremeAmer Coin Mining Platform</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@8.0.0"></script>
     <style>
         * {
             margin: 0;
@@ -216,6 +217,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transform: translateX(400px);
             transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         .notification.show {
@@ -225,70 +227,192 @@
         .notification.error {
             background: #dc3545;
         }
+
+        .login-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            margin: 50px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .login-section h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .login-button:hover {
+            background: #5a6fd8;
+        }
+
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>⚡ SupremeAmer Coin Miner</h1>
-            <p>Mine SupremeAmer coins and withdraw to your BNB wallet</p>
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <h2>⚡ SupremeAmer Miner</h2>
+            <div class="tab-container">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('login')">Login</button>
+                    <button class="tab" onclick="showTab('register')">Register</button>
+                </div>
+                
+                <div id="login" class="tab-content active">
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="loginEmail" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password">
+                    </div>
+                    <button class="login-button" onclick="login()">Start Mining</button>
+                </div>
+                
+                <div id="register" class="tab-content">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" id="registerUsername" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <input type="email" id="registerEmail" placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="registerPassword" placeholder="Choose a password">
+                    </div>
+                    <button class="login-button" onclick="register()">Create Account</button>
+                </div>
+            </div>
         </div>
 
-        <div class="dashboard">
-            <div class="card">
-                <h2>💰 Mining Stats</h2>
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="coinsMined">0</div>
-                        <div class="stat-label">Coins Mined</div>
+        <!-- Main Mining Interface (Initially Hidden) -->
+        <div id="miningInterface" class="hidden">
+            <div class="header">
+                <h1>⚡ SupremeAmer Coin Miner</h1>
+                <p>Mine SupremeAmer coins and withdraw to your BNB wallet</p>
+                <button onclick="logout()" style="background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">Logout</button>
+            </div>
+
+            <div class="dashboard">
+                <div class="card">
+                    <h2>💰 Mining Stats</h2>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="coinsMined">0</div>
+                            <div class="stat-label">Coins Mined</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="miningPower">1</div>
+                            <div class="stat-label">Mining Power</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalEarnings">0</div>
+                            <div class="stat-label">Total Earnings (USD)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="miningTime">0</div>
+                            <div class="stat-label">Mining Time (mins)</div>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="miningPower">1</div>
-                        <div class="stat-label">Mining Power</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="totalEarnings">0</div>
-                        <div class="stat-label">Total Earnings (USD)</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="miningTime">0</div>
-                        <div class="stat-label">Mining Time (mins)</div>
+                </div>
+
+                <div class="card">
+                    <h2>⛏️ Mining Controller</h2>
+                    <div class="mining-section">
+                        <div class="mining-animation hidden" id="miningAnimation">
+                            <div class="mining-circle"></div>
+                        </div>
+                        <button class="mining-button" id="miningButton">Start Mining</button>
+                        <p id="miningStatus">Ready to start mining SupremeAmer coins</p>
+                        
+                        <div class="withdraw-section">
+                            <button class="withdraw-button" id="withdrawButton" disabled>
+                                Withdraw to BNB Wallet
+                            </button>
+                            <p style="font-size: 0.9em; margin-top: 10px; color: #666;">
+                                Receiver: 0xYourBnbAddressHere
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="card">
-                <h2>⛏️ Mining Controller</h2>
-                <div class="mining-section">
-                    <div class="mining-animation hidden" id="miningAnimation">
-                        <div class="mining-circle"></div>
-                    </div>
-                    <button class="mining-button" id="miningButton">Start Mining</button>
-                    <p id="miningStatus">Ready to start mining SupremeAmer coins</p>
-                    
-                    <div class="withdraw-section">
-                        <button class="withdraw-button" id="withdrawButton" disabled>
-                            Withdraw to BNB Wallet
-                        </button>
-                        <p style="font-size: 0.9em; margin-top: 10px; color: #666;">
-                            Receiver: 0xYourBnbAddressHere
-                        </p>
-                    </div>
+                <h2>📊 Transaction History</h2>
+                <div class="transaction-list" id="transactionList">
+                    <p style="text-align: center; color: #666;">No transactions yet</p>
                 </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>📊 Transaction History</h2>
-            <div class="transaction-list" id="transactionList">
-                <!-- Transactions will be populated here -->
             </div>
         </div>
     </div>
 
     <div class="notification" id="notification"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@8.0.0"></script>
     <script>
         // Appwrite configuration
         const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
@@ -302,6 +426,7 @@
         client.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT);
 
         const database = new Appwrite.Database(client);
+        const account = new Appwrite.Account(client);
 
         // Mining state
         let miningInterval;
@@ -309,8 +434,11 @@
         let coinsMined = 0;
         let miningTime = 0;
         let userId = null;
+        let currentUser = null;
 
         // DOM elements
+        const loginSection = document.getElementById('loginSection');
+        const miningInterface = document.getElementById('miningInterface');
         const miningButton = document.getElementById('miningButton');
         const miningAnimation = document.getElementById('miningAnimation');
         const miningStatus = document.getElementById('miningStatus');
@@ -321,25 +449,109 @@
         const transactionList = document.getElementById('transactionList');
         const notification = document.getElementById('notification');
 
-        // Initialize user
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Authentication functions
+        async function register() {
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (!username || !email || !password) {
+                showNotification('Please fill all fields', true);
+                return;
+            }
+
+            try {
+                // Create user account
+                await account.create('unique()', email, password, username);
+                showNotification('Account created successfully! Please login.');
+                showTab('login');
+                
+                // Clear form
+                document.getElementById('registerUsername').value = '';
+                document.getElementById('registerEmail').value = '';
+                document.getElementById('registerPassword').value = '';
+            } catch (error) {
+                showNotification('Error creating account: ' + error.message, true);
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showNotification('Please enter email and password', true);
+                return;
+            }
+
+            try {
+                // Create session
+                await account.createEmailSession(email, password);
+                currentUser = await account.get();
+                userId = currentUser.$id;
+                
+                // Initialize user data
+                await initializeUser();
+                
+                // Switch to mining interface
+                loginSection.classList.add('hidden');
+                miningInterface.classList.remove('hidden');
+                
+                showNotification('Login successful! Welcome to SupremeAmer Miner.');
+            } catch (error) {
+                showNotification('Login failed: ' + error.message, true);
+            }
+        }
+
+        async function logout() {
+            try {
+                await account.deleteSession('current');
+                loginSection.classList.remove('hidden');
+                miningInterface.classList.add('hidden');
+                showNotification('Logged out successfully');
+                
+                // Clear form
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        // Initialize user data
         async function initializeUser() {
             try {
-                // Generate unique user ID (in real app, use proper authentication)
-                userId = 'user_' + Date.now();
-                
-                // Check if user exists, if not create
+                // Check if user document exists
                 try {
                     const userDoc = await database.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
                     coinsMined = userDoc.coinsMined || 0;
                     miningTime = userDoc.miningTime || 0;
                 } catch (error) {
-                    // User doesn't exist, create new
+                    // User document doesn't exist, create it
                     await database.createDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
                         coinsMined: 0,
                         miningTime: 0,
                         totalWithdrawn: 0,
+                        miningPower: 1,
                         transactions: [],
-                        createdAt: new Date().toISOString()
+                        createdAt: new Date().toISOString(),
+                        username: currentUser.name,
+                        email: currentUser.email
                     });
                 }
                 
@@ -351,7 +563,7 @@
             }
         }
 
-        // Start/Stop mining
+        // Mining functions
         miningButton.addEventListener('click', toggleMining);
 
         function toggleMining() {
@@ -398,7 +610,8 @@
             try {
                 await database.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
                     coinsMined: parseFloat(coinsMined.toFixed(6)),
-                    miningTime: parseFloat(miningTime.toFixed(2))
+                    miningTime: parseFloat(miningTime.toFixed(2)),
+                    lastMiningSession: new Date().toISOString()
                 });
             } catch (error) {
                 console.error('Error updating user data:', error);
@@ -426,7 +639,7 @@
                 };
 
                 // Update user document
-                const updatedTransactions = [...(userDoc.transactions || []), transaction];
+                const updatedTransactions = [...(userDoc.transactions || []), JSON.stringify(transaction)];
                 
                 await database.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
                     coinsMined: 0,
@@ -438,7 +651,7 @@
                 coinsMined = 0;
                 miningTime = 0;
                 
-                showNotification(`Successfully withdrew ${transaction.amount} SupremeAmer coins!`);
+                showNotification(`Successfully withdrew ${transaction.amount} SupremeAmer coins to ${SUPREMEAMER_RECEIVER_BNB}`);
                 updateUI();
                 loadTransactionHistory();
                 
@@ -474,23 +687,29 @@
                     return;
                 }
                 
-                transactions.reverse().forEach(transaction => {
-                    const transactionElement = document.createElement('div');
-                    transactionElement.className = 'transaction-item';
-                    
-                    const date = new Date(transaction.timestamp).toLocaleDateString();
-                    const amount = transaction.amount.toFixed(6);
-                    
-                    transactionElement.innerHTML = `
-                        <div>
-                            <strong>${transaction.type.toUpperCase()}</strong>
-                            <div style="font-size: 0.8em; color: #666;">${date}</div>
-                        </div>
-                        <div class="transaction-amount">${amount} SAM</div>
-                        <div style="font-size: 0.8em; color: #666;">${transaction.status}</div>
-                    `;
-                    
-                    transactionList.appendChild(transactionElement);
+                // Parse and display transactions
+                transactions.reverse().forEach(transactionStr => {
+                    try {
+                        const transaction = JSON.parse(transactionStr);
+                        const transactionElement = document.createElement('div');
+                        transactionElement.className = 'transaction-item';
+                        
+                        const date = new Date(transaction.timestamp).toLocaleDateString();
+                        const amount = transaction.amount.toFixed(6);
+                        
+                        transactionElement.innerHTML = `
+                            <div>
+                                <strong>${transaction.type.toUpperCase()}</strong>
+                                <div style="font-size: 0.8em; color: #666;">${date}</div>
+                            </div>
+                            <div class="transaction-amount">${amount} SAM</div>
+                            <div style="font-size: 0.8em; color: #666;">${transaction.status}</div>
+                        `;
+                        
+                        transactionList.appendChild(transactionElement);
+                    } catch (e) {
+                        console.error('Error parsing transaction:', e);
+                    }
                 });
             } catch (error) {
                 console.error('Error loading transactions:', error);
@@ -513,8 +732,22 @@
             }, 3000);
         }
 
+        // Check if user is already logged in
+        async function checkExistingSession() {
+            try {
+                currentUser = await account.get();
+                userId = currentUser.$id;
+                await initializeUser();
+                loginSection.classList.add('hidden');
+                miningInterface.classList.remove('hidden');
+            } catch (error) {
+                // No existing session, stay on login page
+                console.log('No existing session');
+            }
+        }
+
         // Initialize the app
-        initializeUser();
+        checkExistingSession();
     </script>
 </body>
 </html>
