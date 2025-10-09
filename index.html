@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SupremeAmer Coin Mining Platform</title>
+    <title>SupremeAmer - Crypto Gaming Ecosystem</title>
     <!-- Appwrite SDK -->
     <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -21,6 +22,7 @@
             --danger: #dc3545;
             --warning: #ffc107;
             --info: #17a2b8;
+            --dark: #343a40;
         }
 
         body {
@@ -51,6 +53,37 @@
         .header p {
             font-size: 1.2em;
             opacity: 0.9;
+        }
+
+        /* Enhanced Navigation */
+        .main-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .nav-tab {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .dashboard {
@@ -117,8 +150,10 @@
             color: #666;
         }
 
+        /* Enhanced Mining Section */
         .mining-section {
             text-align: center;
+            position: relative;
         }
 
         .mining-button {
@@ -178,53 +213,166 @@
             100% { transform: rotate(360deg); }
         }
 
-        .transaction-history {
+        /* New Feature Styles */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
             margin-top: 30px;
         }
 
-        .transaction-list {
-            max-height: 300px;
-            overflow-y: auto;
+        .staking-pool {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            transition: all 0.3s ease;
         }
 
-        .transaction-item {
+        .staking-pool:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .pool-header {
             display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            transition: background 0.3s ease;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .transaction-item:hover {
+        .apy-badge {
+            background: var(--success);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .nft-item {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nft-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .nft-image {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .nft-rarity {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .rarity-common { background: #6c757d; color: white; }
+        .rarity-rare { background: #007bff; color: white; }
+        .rarity-epic { background: #6f42c1; color: white; }
+        .rarity-legendary { background: #fd7e14; color: white; }
+
+        .clan-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        .chat-container {
+            height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            height: 320px;
+            overflow-y: auto;
+            padding: 15px;
             background: #f8f9fa;
         }
 
-        .transaction-amount {
-            font-weight: bold;
-            color: var(--success);
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background: white;
         }
 
-        .withdraw-section {
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message.own {
+            background: var(--primary);
+            color: white;
+            margin-left: 20%;
+        }
+
+        .admin-panel {
+            background: var(--dark);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
             margin-top: 20px;
         }
 
-        .withdraw-button {
-            background: var(--success);
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-stat {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .vr-mining {
+            background: linear-gradient(135deg, #000428, #004e92);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
         }
 
-        .withdraw-button:hover {
-            background: #218838;
+        .vr-container {
+            position: relative;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .withdraw-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .vr-miner {
+            font-size: 4em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
         }
 
         .hidden {
@@ -253,6 +401,7 @@
             background: var(--danger);
         }
 
+        /* Login Styles */
         .login-section {
             background: white;
             border-radius: 15px;
@@ -260,12 +409,6 @@
             max-width: 400px;
             margin: 50px auto;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .login-section h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: var(--primary);
         }
 
         .form-group {
@@ -335,221 +478,13 @@
         .tab-content.active {
             display: block;
         }
-
-        /* New Features Styles */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .upgrade-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .upgrade-item:hover {
-            border-color: var(--primary);
-            background: #f8f9ff;
-        }
-
-        .upgrade-button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .upgrade-button:hover:not(:disabled) {
-            background: #5a6fd8;
-        }
-
-        .upgrade-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .leaderboard {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            border-bottom: 1px solid #eee;
-            transition: background 0.3s ease;
-        }
-
-        .leaderboard-item:hover {
-            background: #f8f9fa;
-        }
-
-        .leaderboard-rank {
-            font-weight: bold;
-            color: var(--primary);
-            width: 30px;
-        }
-
-        .leaderboard-name {
-            flex: 1;
-            margin: 0 15px;
-        }
-
-        .leaderboard-score {
-            font-weight: bold;
-            color: var(--success);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            background: var(--primary);
-            color: white;
-            border-radius: 12px;
-            font-size: 0.8em;
-            margin-left: 5px;
-        }
-
-        .achievement-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .achievement-item.unlocked {
-            border-color: var(--success);
-            background: #f8fff9;
-        }
-
-        .achievement-icon {
-            font-size: 2em;
-            margin-right: 15px;
-        }
-
-        .achievement-info {
-            flex: 1;
-        }
-
-        .achievement-progress {
-            background: #e9ecef;
-            border-radius: 10px;
-            height: 8px;
-            margin-top: 5px;
-            overflow: hidden;
-        }
-
-        .achievement-progress-bar {
-            background: var(--success);
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-
-        .referral-section {
-            text-align: center;
-            padding: 20px;
-            background: #f8f9ff;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .referral-code {
-            background: white;
-            border: 2px dashed var(--primary);
-            padding: 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 1.2em;
-            margin: 15px 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .referral-code:hover {
-            background: #f0f2ff;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-            margin-top: 20px;
-        }
-
-        .quest-item {
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .quest-item.completed {
-            border-color: var(--success);
-            background: #f8fff9;
-        }
-
-        .quest-reward {
-            color: var(--success);
-            font-weight: bold;
-        }
-
-        .admin-panel {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .admin-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .admin-stat {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- Login Section -->
         <div id="loginSection" class="login-section">
-            <h2>⚡ SupremeAmer Miner</h2>
+            <h2>⚡ SupremeAmer Ecosystem</h2>
             <div class="tab-container">
                 <div class="tabs">
                     <button class="tab active" onclick="showTab('login')">Login</button>
@@ -565,11 +500,7 @@
                         <label>Password:</label>
                         <input type="password" id="loginPassword" placeholder="Enter your password">
                     </div>
-                    <div class="form-group">
-                        <label>Referral Code (optional):</label>
-                        <input type="text" id="loginReferralCode" placeholder="Enter referral code">
-                    </div>
-                    <button class="login-button" onclick="login()">Start Mining</button>
+                    <button class="login-button" onclick="login()">Enter Ecosystem</button>
                 </div>
                 
                 <div id="register" class="tab-content">
@@ -585,33 +516,31 @@
                         <label>Password:</label>
                         <input type="password" id="registerPassword" placeholder="Choose a password">
                     </div>
-                    <div class="form-group">
-                        <label>Referral Code (optional):</label>
-                        <input type="text" id="registerReferralCode" placeholder="Enter referral code">
-                    </div>
                     <button class="login-button" onclick="register()">Create Account</button>
                 </div>
             </div>
         </div>
 
-        <!-- Main Mining Interface (Initially Hidden) -->
-        <div id="miningInterface" class="hidden">
+        <!-- Main Ecosystem Interface -->
+        <div id="ecosystemInterface" class="hidden">
             <div class="header">
-                <h1>⚡ SupremeAmer Coin Miner</h1>
-                <p>Mine SupremeAmer coins and withdraw to your BNB wallet</p>
-                <div>
-                    <button onclick="showTab('main')" class="tab active">Dashboard</button>
-                    <button onclick="showTab('upgrades')" class="tab">Upgrades</button>
-                    <button onclick="showTab('leaderboard')" class="tab">Leaderboard</button>
-                    <button onclick="showTab('achievements')" class="tab">Achievements</button>
-                    <button onclick="showTab('referral')" class="tab">Referral</button>
-                    <button onclick="showTab('analytics')" class="tab">Analytics</button>
-                    <button onclick="logout()" style="background: var(--danger); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-left: 10px;">Logout</button>
+                <h1>⚡ SupremeAmer Ecosystem</h1>
+                <p>The Ultimate Crypto Gaming Experience</p>
+                
+                <div class="main-nav">
+                    <button class="nav-tab active" onclick="showEcosystemTab('dashboard')">🏠 Dashboard</button>
+                    <button class="nav-tab" onclick="showEcosystemTab('staking')">💰 Staking</button>
+                    <button class="nav-tab" onclick="showEcosystemTab('nft')">🎨 NFT Market</button>
+                    <button class="nav-tab" onclick="showEcosystemTab('clans')">👥 Clans</button>
+                    <button class="nav-tab" onclick="showEcosystemTab('analytics')">📊 Analytics</button>
+                    <button class="nav-tab" onclick="showEcosystemTab('metaverse')">🌐 Metaverse</button>
+                    <button class="nav-tab" onclick="showEcosystemTab('admin')">⚙️ Admin</button>
+                    <button onclick="logout()" style="background: var(--danger); color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer;">Logout</button>
                 </div>
             </div>
 
-            <!-- Main Dashboard Tab -->
-            <div id="main" class="tab-content active">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
                 <div class="dashboard">
                     <div class="card">
                         <h2>💰 Mining Stats</h2>
@@ -626,11 +555,11 @@
                             </div>
                             <div class="stat-item">
                                 <div class="stat-value" id="totalEarnings">0</div>
-                                <div class="stat-label">Total Earnings (USD)</div>
+                                <div class="stat-label">Total Earnings</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-value" id="miningTime">0</div>
-                                <div class="stat-label">Mining Time (mins)</div>
+                                <div class="stat-value" id="stakingRewards">0</div>
+                                <div class="stat-label">Staking Rewards</div>
                             </div>
                         </div>
                     </div>
@@ -641,16 +570,13 @@
                             <div class="mining-animation hidden" id="miningAnimation">
                                 <div class="mining-circle"></div>
                             </div>
-                            <button class="mining-button" id="miningButton">Start Mining</button>
-                            <p id="miningStatus">Ready to start mining SupremeAmer coins</p>
+                            <button class="mining-button" id="miningButton">Start Quantum Mining</button>
+                            <p id="miningStatus">Ready to start quantum mining sequence</p>
                             
                             <div class="withdraw-section">
-                                <button class="withdraw-button" id="withdrawButton" disabled>
-                                    Withdraw to BNB Wallet
+                                <button class="mining-button" id="withdrawButton" disabled style="padding: 15px 30px; font-size: 1.2em;">
+                                    Withdraw to Blockchain
                                 </button>
-                                <p style="font-size: 0.9em; margin-top: 10px; color: #666;">
-                                    Receiver: <span id="bnbAddress">0xYourBnbAddressHere</span>
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -658,78 +584,81 @@
 
                 <div class="features-grid">
                     <div class="card">
-                        <h2>🎯 Daily Quests</h2>
-                        <div id="questsList">
-                            <!-- Quests will be populated here -->
+                        <h2>🚀 Active Stakes</h2>
+                        <div id="activeStakes">
+                            <p style="text-align: center; color: #666;">No active stakes</p>
                         </div>
                     </div>
 
                     <div class="card">
-                        <h2>🏆 Recent Achievements</h2>
-                        <div id="recentAchievements">
-                            <!-- Achievements will be populated here -->
+                        <h2>🎮 Clan Status</h2>
+                        <div id="clanStatus">
+                            <p style="text-align: center; color: #666;">Not in a clan</p>
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Staking Tab -->
+            <div id="staking" class="tab-content">
+                <div class="card">
+                    <h2>💰 Yield Farming Pools</h2>
+                    <div id="stakingPools">
+                        <!-- Staking pools will be populated here -->
+                    </div>
+                </div>
 
                 <div class="card">
-                    <h2>📊 Transaction History</h2>
-                    <div class="transaction-list" id="transactionList">
-                        <p style="text-align: center; color: #666;">No transactions yet</p>
+                    <h2>📈 Staking Analytics</h2>
+                    <div class="chart-container">
+                        <canvas id="stakingChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Upgrades Tab -->
-            <div id="upgrades" class="tab-content">
+            <!-- NFT Market Tab -->
+            <div id="nft" class="tab-content">
                 <div class="card">
-                    <h2>🚀 Mining Upgrades</h2>
-                    <div id="upgradesList">
-                        <!-- Upgrades will be populated here -->
+                    <h2>🎨 NFT Mining Equipment</h2>
+                    <div class="features-grid" id="nftMarketplace">
+                        <!-- NFT items will be populated here -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>👜 My NFT Collection</h2>
+                    <div class="features-grid" id="nftCollection">
+                        <!-- User's NFT collection -->
                     </div>
                 </div>
             </div>
 
-            <!-- Leaderboard Tab -->
-            <div id="leaderboard" class="tab-content">
-                <div class="card">
-                    <h2>🏆 Global Leaderboard</h2>
-                    <div class="leaderboard" id="globalLeaderboard">
-                        <!-- Leaderboard will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Achievements Tab -->
-            <div id="achievements" class="tab-content">
-                <div class="card">
-                    <h2>🎖️ Achievements</h2>
-                    <div id="achievementsList">
-                        <!-- Achievements will be populated here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Referral Tab -->
-            <div id="referral" class="tab-content">
-                <div class="card">
-                    <h2>👥 Referral Program</h2>
-                    <div class="referral-section">
-                        <h3>Invite Friends & Earn 20% Commission!</h3>
-                        <p>Share your referral code and earn 20% of all coins mined by your referrals</p>
-                        <div class="referral-code" id="referralCode" onclick="copyReferralCode()">
-                            Loading...
-                        </div>
-                        <p style="font-size: 0.9em; color: #666;">Click to copy referral code</p>
-                        
-                        <div class="stats" style="margin-top: 20px;">
-                            <div class="stat-item">
-                                <div class="stat-value" id="referralCount">0</div>
-                                <div class="stat-label">Total Referrals</div>
+            <!-- Clans Tab -->
+            <div id="clans" class="tab-content">
+                <div class="dashboard">
+                    <div class="card">
+                        <h2>👥 Clan Management</h2>
+                        <div id="clanManagement">
+                            <div class="clan-card">
+                                <h3>Create or Join a Clan</h3>
+                                <input type="text" id="clanName" placeholder="Clan Name" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
+                                <button onclick="createClan()" class="mining-button" style="padding: 10px 20px; font-size: 1em; margin: 5px;">Create Clan</button>
+                                <button onclick="joinClan()" class="mining-button" style="padding: 10px 20px; font-size: 1em; margin: 5px; background: var(--success);">Join Clan</button>
                             </div>
-                            <div class="stat-item">
-                                <div class="stat-value" id="referralEarnings">0</div>
-                                <div class="stat-label">Referral Earnings</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h2>💬 Clan Chat</h2>
+                        <div class="chat-container">
+                            <div class="chat-messages" id="clanChat">
+                                <div class="message">
+                                    <strong>System:</strong> Welcome to clan chat!
+                                </div>
+                            </div>
+                            <div class="chat-input">
+                                <input type="text" id="chatMessage" placeholder="Type your message..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <button onclick="sendClanMessage()" style="background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; margin-left: 10px; cursor: pointer;">Send</button>
                             </div>
                         </div>
                     </div>
@@ -739,9 +668,95 @@
             <!-- Analytics Tab -->
             <div id="analytics" class="tab-content">
                 <div class="card">
-                    <h2>📈 Mining Analytics</h2>
+                    <h2>📊 Enterprise Analytics</h2>
                     <div class="chart-container">
-                        <canvas id="miningChart"></canvas>
+                        <canvas id="enterpriseChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="card">
+                        <h2>📈 Performance Metrics</h2>
+                        <div id="performanceMetrics">
+                            <!-- Performance metrics -->
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2>🔮 AI Predictions</h2>
+                        <div id="aiPredictions">
+                            <!-- AI predictions -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metaverse Tab -->
+            <div id="metaverse" class="tab-content">
+                <div class="vr-mining">
+                    <h2>🌐 SupremeAmer Metaverse</h2>
+                    <p>Experience quantum mining in virtual reality</p>
+                    
+                    <div class="vr-container">
+                        <div class="vr-miner">⛏️</div>
+                    </div>
+                    
+                    <button class="mining-button" onclick="enterMetaverse()" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24);">
+                        🕶️ Enter VR Mode
+                    </button>
+                    
+                    <div class="features-grid" style="margin-top: 20px;">
+                        <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+                            <h3>🏆 Metaverse Leaderboard</h3>
+                            <div id="metaverseLeaderboard">
+                                <!-- Leaderboard -->
+                            </div>
+                        </div>
+                        <div class="card" style="background: rgba(255,255,255,0.1); color: white;">
+                            <h3>🎯 VR Mining Stats</h3>
+                            <div id="vrStats">
+                                <!-- VR stats -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="admin" class="tab-content">
+                <div class="admin-panel">
+                    <h2>⚙️ Enterprise Admin Panel</h2>
+                    
+                    <div class="admin-stats">
+                        <div class="admin-stat">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="admin-stat">
+                            <div class="stat-value" id="totalStaked">0</div>
+                            <div class="stat-label">Total Staked</div>
+                        </div>
+                        <div class="admin-stat">
+                            <div class="stat-value" id="platformRevenue">0</div>
+                            <div class="stat-label">Platform Revenue</div>
+                        </div>
+                        <div class="admin-stat">
+                            <div class="stat-value" id="activeClans">0</div>
+                            <div class="stat-label">Active Clans</div>
+                        </div>
+                    </div>
+
+                    <div class="features-grid">
+                        <div class="card" style="background: rgba(255,255,255,0.1);">
+                            <h3>📢 Broadcast Message</h3>
+                            <input type="text" id="broadcastMessage" placeholder="Enter global message" style="width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                            <button onclick="sendBroadcast()" style="width: 100%; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer;">Broadcast</button>
+                        </div>
+
+                        <div class="card" style="background: rgba(255,255,255,0.1);">
+                            <h3>🔧 System Controls</h3>
+                            <button onclick="adjustMiningRate()" style="width: 100%; padding: 10px; margin: 5px 0; background: var(--warning); color: black; border: none; border-radius: 5px; cursor: pointer;">Adjust Mining Rate</button>
+                            <button onclick="runMaintenance()" style="width: 100%; padding: 10px; margin: 5px 0; background: var(--info); color: white; border: none; border-radius: 5px; cursor: pointer;">Run Maintenance</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -756,9 +771,9 @@
         const APPWRITE_PROJECT = '6839d9640019316a160d';
         const APPWRITE_DB_ID = '6839dcca000190bf99f6';
         const APPWRITE_COLLECTION_ID = 'users';
-        const SUPREMEAMER_RECEIVER_BNB = '0xYourBnbAddressHere'; // CHANGE TO YOURS
+        const SUPREMEAMER_RECEIVER_BNB = '0xYourBnbAddressHere';
 
-        // Initialize Appwrite with your configuration
+        // Initialize Appwrite
         const client = new Appwrite.Client();
         client
             .setEndpoint(APPWRITE_ENDPOINT)
@@ -767,10 +782,7 @@
         const account = new Appwrite.Account(client);
         const databases = new Appwrite.Databases(client);
 
-        // Update BNB address display
-        document.getElementById('bnbAddress').textContent = SUPREMEAMER_RECEIVER_BNB;
-
-        // Mining state
+        // Enhanced Game State
         let miningInterval;
         let isMining = false;
         let coinsMined = 0;
@@ -778,751 +790,455 @@
         let userId = null;
         let currentUser = null;
         let miningChart = null;
+        let stakingChart = null;
+        let enterpriseChart = null;
 
-        // Game data
-        const upgrades = [
-            { id: 'cpu', name: 'Better CPU', description: 'Increase mining speed by 20%', cost: 10, power: 1.2, level: 0, maxLevel: 5 },
-            { id: 'gpu', name: 'GPU Mining', description: 'Double your mining power', cost: 25, power: 2, level: 0, maxLevel: 3 },
-            { id: 'farm', name: 'Mining Farm', description: '5x mining power boost', cost: 100, power: 5, level: 0, maxLevel: 2 },
-            { id: 'asic', name: 'ASIC Miner', description: '10x mining power', cost: 500, power: 10, level: 0, maxLevel: 1 }
+        // Enhanced Game Data
+        const stakingPools = [
+            { id: '30_day', name: '30-Day Pool', apy: 0.15, lockPeriod: 30, minStake: 10 },
+            { id: '90_day', name: '90-Day Pool', apy: 0.45, lockPeriod: 90, minStake: 50 },
+            { id: '180_day', name: '180-Day Pool', apy: 1.00, lockPeriod: 180, minStake: 100 },
+            { id: '360_day', name: '360-Day Pool', apy: 2.00, lockPeriod: 360, minStake: 500 }
         ];
 
-        const achievements = [
-            { id: 'first_mining', name: 'First Steps', description: 'Mine your first coin', reward: 5, unlocked: false, progress: 0, target: 1 },
-            { id: 'mining_expert', name: 'Mining Expert', description: 'Mine 100 coins', reward: 50, unlocked: false, progress: 0, target: 100 },
-            { id: 'mining_master', name: 'Mining Master', description: 'Mine 1000 coins', reward: 200, unlocked: false, progress: 0, target: 1000 },
-            { id: 'time_miner', name: 'Time Miner', description: 'Mine for 60 minutes', reward: 25, unlocked: false, progress: 0, target: 60 },
-            { id: 'first_withdrawal', name: 'First Withdrawal', description: 'Make your first withdrawal', reward: 10, unlocked: false, progress: 0, target: 1 },
-            { id: 'referral_master', name: 'Referral Master', description: 'Refer 5 friends', reward: 100, unlocked: false, progress: 0, target: 5 }
+        const nftEquipment = [
+            { id: 'quantum_cpu', name: 'Quantum CPU', rarity: 'rare', miningBoost: 2.0, cost: 100, image: '⚛️' },
+            { id: 'hologram_gpu', name: 'Hologram GPU', rarity: 'epic', miningBoost: 3.5, cost: 250, image: '💠' },
+            { id: 'neural_asic', name: 'Neural ASIC', rarity: 'legendary', miningBoost: 5.0, cost: 500, image: '🧠' },
+            { id: 'metaverse_rig', name: 'Metaverse Rig', rarity: 'legendary', miningBoost: 8.0, cost: 1000, image: '🌐' }
         ];
 
-        const quests = [
-            { id: 'daily_mining', name: 'Daily Mining', description: 'Mine for 30 minutes today', reward: 5, progress: 0, target: 30, completed: false },
-            { id: 'coin_collector', name: 'Coin Collector', description: 'Collect 50 coins today', reward: 10, progress: 0, target: 50, completed: false },
-            { id: 'streak_master', name: 'Streak Master', description: 'Mine for 3 consecutive days', reward: 15, progress: 0, target: 3, completed: false }
-        ];
+        const clans = [];
+        let currentClan = null;
 
-        // DOM elements
+        // DOM Elements
         const loginSection = document.getElementById('loginSection');
-        const miningInterface = document.getElementById('miningInterface');
+        const ecosystemInterface = document.getElementById('ecosystemInterface');
         const miningButton = document.getElementById('miningButton');
         const miningAnimation = document.getElementById('miningAnimation');
         const miningStatus = document.getElementById('miningStatus');
         const withdrawButton = document.getElementById('withdrawButton');
-        const coinsMinedElement = document.getElementById('coinsMined');
-        const miningTimeElement = document.getElementById('miningTime');
-        const totalEarningsElement = document.getElementById('totalEarnings');
-        const transactionList = document.getElementById('transactionList');
         const notification = document.getElementById('notification');
 
-        // Tab management
-        function showTab(tabName) {
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
+        // Enhanced Navigation
+        function showEcosystemTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             
-            // Show selected tab
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
 
-            // Refresh tab content if needed
-            if (tabName === 'leaderboard') {
-                loadLeaderboard();
-            } else if (tabName === 'analytics') {
-                initializeChart();
+            // Initialize tab-specific features
+            switch(tabName) {
+                case 'staking':
+                    renderStakingPools();
+                    initializeStakingChart();
+                    break;
+                case 'nft':
+                    renderNFTMarketplace();
+                    renderNFTCollection();
+                    break;
+                case 'clans':
+                    loadClanData();
+                    break;
+                case 'analytics':
+                    initializeEnterpriseChart();
+                    loadAIPredictions();
+                    break;
+                case 'admin':
+                    if (userId === 'admin') loadAdminPanel();
+                    break;
             }
         }
 
-        // Authentication functions
+        // Enhanced Authentication
         async function register() {
             const username = document.getElementById('registerUsername').value;
             const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
-            const referralCode = document.getElementById('registerReferralCode').value;
-
-            if (!username || !email || !password) {
-                showNotification('Please fill all fields', true);
-                return;
-            }
 
             try {
-                // Create user account with Appwrite 13.0.0
-                await account.create(
-                    Appwrite.ID.unique(), // Generate unique user ID
-                    email, 
-                    password, 
-                    username
-                );
-                
-                showNotification('Account created successfully! Please login.');
+                await account.create(Appwrite.ID.unique(), email, password, username);
+                showNotification('Account created! Welcome to the ecosystem.');
                 showTab('login');
-                
-                // Clear form
-                document.getElementById('registerUsername').value = '';
-                document.getElementById('registerEmail').value = '';
-                document.getElementById('registerPassword').value = '';
-                document.getElementById('registerReferralCode').value = '';
             } catch (error) {
-                showNotification('Error creating account: ' + error.message, true);
+                showNotification('Registration failed: ' + error.message, true);
             }
         }
 
         async function login() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-            const referralCode = document.getElementById('loginReferralCode').value;
-
-            if (!email || !password) {
-                showNotification('Please enter email and password', true);
-                return;
-            }
 
             try {
-                // Create session with Appwrite 13.0.0
                 await account.createEmailPasswordSession(email, password);
                 currentUser = await account.get();
                 userId = currentUser.$id;
                 
-                // Initialize user data
-                await initializeUser(referralCode);
-                
-                // Switch to mining interface
+                await initializeEnhancedUser();
                 loginSection.classList.add('hidden');
-                miningInterface.classList.remove('hidden');
+                ecosystemInterface.classList.remove('hidden');
                 
-                showNotification('Login successful! Welcome to SupremeAmer Miner.');
+                showNotification('Welcome to SupremeAmer Ecosystem!');
             } catch (error) {
                 showNotification('Login failed: ' + error.message, true);
             }
+        }
+
+        // Enhanced User Initialization
+        async function initializeEnhancedUser() {
+            try {
+                const userDoc = await databases.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
+                
+                // Load enhanced user data
+                coinsMined = userDoc.coinsMined || 0;
+                miningTime = userDoc.miningTime || 0;
+                
+                // Initialize enhanced features
+                updateEnhancedUI();
+                renderStakingPools();
+                renderNFTMarketplace();
+                loadClanData();
+                
+            } catch (error) {
+                // Create new user with enhanced data structure
+                const enhancedUserData = {
+                    coinsMined: 0,
+                    miningTime: 0,
+                    totalWithdrawn: 0,
+                    miningPower: 1,
+                    staking: {
+                        activeStakes: [],
+                        totalStaked: 0,
+                        totalRewards: 0
+                    },
+                    nfts: [],
+                    clan: null,
+                    achievements: [],
+                    metaverse: {
+                        vrTime: 0,
+                        vrEarnings: 0
+                    },
+                    createdAt: new Date().toISOString(),
+                    username: currentUser.name,
+                    email: currentUser.email
+                };
+                
+                await databases.createDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, enhancedUserData);
+            }
+        }
+
+        // Feature 1: Enhanced Staking System
+        async function renderStakingPools() {
+            const stakingPoolsElement = document.getElementById('stakingPools');
+            stakingPoolsElement.innerHTML = '';
+
+            stakingPools.forEach(pool => {
+                const poolElement = document.createElement('div');
+                poolElement.className = 'staking-pool';
+                poolElement.innerHTML = `
+                    <div class="pool-header">
+                        <h3>${pool.name}</h3>
+                        <span class="apy-badge">${(pool.apy * 100).toFixed(1)}% APY</span>
+                    </div>
+                    <p>Lock Period: ${pool.lockPeriod} days</p>
+                    <p>Minimum Stake: ${pool.minStake} SAM</p>
+                    <input type="number" id="stakeAmount-${pool.id}" placeholder="Amount to stake" min="${pool.minStake}" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
+                    <button onclick="stakeInPool('${pool.id}')" class="mining-button" style="padding: 10px 20px; font-size: 1em; width: 100%;">Stake Now</button>
+                `;
+                stakingPoolsElement.appendChild(poolElement);
+            });
+        }
+
+        async function stakeInPool(poolId) {
+            const pool = stakingPools.find(p => p.id === poolId);
+            const amount = parseFloat(document.getElementById(`stakeAmount-${poolId}`).value);
+
+            if (!amount || amount < pool.minStake || amount > coinsMined) {
+                showNotification('Invalid stake amount', true);
+                return;
+            }
+
+            coinsMined -= amount;
+            
+            const stake = {
+                poolId: poolId,
+                amount: amount,
+                stakedAt: new Date().toISOString(),
+                unlockDate: new Date(Date.now() + pool.lockPeriod * 24 * 60 * 60 * 1000).toISOString()
+            };
+
+            // Update user document
+            const userDoc = await databases.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
+            const stakes = userDoc.staking?.activeStakes || [];
+            stakes.push(stake);
+
+            await databases.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
+                coinsMined: coinsMined,
+                staking: {
+                    activeStakes: stakes,
+                    totalStaked: (userDoc.staking?.totalStaked || 0) + amount
+                }
+            });
+
+            showNotification(`Successfully staked ${amount} SAM in ${pool.name}`);
+            updateEnhancedUI();
+        }
+
+        // Feature 3: NFT Marketplace
+        async function renderNFTMarketplace() {
+            const marketplace = document.getElementById('nftMarketplace');
+            marketplace.innerHTML = '';
+
+            nftEquipment.forEach(nft => {
+                const nftElement = document.createElement('div');
+                nftElement.className = 'nft-item';
+                nftElement.innerHTML = `
+                    <div class="nft-image">${nft.image}</div>
+                    <h3>${nft.name}</h3>
+                    <div class="nft-rarity rarity-${nft.rarity}">${nft.rarity.toUpperCase()}</div>
+                    <p>Mining Boost: ${nft.miningBoost}x</p>
+                    <p>Cost: ${nft.cost} SAM</p>
+                    <button onclick="purchaseNFT('${nft.id}')" class="mining-button" style="padding: 10px 20px; font-size: 1em; width: 100%; margin-top: 10px;">Purchase</button>
+                `;
+                marketplace.appendChild(nftElement);
+            });
+        }
+
+        async function purchaseNFT(nftId) {
+            const nft = nftEquipment.find(n => n.id === nftId);
+            
+            if (coinsMined < nft.cost) {
+                showNotification('Insufficient funds', true);
+                return;
+            }
+
+            coinsMined -= nft.cost;
+            
+            const userDoc = await databases.getDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId);
+            const nfts = userDoc.nfts || [];
+            nfts.push({
+                ...nft,
+                purchasedAt: new Date().toISOString(),
+                tokenId: `NFT-${Date.now()}`
+            });
+
+            await databases.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
+                coinsMined: coinsMined,
+                nfts: nfts
+            });
+
+            showNotification(`Purchased ${nft.name}! Mining power increased.`);
+            updateEnhancedUI();
+            renderNFTCollection();
+        }
+
+        // Feature 6: Clan System
+        async function createClan() {
+            const clanName = document.getElementById('clanName').value;
+            if (!clanName) {
+                showNotification('Please enter a clan name', true);
+                return;
+            }
+
+            const clan = {
+                id: `clan-${Date.now()}`,
+                name: clanName,
+                creator: userId,
+                members: [userId],
+                createdAt: new Date().toISOString(),
+                chat: []
+            };
+
+            clans.push(clan);
+            currentClan = clan;
+
+            await databases.updateDocument(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID, userId, {
+                clan: clan
+            });
+
+            showNotification(`Clan "${clanName}" created!`);
+            loadClanData();
+        }
+
+        async function sendClanMessage() {
+            if (!currentClan) {
+                showNotification('Join a clan first', true);
+                return;
+            }
+
+            const message = document.getElementById('chatMessage').value;
+            if (!message) return;
+
+            const chatMessage = {
+                user: currentUser.name,
+                message: message,
+                timestamp: new Date().toISOString()
+            };
+
+            currentClan.chat.push(chatMessage);
+            document.getElementById('chatMessage').value = '';
+
+            // Update clan chat display
+            const chatElement = document.createElement('div');
+            chatElement.className = 'message own';
+            chatElement.innerHTML = `<strong>${chatMessage.user}:</strong> ${chatMessage.message}`;
+            document.getElementById('clanChat').appendChild(chatElement);
+        }
+
+        // Feature 7: Enterprise Analytics
+        function initializeEnterpriseChart() {
+            const ctx = document.getElementById('enterpriseChart').getContext('2d');
+            
+            if (enterpriseChart) enterpriseChart.destroy();
+
+            enterpriseChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Platform Growth',
+                        data: [100, 250, 400, 650, 900, 1200],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'SupremeAmer Ecosystem Growth'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Feature 8: Metaverse Integration
+        function enterMetaverse() {
+            showNotification('Entering SupremeAmer Metaverse...');
+            // Simulate VR experience
+            document.body.style.background = 'linear-gradient(135deg, #000428, #004e92)';
+            
+            setTimeout(() => {
+                showNotification('VR Mining Session Started! 2x earnings activated!');
+                // Enhanced mining in VR mode
+            }, 2000);
+        }
+
+        // Enhanced UI Update
+        function updateEnhancedUI() {
+            document.getElementById('coinsMined').textContent = coinsMined.toFixed(2);
+            document.getElementById('miningPower').textContent = calculateTotalMiningPower().toFixed(1);
+            document.getElementById('totalEarnings').textContent = `$${(coinsMined * 0.01).toFixed(2)}`;
+            
+            // Update staking rewards
+            calculateStakingRewards().then(rewards => {
+                document.getElementById('stakingRewards').textContent = `${rewards.toFixed(2)} SAM`;
+            });
+        }
+
+        function calculateTotalMiningPower() {
+            let power = 1;
+            // Add NFT boosts
+            // Add clan boosts
+            // Add staking boosts
+            return power;
+        }
+
+        async function calculateStakingRewards() {
+            // Calculate pending staking rewards
+            return 0; // Placeholder
+        }
+
+        // Utility Functions
+        function showNotification(message, isError = false) {
+            notification.textContent = message;
+            notification.className = 'notification' + (isError ? ' error' : '');
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
         }
 
         async function logout() {
             try {
                 await account.deleteSession('current');
                 loginSection.classList.remove('hidden');
-                miningInterface.classList.add('hidden');
+                ecosystemInterface.classList.add('hidden');
                 showNotification('Logged out successfully');
-                
-                // Clear form
-                document.getElementById('loginEmail').value = '';
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('loginReferralCode').value = '';
             } catch (error) {
                 console.error('Logout error:', error);
             }
         }
 
-        // Initialize user data
-        async function initializeUser(referralCode = '') {
-            try {
-                // Check if user document exists
-                try {
-                    const userDoc = await databases.getDocument(
-                        APPWRITE_DB_ID, 
-                        APPWRITE_COLLECTION_ID, 
-                        userId
-                    );
-                    
-                    coinsMined = userDoc.coinsMined || 0;
-                    miningTime = userDoc.miningTime || 0;
-                    
-                    // Load upgrades
-                    if (userDoc.upgrades) {
-                        const savedUpgrades = JSON.parse(userDoc.upgrades);
-                        upgrades.forEach(upgrade => {
-                            const savedUpgrade = savedUpgrades.find(u => u.id === upgrade.id);
-                            if (savedUpgrade) {
-                                upgrade.level = savedUpgrade.level;
-                                upgrade.cost = savedUpgrade.cost;
-                            }
-                        });
-                    }
-                    
-                    // Load achievements
-                    if (userDoc.achievements) {
-                        const savedAchievements = JSON.parse(userDoc.achievements);
-                        achievements.forEach(achievement => {
-                            const savedAchievement = savedAchievements.find(a => a.id === achievement.id);
-                            if (savedAchievement) {
-                                achievement.unlocked = savedAchievement.unlocked;
-                                achievement.progress = savedAchievement.progress;
-                            }
-                        });
-                    }
-                    
-                    // Load quests
-                    if (userDoc.quests) {
-                        const savedQuests = JSON.parse(userDoc.quests);
-                        quests.forEach(quest => {
-                            const savedQuest = savedQuests.find(q => q.id === quest.id);
-                            if (savedQuest) {
-                                quest.progress = savedQuest.progress;
-                                quest.completed = savedQuest.completed;
-                            }
-                        });
-                    }
-                    
-                } catch (error) {
-                    // User document doesn't exist, create it
-                    const userData = {
-                        coinsMined: 0,
-                        miningTime: 0,
-                        totalWithdrawn: 0,
-                        miningPower: 1,
-                        upgrades: JSON.stringify(upgrades),
-                        achievements: JSON.stringify(achievements),
-                        quests: JSON.stringify(quests),
-                        referralCode: generateReferralCode(),
-                        referredBy: referralCode,
-                        referrals: JSON.stringify([]),
-                        referralEarnings: 0,
-                        transactions: JSON.stringify([]),
-                        miningSessions: JSON.stringify([]),
-                        createdAt: new Date().toISOString(),
-                        username: currentUser.name,
-                        email: currentUser.email,
-                        lastLogin: new Date().toISOString()
-                    };
-                    
-                    await databases.createDocument(
-                        APPWRITE_DB_ID, 
-                        APPWRITE_COLLECTION_ID, 
-                        userId, 
-                        userData
-                    );
-                    
-                    // Handle referral if provided
-                    if (referralCode) {
-                        await handleReferral(referralCode);
-                    }
-                }
-                
-                updateUI();
-                loadTransactionHistory();
-                renderUpgrades();
-                renderAchievements();
-                renderQuests();
-                loadLeaderboard();
-                updateReferralInfo();
-            } catch (error) {
-                console.error('Error initializing user:', error);
-                showNotification('Error initializing mining session', true);
-            }
-        }
-
-        // Mining functions
-        miningButton.addEventListener('click', toggleMining);
-
-        function toggleMining() {
-            if (isMining) {
-                stopMining();
-            } else {
-                startMining();
-            }
-        }
-
-        function startMining() {
-            isMining = true;
-            miningButton.textContent = 'Stop Mining';
-            miningAnimation.classList.remove('hidden');
-            miningStatus.textContent = 'Mining SupremeAmer coins...';
-            
-            miningInterval = setInterval(async () => {
-                // Calculate mining power from upgrades
-                let totalMiningPower = 1;
-                upgrades.forEach(upgrade => {
-                    if (upgrade.level > 0) {
-                        totalMiningPower *= upgrade.power;
-                    }
-                });
-                
-                // Mine coins (random between 0.1 and 0.5 coins per second) multiplied by power
-                const baseCoinsPerSecond = (Math.random() * 0.4 + 0.1) / 60;
-                const coinsThisSecond = baseCoinsPerSecond * totalMiningPower;
-                coinsMined += coinsThisSecond;
-                miningTime += 1/60; // Add 1 second in minutes
-                
-                // Update quest progress
-                updateQuestProgress('daily_mining', 1/60);
-                updateQuestProgress('coin_collector', coinsThisSecond);
-                
-                // Update achievement progress
-                updateAchievementProgress('first_mining', coinsMined);
-                updateAchievementProgress('mining_expert', coinsMined);
-                updateAchievementProgress('mining_master', coinsMined);
-                updateAchievementProgress('time_miner', miningTime);
-                
-                // Update every 5 seconds in database to reduce API calls
-                if (Math.floor(miningTime * 60) % 5 === 0) {
-                    await updateUserData();
-                }
-                
-                updateUI();
-            }, 1000);
-        }
-
-        function stopMining() {
-            isMining = false;
-            miningButton.textContent = 'Start Mining';
-            miningAnimation.classList.add('hidden');
-            miningStatus.textContent = 'Mining stopped. Ready to continue.';
-            
-            clearInterval(miningInterval);
-            updateUserData();
-        }
-
-        // Update user data in Appwrite
-        async function updateUserData() {
-            try {
-                await databases.updateDocument(
-                    APPWRITE_DB_ID, 
-                    APPWRITE_COLLECTION_ID, 
-                    userId, 
-                    {
-                        coinsMined: parseFloat(coinsMined.toFixed(6)),
-                        miningTime: parseFloat(miningTime.toFixed(2)),
-                        lastMiningSession: new Date().toISOString(),
-                        upgrades: JSON.stringify(upgrades),
-                        achievements: JSON.stringify(achievements),
-                        quests: JSON.stringify(quests),
-                        miningPower: calculateTotalMiningPower()
-                    }
-                );
-            } catch (error) {
-                console.error('Error updating user data:', error);
-            }
-        }
-
-        // Calculate total mining power from upgrades
-        function calculateTotalMiningPower() {
-            let power = 1;
-            upgrades.forEach(upgrade => {
-                if (upgrade.level > 0) {
-                    power *= upgrade.power;
+        // Initialize enhanced charts
+        function initializeStakingChart() {
+            const ctx = document.getElementById('stakingChart').getContext('2d');
+            stakingChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: stakingPools.map(p => p.name),
+                    datasets: [{
+                        label: 'APY %',
+                        data: stakingPools.map(p => p.apy * 100),
+                        backgroundColor: stakingPools.map((_, i) => 
+                            `hsl(${i * 60}, 70%, 60%)`
+                        )
+                    }]
                 }
             });
-            return power;
         }
 
-        // Upgrade system
-        function renderUpgrades() {
-            const upgradesList = document.getElementById('upgradesList');
-            upgradesList.innerHTML = '';
-            
-            upgrades.forEach(upgrade => {
-                const upgradeElement = document.createElement('div');
-                upgradeElement.className = 'upgrade-item';
-                
-                const canAfford = coinsMined >= upgrade.cost && upgrade.level < upgrade.maxLevel;
-                
-                upgradeElement.innerHTML = `
-                    <div>
-                        <strong>${upgrade.name}</strong>
-                        <div style="font-size: 0.9em; color: #666;">${upgrade.description}</div>
-                        <div style="font-size: 0.8em; color: #888;">
-                            Level: ${upgrade.level}/${upgrade.maxLevel} | Cost: ${upgrade.cost} SAM
-                        </div>
-                    </div>
-                    <button class="upgrade-button" ${!canAfford ? 'disabled' : ''} 
-                            onclick="buyUpgrade('${upgrade.id}')">
-                        ${upgrade.level >= upgrade.maxLevel ? 'MAX' : 'Buy'}
-                    </button>
-                `;
-                
-                upgradesList.appendChild(upgradeElement);
-            });
-        }
-
-        async function buyUpgrade(upgradeId) {
-            const upgrade = upgrades.find(u => u.id === upgradeId);
-            
-            if (!upgrade || upgrade.level >= upgrade.maxLevel || coinsMined < upgrade.cost) {
-                return;
-            }
-            
-            coinsMined -= upgrade.cost;
-            upgrade.level++;
-            
-            // Increase cost for next level
-            upgrade.cost = Math.round(upgrade.cost * 1.5);
-            
-            showNotification(`Upgraded ${upgrade.name} to level ${upgrade.level}!`);
-            updateUI();
-            renderUpgrades();
-            await updateUserData();
-        }
-
-        // Achievement system
-        function renderAchievements() {
-            const achievementsList = document.getElementById('achievementsList');
-            const recentAchievements = document.getElementById('recentAchievements');
-            
-            achievementsList.innerHTML = '';
-            recentAchievements.innerHTML = '';
-            
-            let recentUnlocked = [];
-            
-            achievements.forEach(achievement => {
-                const achievementElement = document.createElement('div');
-                achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : ''}`;
-                
-                const progressPercent = (achievement.progress / achievement.target) * 100;
-                
-                achievementElement.innerHTML = `
-                    <div class="achievement-icon">${achievement.unlocked ? '🏆' : '🔒'}</div>
-                    <div class="achievement-info">
-                        <strong>${achievement.name}</strong>
-                        <div style="font-size: 0.9em; color: #666;">${achievement.description}</div>
-                        <div class="achievement-progress">
-                            <div class="achievement-progress-bar" style="width: ${Math.min(progressPercent, 100)}%"></div>
-                        </div>
-                        <div style="font-size: 0.8em; color: #888;">
-                            Progress: ${achievement.progress.toFixed(1)}/${achievement.target}
-                        </div>
-                    </div>
-                    <div style="color: var(--success); font-weight: bold;">
-                        +${achievement.reward} SAM
-                    </div>
-                `;
-                
-                achievementsList.appendChild(achievementElement);
-                
-                // Track recently unlocked achievements
-                if (achievement.unlocked && achievement.progress === achievement.target) {
-                    recentUnlocked.push(achievement);
-                }
-            });
-            
-            // Show recent achievements (last 3 unlocked)
-            recentUnlocked.slice(-3).reverse().forEach(achievement => {
-                const recentElement = document.createElement('div');
-                recentElement.className = 'achievement-item unlocked';
-                recentElement.innerHTML = `
-                    <div class="achievement-icon">🏆</div>
-                    <div class="achievement-info">
-                        <strong>${achievement.name}</strong>
-                        <div style="font-size: 0.9em; color: #666;">Unlocked!</div>
-                    </div>
-                `;
-                recentAchievements.appendChild(recentElement);
-            });
-        }
-
-        function updateAchievementProgress(achievementId, progress) {
-            const achievement = achievements.find(a => a.id === achievementId);
-            if (achievement && !achievement.unlocked) {
-                achievement.progress = Math.min(progress, achievement.target);
-                
-                if (achievement.progress >= achievement.target && !achievement.unlocked) {
-                    achievement.unlocked = true;
-                    coinsMined += achievement.reward;
-                    showNotification(`Achievement unlocked: ${achievement.name}! +${achievement.reward} SAM`);
-                    renderAchievements();
-                }
-            }
-        }
-
-        // Quest system
-        function renderQuests() {
-            const questsList = document.getElementById('questsList');
-            questsList.innerHTML = '';
-            
-            quests.forEach(quest => {
-                const questElement = document.createElement('div');
-                questElement.className = `quest-item ${quest.completed ? 'completed' : ''}`;
-                
-                const progressPercent = (quest.progress / quest.target) * 100;
-                
-                questElement.innerHTML = `
-                    <div>
-                        <strong>${quest.name}</strong>
-                        <div style="font-size: 0.9em; color: #666;">${quest.description}</div>
-                        <div style="font-size: 0.8em; color: #888;">
-                            Progress: ${quest.progress.toFixed(1)}/${quest.target}
-                        </div>
-                    </div>
-                    <div class="quest-reward">
-                        +${quest.reward} SAM
-                    </div>
-                `;
-                
-                questsList.appendChild(questElement);
-            });
-        }
-
-        function updateQuestProgress(questId, progress) {
-            const quest = quests.find(q => q.id === questId);
-            if (quest && !quest.completed) {
-                quest.progress += progress;
-                
-                if (quest.progress >= quest.target && !quest.completed) {
-                    quest.completed = true;
-                    coinsMined += quest.reward;
-                    showNotification(`Quest completed: ${quest.name}! +${quest.reward} SAM`);
-                    renderQuests();
-                }
-            }
-        }
-
-        // Referral system
-        function generateReferralCode() {
-            return 'REF' + Math.random().toString(36).substr(2, 8).toUpperCase();
-        }
-
-        async function updateReferralInfo() {
-            try {
-                const userDoc = await databases.getDocument(
-                    APPWRITE_DB_ID, 
-                    APPWRITE_COLLECTION_ID, 
-                    userId
-                );
-                
-                document.getElementById('referralCode').textContent = userDoc.referralCode;
-                
-                const referrals = JSON.parse(userDoc.referrals || '[]');
-                document.getElementById('referralCount').textContent = referrals.length;
-                document.getElementById('referralEarnings').textContent = userDoc.referralEarnings || 0;
-            } catch (error) {
-                console.error('Error loading referral info:', error);
-            }
-        }
-
-        function copyReferralCode() {
-            const referralCode = document.getElementById('referralCode').textContent;
-            navigator.clipboard.writeText(referralCode).then(() => {
-                showNotification('Referral code copied to clipboard!');
-            });
-        }
-
-        async function handleReferral(referralCode) {
-            try {
-                // Find referrer and update their data
-                const allUsers = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
-                const referrer = allUsers.documents.find(user => user.referralCode === referralCode);
-                
-                if (referrer) {
-                    const referrals = JSON.parse(referrer.referrals || '[]');
-                    const updatedReferrals = [...referrals, userId];
-                    const updatedReferralEarnings = (referrer.referralEarnings || 0) + 10; // Bonus for referrer
-                    
-                    await databases.updateDocument(
-                        APPWRITE_DB_ID, 
-                        APPWRITE_COLLECTION_ID, 
-                        referrer.$id, 
-                        {
-                            referrals: JSON.stringify(updatedReferrals),
-                            referralEarnings: updatedReferralEarnings
-                        }
-                    );
-                    
-                    // Give bonus to new user
-                    coinsMined += 5;
-                    showNotification('Referral bonus applied! +5 SAM');
-                }
-            } catch (error) {
-                console.error('Error handling referral:', error);
-            }
-        }
-
-        // Leaderboard system
-        async function loadLeaderboard() {
-            try {
-                const allUsers = await databases.listDocuments(APPWRITE_DB_ID, APPWRITE_COLLECTION_ID);
-                const sortedUsers = allUsers.documents
-                    .filter(user => user.coinsMined > 0)
-                    .sort((a, b) => b.coinsMined - a.coinsMined)
-                    .slice(0, 20);
-                
-                const leaderboard = document.getElementById('globalLeaderboard');
-                leaderboard.innerHTML = '';
-                
-                sortedUsers.forEach((user, index) => {
-                    const leaderboardItem = document.createElement('div');
-                    leaderboardItem.className = 'leaderboard-item';
-                    
-                    leaderboardItem.innerHTML = `
-                        <div class="leaderboard-rank">#${index + 1}</div>
-                        <div class="leaderboard-name">
-                            ${user.username}
-                            ${user.$id === userId ? '<span class="badge">You</span>' : ''}
-                        </div>
-                        <div class="leaderboard-score">${user.coinsMined.toFixed(2)} SAM</div>
-                    `;
-                    
-                    leaderboard.appendChild(leaderboardItem);
-                });
-            } catch (error) {
-                console.error('Error loading leaderboard:', error);
-            }
-        }
-
-        // Analytics chart (placeholder - you can integrate Chart.js if needed)
-        function initializeChart() {
-            const chartContainer = document.getElementById('miningChart');
-            chartContainer.innerHTML = `
-                <div style="text-align: center; padding: 50px; color: #666;">
-                    <h3>📊 Mining Analytics</h3>
-                    <p>Chart visualization will be implemented with Chart.js</p>
-                    <p>Total Coins Mined: <strong>${coinsMined.toFixed(2)} SAM</strong></p>
-                    <p>Total Mining Time: <strong>${miningTime.toFixed(2)} minutes</strong></p>
+        function loadAIPredictions() {
+            document.getElementById('aiPredictions').innerHTML = `
+                <div class="stat-item">
+                    <div class="stat-value">+15%</div>
+                    <div class="stat-label">Next Week Growth</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">Optimal</div>
+                    <div class="stat-label">Staking Strategy</div>
                 </div>
             `;
         }
 
-        // Withdraw functionality
-        withdrawButton.addEventListener('click', async () => {
-            if (coinsMined < 1) {
-                showNotification('Minimum withdrawal is 1 SupremeAmer coin', true);
-                return;
-            }
-
-            try {
-                // Get current user data
-                const userDoc = await databases.getDocument(
-                    APPWRITE_DB_ID, 
-                    APPWRITE_COLLECTION_ID, 
-                    userId
-                );
-                
-                // Create withdrawal transaction
-                const transaction = {
-                    type: 'withdrawal',
-                    amount: parseFloat(coinsMined.toFixed(6)),
-                    bnbAddress: SUPREMEAMER_RECEIVER_BNB,
-                    timestamp: new Date().toISOString(),
-                    status: 'pending'
-                };
-
-                // Update achievement
-                updateAchievementProgress('first_withdrawal', 1);
-
-                // Parse existing transactions
-                const transactions = JSON.parse(userDoc.transactions || '[]');
-                const updatedTransactions = [...transactions, JSON.stringify(transaction)];
-                
-                await databases.updateDocument(
-                    APPWRITE_DB_ID, 
-                    APPWRITE_COLLECTION_ID, 
-                    userId, 
-                    {
-                        coinsMined: 0,
-                        totalWithdrawn: (userDoc.totalWithdrawn || 0) + coinsMined,
-                        transactions: JSON.stringify(updatedTransactions)
-                    }
-                );
-
-                // Reset local state
-                coinsMined = 0;
-                miningTime = 0;
-                
-                showNotification(`Successfully withdrew ${transaction.amount} SupremeAmer coins to ${SUPREMEAMER_RECEIVER_BNB}`);
-                updateUI();
-                loadTransactionHistory();
-                
-            } catch (error) {
-                console.error('Error processing withdrawal:', error);
-                showNotification('Error processing withdrawal', true);
-            }
-        });
-
-        // Update UI
-        function updateUI() {
-            coinsMinedElement.textContent = coinsMined.toFixed(6);
-            miningTimeElement.textContent = miningTime.toFixed(2);
-            
-            // Calculate earnings (assuming 1 SupremeAmer = $0.01 for demo)
-            const earnings = coinsMined * 0.01;
-            totalEarningsElement.textContent = '$' + earnings.toFixed(4);
-            
-            // Update mining power display
-            document.getElementById('miningPower').textContent = calculateTotalMiningPower().toFixed(1);
-            
-            // Enable/disable withdraw button
-            withdrawButton.disabled = coinsMined < 1;
-        }
-
-        // Load transaction history
-        async function loadTransactionHistory() {
-            try {
-                const userDoc = await databases.getDocument(
-                    APPWRITE_DB_ID, 
-                    APPWRITE_COLLECTION_ID, 
-                    userId
-                );
-                
-                const transactions = JSON.parse(userDoc.transactions || '[]');
-                
-                transactionList.innerHTML = '';
-                
-                if (transactions.length === 0) {
-                    transactionList.innerHTML = '<p style="text-align: center; color: #666;">No transactions yet</p>';
-                    return;
-                }
-                
-                // Parse and display transactions
-                transactions.reverse().forEach(transactionStr => {
-                    try {
-                        const transaction = JSON.parse(transactionStr);
-                        const transactionElement = document.createElement('div');
-                        transactionElement.className = 'transaction-item';
-                        
-                        const date = new Date(transaction.timestamp).toLocaleDateString();
-                        const amount = transaction.amount.toFixed(6);
-                        
-                        transactionElement.innerHTML = `
-                            <div>
-                                <strong>${transaction.type.toUpperCase()}</strong>
-                                <div style="font-size: 0.8em; color: #666;">${date}</div>
-                            </div>
-                            <div class="transaction-amount">${amount} SAM</div>
-                            <div style="font-size: 0.8em; color: #666;">${transaction.status}</div>
-                        `;
-                        
-                        transactionList.appendChild(transactionElement);
-                    } catch (e) {
-                        console.error('Error parsing transaction:', e);
-                    }
-                });
-            } catch (error) {
-                console.error('Error loading transactions:', error);
+        function loadClanData() {
+            if (currentClan) {
+                document.getElementById('clanStatus').innerHTML = `
+                    <div class="clan-card">
+                        <h3>${currentClan.name}</h3>
+                        <p>Members: ${currentClan.members.length}</p>
+                        <p>Created: ${new Date(currentClan.createdAt).toLocaleDateString()}</p>
+                    </div>
+                `;
             }
         }
 
-        // Notification system
-        function showNotification(message, isError = false) {
-            notification.textContent = message;
-            notification.className = 'notification';
-            
-            if (isError) {
-                notification.classList.add('error');
-            }
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+        function renderNFTCollection() {
+            // Placeholder for NFT collection rendering
         }
 
-        // Check if user is already logged in
+        function loadAdminPanel() {
+            // Placeholder for admin panel features
+        }
+
+        // Check existing session
         async function checkExistingSession() {
             try {
                 currentUser = await account.get();
                 userId = currentUser.$id;
-                await initializeUser();
+                await initializeEnhancedUser();
                 loginSection.classList.add('hidden');
-                miningInterface.classList.remove('hidden');
+                ecosystemInterface.classList.remove('hidden');
             } catch (error) {
-                // No existing session, stay on login page
                 console.log('No existing session');
             }
         }
 
-        // Initialize the app
+        // Initialize the enhanced ecosystem
         checkExistingSession();
     </script>
 </body>
